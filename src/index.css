@@ -1,0 +1,41 @@
+/* Google Fonts: display face for headers, body face for chat text */
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  /* Hides scrollbars visually while keeping the element scrollable -
+     used on the horizontal doctor-card rail so it feels like a native
+     mobile carousel instead of a desktop scroll list. */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Thin, brand-tinted scrollbar for the main message stream */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #a9bdb9 transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #a9bdb9;
+    border-radius: 999px;
+  }
+
+  /* Snap points so the doctor card rail settles neatly on a card
+     when the user flicks/swipes it on mobile */
+  .snap-x-mandatory {
+    scroll-snap-type: x mandatory;
+  }
+  .snap-start {
+    scroll-snap-align: start;
+  }
+}
