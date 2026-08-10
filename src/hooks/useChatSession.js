@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocalStorage } from "./useLocalStorage";
+import { useLanguage } from "../i18n/LanguageContext";
 import { generateId } from "../utils/generateId";
 import { fetchChatHistory, sendChatMessage, bookDoctorSlot } from "../services/chatApi";
+import { translateText } from "../services/translationProvider";
 import {
   mockCardiologySearch,
   mockUnavailableFallback,
@@ -20,20 +22,26 @@ const MOCK_MODE = import.meta.env.VITE_CHAT_MOCK_MODE !== "false";
 /**
  * useChatSession
  * --------------
- * Owns everything related to a single chat conversation:
- *  - Session id: generated/persisted in localStorage so the conversation
- *    survives refreshes and page navigation, then hydrates message
- *    history for that id from the backend on mount.
- *  - Normalizes whatever shape the backend returns into a flat
- *    `messages` array the UI can render generically by `type`.
- *  - Drives the full booking journey as a sequence of message types:
- *      quick-link tap
- *        -> "patient-form"   (name + mobile capture)
- *        -> "doctor-list"    (existing card rail)
- *        -> "slot-picker"    (time slot buttons, after "Book Slot")
- *        -> "booking-success"(confirmation card)
+ * Owns everything related to a single chat conversation: session id
+ * lifecycle, history hydration, the booking-flow message chain, and -
+ * new in this revision - language-aware output.
+ *
+ * Because this is a hook (not a component), it can call `useLanguage()`
+ * itself to read the active language/translator straight from context,
+ * so no `language`/`t` props need to be threaded in from ChatWidget.
+ *
+ * Two distinct localization paths:
+ *  - Static, app-authored strings (form prompts, slot-picker prefix)
+ *    use `t('key')` from UI_STRINGS - bundled with the app, no network.
+ *  - Dynamic AI reply text is localized via `translateText()` in mock
+ *    mode, or via the `targetLanguage` param sent to the real backend
+ *    (see chatApi.sendChatMessage) - the backend should generate the
+ *    reply natively in that language rather than relying on a
+ *    client-side translation pass.
  */
 export function useChatSession({ tenantId } = {}) {
+  const { language, t } = useLanguage();
+
   // --- Session id: created once, then persisted forever (per browser) ---
   const [sessionId] = useLocalStorage("hc_session_id", null);
   const sessionIdRef = useRef(sessionId ?? generateId("session"));
@@ -64,11 +72,26 @@ export function useChatSession({ tenantId } = {}) {
   const toAssistantMessage = (reply) => ({
     id: generateId("msg"),
     role: "assistant",
-    type: reply.type || "text", // 'text' | 'doctor-list' | 'fallback'
+    type: reply.type || "text",
     text: reply.text,
     doctors: reply.doctors || null,
     timestamp: new Date().toISOString(),
   });
+
+  /**
+   * Localizes a mock-mode reply's free text before it hits the UI.
+   * Doctor names/departments are left untranslated (proper nouns /
+   * clinical taxonomy the hospital controls), only the AI-authored
+   * lead-in `text` is run through the translation provider.
+   */
+  const localizeMockReply = useCallback(
+    async (reply) => {
+      if (language === "en") return reply;
+      const text = await translateText(reply.text, language);
+      return { ...reply, text };
+    },
+    [language]
+  );
 
   // --- Hydrate history on mount ---
   useEffect(() => {
@@ -78,9 +101,6 @@ export function useChatSession({ tenantId } = {}) {
       setIsLoadingHistory(true);
       try {
         if (MOCK_MODE) {
-          // Simulate an empty history for a "fresh" demo session so the
-          // widget opens with just the greeting - swap this for a
-          // canned array if you want to demo returning-user history.
           await new Promise((r) => setTimeout(r, 300));
           if (!cancelled) setMessages([]);
         } else {
@@ -132,14 +152,18 @@ export function useChatSession({ tenantId } = {}) {
       setError(null);
 
       try {
-        let payload;
+        let reply;
         if (MOCK_MODE) {
           await new Promise((r) => setTimeout(r, 700 + Math.random() * 500));
-          payload = pickMockReply(trimmed);
+          const payload = pickMockReply(trimmed);
+          reply = await localizeMockReply(payload.reply);
         } else {
-          payload = await sendChatMessage(sessionIdRef.current, trimmed, tenantId);
+          // Real backend: forward the active language so the model
+          // generates its reply natively in it.
+          const payload = await sendChatMessage(sessionIdRef.current, trimmed, tenantId, language);
+          reply = payload.reply;
         }
-        setMessages((prev) => [...prev, toAssistantMessage(payload.reply)]);
+        setMessages((prev) => [...prev, toAssistantMessage(reply)]);
       } catch (err) {
         setError(err.message);
         pushMessages({
@@ -151,39 +175,42 @@ export function useChatSession({ tenantId } = {}) {
         setIsTyping(false);
       }
     },
-    [tenantId, pushMessages]
+    [tenantId, language, localizeMockReply, pushMessages]
+  );
+
+  /**
+   * Injects an assistant message directly (no round-trip), used by the
+   * proactive behavioral trigger to post its contextual greeting the
+   * instant the user accepts it.
+   */
+  const injectAssistantMessage = useCallback(
+    (text) => {
+      pushMessages({ role: "assistant", type: "text", text });
+    },
+    [pushMessages]
   );
 
   // --- Quick link: "Book Appointment" -> kick off patient registration ---
   const startBookingFlow = useCallback(() => {
     pushMessages(
-      { role: "user", type: "text", text: "Book Appointment" },
-      {
-        role: "assistant",
-        type: "patient-form",
-        text: "Sure! Please share the patient's details so we can find the right doctor:",
-        status: "pending", // becomes "submitted" once the form is filled
-      }
+      { role: "user", type: "text", text: t("quickBook") },
+      { role: "assistant", type: "patient-form", text: t("patientFormPrompt"), status: "pending" }
     );
-  }, [pushMessages]);
+  }, [pushMessages, t]);
 
   // --- Patient registration form submitted ---
   const submitPatientForm = useCallback(
     async (messageId, formData) => {
-      // Lock the form in place and show what was entered, like a WhatsApp
-      // business-chat form freezing after submission.
       setMessages((prev) =>
         prev.map((m) => (m.id === messageId ? { ...m, status: "submitted", formData } : m))
       );
       setIsTyping(true);
       await new Promise((r) => setTimeout(r, 500));
-      // Proceed straight into doctor search, same payload used for the
-      // "find a doctor" chat intent, so the two entry points converge.
-      const payload = MOCK_MODE ? mockCardiologySearch : mockCardiologySearch; // swap for a real POST if desired
-      setMessages((prev) => [...prev, toAssistantMessage(payload.reply)]);
+      const reply = await localizeMockReply(mockCardiologySearch.reply);
+      setMessages((prev) => [...prev, toAssistantMessage(reply)]);
       setIsTyping(false);
     },
-    []
+    [localizeMockReply]
   );
 
   // --- "Book Slot" tapped on a doctor card -> show time slot buttons ---
@@ -192,40 +219,33 @@ export function useChatSession({ tenantId } = {}) {
       pushMessages({
         role: "assistant",
         type: "slot-picker",
-        text: `Great choice! Pick a convenient time slot with ${doctor.name}:`,
+        text: `${t("slotPickerPrefix")} ${doctor.name}:`,
         doctor,
         slots: doctor.slots?.length ? doctor.slots : DEFAULT_SLOTS,
         selectedSlot: null,
       });
     },
-    [pushMessages]
+    [pushMessages, t]
   );
 
   // --- A time slot was tapped -> lock the picker, confirm the booking ---
   const confirmBooking = useCallback(
     async (slotMessageId, doctor, slot) => {
-      // Freeze the slot-picker message so buttons become non-interactive
-      // and the chosen slot stays visibly highlighted.
       setMessages((prev) =>
         prev.map((m) => (m.id === slotMessageId ? { ...m, selectedSlot: slot } : m))
       );
       setIsTyping(true);
       try {
-        let confirmation;
+        let confirmationText;
         if (MOCK_MODE) {
           await new Promise((r) => setTimeout(r, 700));
-          confirmation = mockBookingConfirmation;
+          confirmationText = await translateText(mockBookingConfirmation.message, language);
         } else {
-          confirmation = await bookDoctorSlot(sessionIdRef.current, doctor.id, slot, tenantId);
+          const confirmation = await bookDoctorSlot(sessionIdRef.current, doctor.id, slot, tenantId);
+          confirmationText = confirmation.message;
         }
-        pushMessages({
-          role: "assistant",
-          type: "booking-success",
-          text: confirmation.message,
-          doctor,
-          slot,
-        });
-      } catch (err) {
+        pushMessages({ role: "assistant", type: "booking-success", text: confirmationText, doctor, slot });
+      } catch {
         pushMessages({
           role: "assistant",
           type: "text",
@@ -235,7 +255,7 @@ export function useChatSession({ tenantId } = {}) {
         setIsTyping(false);
       }
     },
-    [tenantId, pushMessages]
+    [tenantId, language, pushMessages]
   );
 
   return {
@@ -245,6 +265,7 @@ export function useChatSession({ tenantId } = {}) {
     isTyping,
     error,
     sendMessage,
+    injectAssistantMessage,
     startBookingFlow,
     submitPatientForm,
     requestSlots,

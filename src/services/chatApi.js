@@ -44,12 +44,19 @@ export async function fetchChatHistory(sessionId, tenantId) {
  * POST /api/chat/message
  * Sends the user's text to the AI backend and receives the assistant's
  * reply, which may include a `doctors` array for rich card rendering.
+ *
+ * `targetLanguage` (short code, e.g. "en"/"es"/"hi") tells the backend
+ * which language to generate the reply in. Prefer this over
+ * translating the English reply client-side afterward — an LLM
+ * generating natively in the target language preserves medical nuance
+ * (dosages, symptom terms, etc.) far better than a translation pass
+ * bolted on after the fact.
  */
-export async function sendChatMessage(sessionId, message, tenantId) {
+export async function sendChatMessage(sessionId, message, tenantId, targetLanguage = "en") {
   const res = await fetch(`${API_BASE_URL}/chat/message`, {
     method: "POST",
     headers: buildHeaders(tenantId),
-    body: JSON.stringify({ sessionId, message }),
+    body: JSON.stringify({ sessionId, message, targetLanguage }),
   });
   return handleResponse(res);
 }

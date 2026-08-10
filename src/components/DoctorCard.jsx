@@ -1,4 +1,5 @@
 import { Star, CalendarCheck, Clock3 } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * DoctorCard
@@ -13,6 +14,7 @@ import { Star, CalendarCheck, Clock3 } from "lucide-react";
  */
 export default function DoctorCard({ doctor, onBookSlot }) {
   const isAvailable = doctor.availability === "available";
+  const { t } = useLanguage();
 
   return (
     <div className="snap-start flex w-[210px] flex-shrink-0 flex-col overflow-hidden rounded-2xl border border-clinical-100 bg-white shadow-sm transition-transform hover:-translate-y-0.5 hover:shadow-md">
@@ -36,7 +38,7 @@ export default function DoctorCard({ doctor, onBookSlot }) {
           ].join(" ")}
         >
           <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
-          {isAvailable ? "Available" : "Busy"}
+          {isAvailable ? t("availableBadge") : t("busyBadge")}
         </span>
       </div>
 
@@ -66,7 +68,7 @@ export default function DoctorCard({ doctor, onBookSlot }) {
           ].join(" ")}
         >
           <CalendarCheck size={14} />
-          {isAvailable ? "Book Slot" : "Notify Me"}
+          {isAvailable ? t("bookSlotBtn") : t("notifyMeBtn")}
         </button>
       </div>
     </div>

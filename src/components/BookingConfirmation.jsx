@@ -1,4 +1,5 @@
 import { CheckCircle2, Clock3 } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * BookingConfirmation
@@ -9,13 +10,14 @@ import { CheckCircle2, Clock3 } from "lucide-react";
  */
 export default function BookingConfirmation({ message }) {
   const { doctor, slot, text } = message;
+  const { t } = useLanguage();
 
   return (
     <div className="flex w-full flex-col items-start gap-2 animate-pop-in">
       <div className="flex w-full max-w-[90%] flex-col gap-3 rounded-2xl border border-status-available/30 bg-white p-4 shadow-sm">
         <div className="flex items-center gap-2 text-status-available">
           <CheckCircle2 size={20} />
-          <span className="font-display text-sm font-bold">Appointment Confirmed</span>
+          <span className="font-display text-sm font-bold">{t("appointmentConfirmed")}</span>
         </div>
 
         {doctor && (

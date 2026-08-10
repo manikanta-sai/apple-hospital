@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { User, Phone, CheckCircle2 } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * PatientRegistrationForm
@@ -13,6 +14,7 @@ export default function PatientRegistrationForm({ message, onSubmit }) {
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [errors, setErrors] = useState({});
+  const { t } = useLanguage();
 
   const isSubmitted = message.status === "submitted";
 
@@ -52,13 +54,13 @@ export default function PatientRegistrationForm({ message, onSubmit }) {
           <form onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate>
             <div>
               <label className="mb-1 flex items-center gap-1.5 text-xs font-medium text-ink-600">
-                <User size={13} /> Patient Name
+                <User size={13} /> {t("patientNameLabel")}
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Ravi Kumar"
+                placeholder={t("namePlaceholder")}
                 className="w-full rounded-lg border border-clinical-100 bg-clinical-50 px-3 py-2 text-sm text-ink-900 outline-none focus:border-clinical-500 focus:ring-2 focus:ring-clinical-500/20"
               />
               {errors.name && <p className="mt-1 text-[11px] text-coral-600">{errors.name}</p>}
@@ -66,14 +68,14 @@ export default function PatientRegistrationForm({ message, onSubmit }) {
 
             <div>
               <label className="mb-1 flex items-center gap-1.5 text-xs font-medium text-ink-600">
-                <Phone size={13} /> Mobile Number
+                <Phone size={13} /> {t("mobileLabel")}
               </label>
               <input
                 type="tel"
                 inputMode="numeric"
                 value={mobile}
                 onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                placeholder="10-digit mobile number"
+                placeholder={t("mobilePlaceholder")}
                 className="w-full rounded-lg border border-clinical-100 bg-clinical-50 px-3 py-2 text-sm text-ink-900 outline-none focus:border-clinical-500 focus:ring-2 focus:ring-clinical-500/20"
               />
               {errors.mobile && <p className="mt-1 text-[11px] text-coral-600">{errors.mobile}</p>}
@@ -83,7 +85,7 @@ export default function PatientRegistrationForm({ message, onSubmit }) {
               type="submit"
               className="mt-1 rounded-xl bg-clinical-700 py-2 text-xs font-semibold text-white transition-colors hover:bg-clinical-500 active:scale-[0.98]"
             >
-              Continue
+              {t("continueBtn")}
             </button>
           </form>
         )}

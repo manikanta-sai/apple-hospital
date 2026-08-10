@@ -1,22 +1,24 @@
 import { CalendarPlus, Clock, HelpCircle, MapPin, Headset } from "lucide-react";
-
-const LINKS = [
-  { id: "book", label: "Book Appointment", icon: CalendarPlus },
-  { id: "timings", label: "Timings", icon: Clock },
-  { id: "enquiry", label: "Enquiry", icon: HelpCircle },
-  { id: "address", label: "Address", icon: MapPin },
-  { id: "agent", label: "Request Live Agent", icon: Headset },
-];
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * QuickLinks
  * ----------
- * Shortcut chips shown alongside the greeting so a patient can jump
- * straight into a common flow without typing. `onSelect(id)` is wired
- * up by ChatWidget: "book" starts the registration flow, everything
- * else is sent through the normal chat pipeline as a canned message.
+ * Shortcut chips shown alongside the greeting. Labels come from the
+ * shared LanguageContext (`t()`), so they re-render in the selected
+ * language automatically - no props needed for translation.
  */
 export default function QuickLinks({ onSelect }) {
+  const { t } = useLanguage();
+
+  const LINKS = [
+    { id: "book", label: t("quickBook"), icon: CalendarPlus },
+    { id: "timings", label: t("quickTimings"), icon: Clock },
+    { id: "enquiry", label: t("quickEnquiry"), icon: HelpCircle },
+    { id: "address", label: t("quickAddress"), icon: MapPin },
+    { id: "agent", label: t("quickAgent"), icon: Headset },
+  ];
+
   return (
     <div className="flex flex-wrap justify-center gap-2 px-4">
       {LINKS.map(({ id, label, icon: Icon }) => (

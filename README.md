@@ -38,19 +38,32 @@ hospital-chatbot-widget/
     ├── App.jsx                     # Demo host page
     ├── index.css                   # Tailwind + fonts + scrollbar utilities
     ├── components/
-    │   ├── ChatWidget.jsx          # Main widget: launcher + panel + layout
-    │   ├── ChatHeader.jsx          # Brand strip, minimize/close controls
-    │   ├── ChatMessages.jsx        # Scrollable stream, routes message types
-    │   ├── ChatInput.jsx           # Composer input + send button
-    │   ├── MessageBubble.jsx       # Plain text bubble (user/assistant)
-    │   ├── DoctorCard.jsx          # Single rich doctor card
-    │   ├── DoctorCardList.jsx      # Horizontal scrollable card rail
-    │   └── TypingIndicator.jsx     # Bouncing-dot "typing..." state
+    │   ├── ChatWidget.jsx              # Main widget: launcher + panel + layout + LanguageProvider
+    │   ├── ChatHeader.jsx              # Brand strip, language selector, minimize/close controls
+    │   ├── ChatMessages.jsx            # Scrollable stream, routes message types, owns speech-synthesis instance
+    │   ├── ChatInput.jsx               # Composer input + mic dictation + send button
+    │   ├── MessageBubble.jsx           # Plain text bubble (user/assistant) + read-aloud toggle
+    │   ├── DoctorCard.jsx              # Single rich doctor card
+    │   ├── DoctorCardList.jsx          # Horizontal scrollable card rail
+    │   ├── TypingIndicator.jsx         # Bouncing-dot "typing..." state
+    │   ├── QuickLinks.jsx              # Localized quick-action chips
+    │   ├── PatientRegistrationForm.jsx # Inline name + mobile capture
+    │   ├── SlotPicker.jsx              # Time-slot chip picker
+    │   ├── BookingConfirmation.jsx     # Booking success card
+    │   ├── LanguageSelector.jsx        # Header language dropdown
+    │   └── ProactiveTriggerBubble.jsx  # Contextual greeting callout
     ├── hooks/
-    │   ├── useChatSession.js       # sessionId, history, send/book actions
-    │   └── useLocalStorage.js      # Generic persisted-state primitive
+    │   ├── useChatSession.js       # sessionId, history, booking flow, language-aware output
+    │   ├── useLocalStorage.js      # Generic persisted-state primitive
+    │   ├── useBehavioralTrigger.js # Department dwell-time detection + sessionStorage dismissal
+    │   ├── useSpeechRecognition.js # Voice-to-text (Web Speech API)
+    │   └── useSpeechSynthesis.js   # Text-to-speech (Web Speech API)
+    ├── i18n/
+    │   ├── LanguageContext.jsx     # LanguageProvider + useLanguage()
+    │   └── translations.js         # Supported languages + static UI_STRINGS
     ├── services/
-    │   └── chatApi.js              # All backend HTTP calls, isolated
+    │   ├── chatApi.js              # All backend HTTP calls, isolated
+    │   └── translationProvider.js  # Pluggable dynamic-text translator (mock-mode fallback)
     ├── utils/
     │   └── generateId.js           # UUID helper (with fallback)
     └── mock/
@@ -115,11 +128,32 @@ Response:
 Request: `{ "sessionId": "...", "doctorId": "doc_101", "slotId": "Today, 4:30 PM" }`
 Response: `{ "status": "confirmed", "message": "Your slot with Dr. Ananya Rao is confirmed..." }`
 
-## 5. Multi-Tenancy
+## 5. Advanced Features
+
+### Context-Aware Behavioral Triggers
+`useBehavioralTrigger.js` watches the **host page** (not the widget) for a `data-hospital-department="cardiology"` attribute anywhere in the DOM, or falls back to parsing `/departments/cardiology` from the URL. After 30 seconds of dwell time on a configured department, it surfaces a trigger; `ProactiveTriggerBubble.jsx` renders it as a dismissible callout above the launcher — it does **not** force-open the chat panel, which is deliberate (auto-opening chat windows is a well-known dark pattern). Dismissal is written to `sessionStorage` per department, so it won't re-fire in the same tab session. Re-evaluates on `popstate` (SPA route changes) and via a `MutationObserver` on the data attribute (host toggling it client-side). Configure department copy in the `DEPARTMENT_TRIGGERS` map at the top of the hook.
+
+Host integration — just set an attribute, no JS wiring needed:
+```html
+<body data-hospital-department="cardiology">
+```
+
+### Voice-to-Text & Text-to-Speech
+- **Voice-to-text**: `useSpeechRecognition.js` wraps `SpeechRecognition`/`webkitSpeechRecognition`. The mic button in `ChatInput.jsx` is hidden entirely (not just disabled) on unsupported browsers like Firefox. Interim results stream live into the input; dictation never auto-sends — the patient can review/edit first.
+- **Text-to-speech**: `useSpeechSynthesis.js` wraps `speechSynthesis`. One instance is owned by `ChatMessages.jsx` (the browser only plays one utterance at a time) and passed down to every `MessageBubble`, so only the currently-playing bubble shows the "stop" state. The speaker icon only appears on assistant bubbles.
+- Both hooks pick their locale (`en-US`, `es-ES`, `hi-IN`) from the active language via `speechLang` in `LanguageContext`, so dictation and read-aloud follow whatever language the patient has selected.
+
+### Multi-Language
+- `src/i18n/LanguageContext.jsx` — a `LanguageProvider` wrapping the whole widget (set up once, inside `ChatWidget.jsx`, so the host app doesn't need to know about it), persists the choice to `localStorage`, and exposes `t()` for static UI strings from `src/i18n/translations.js`.
+- `LanguageSelector.jsx` in the header lets the patient switch between English, Spanish, and Hindi — add more by extending `SUPPORTED_LANGUAGES` and `UI_STRINGS`.
+- **Static UI copy** (buttons, labels, form prompts) is translated ahead of time in `UI_STRINGS` — zero network cost, instant switch.
+- **Dynamic AI reply text** goes through a separate path, since it can't be pre-translated: `chatApi.sendChatMessage()` now forwards a `targetLanguage` param to `POST /api/chat/message` so your backend/LLM can **generate the reply natively in that language** — this preserves clinical nuance far better than machine-translating an English reply after the fact. `src/services/translationProvider.js` is a pluggable client-side fallback used only in `MOCK_MODE` (swap its `translateText()` implementation for Google Cloud Translation/DeepL/Azure Translator if you need client-side translation in production too).
+
+## 6. Multi-Tenancy
 
 Pass a `tenantId` prop to `<ChatWidget tenantId="hospital-branch-code" />`. It's forwarded as an `X-Tenant-Id` header on every request in `chatApi.js` — swap for subdomain-based routing there if your backend prefers that model instead.
 
-## 6. Mounting the Widget
+## 7. Mounting the Widget
 
 ```jsx
 import ChatWidget from "./components/ChatWidget";
