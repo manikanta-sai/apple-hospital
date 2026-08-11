@@ -48,6 +48,7 @@ function ChatWidgetInner({ tenantId }) {
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window !== "undefined" ? window.matchMedia("(min-width: 640px)").matches : false
   );
+  const [isClosing, setIsClosing] = useState(false);
   const panelRef = useRef(null);
   const dragRef = useRef({ active: false, startX: 0, startY: 0, originX: 0, originY: 0, width: 0, height: 0 });
 
@@ -133,6 +134,22 @@ function ChatWidgetInner({ tenantId }) {
     [isDesktop, isMinimized]
   );
 
+  const handleClose = useCallback(() => {
+    if (isMinimized) {
+      setIsClosing(true);
+      window.setTimeout(() => {
+        setIsOpen(false);
+        setIsMinimized(false);
+        setPanelPosition(null);
+        setIsClosing(false);
+      }, 220);
+    } else {
+      setIsOpen(false);
+      setIsMinimized(false);
+      setPanelPosition(null);
+    }
+  }, [isMinimized]);
+
   // Feature 1: context-aware behavioral trigger. Disabled while the
   // panel is already open - no point suggesting a chat the user is
   // already having.
@@ -214,7 +231,8 @@ function ChatWidgetInner({ tenantId }) {
             "fixed inset-0 z-50 flex flex-col bg-white",
             "sm:inset-auto sm:bottom-6 sm:right-6 sm:h-[640px] sm:w-[400px] sm:rounded-2xl sm:shadow-2xl sm:ring-1 sm:ring-black/5",
             isMinimized ? "sm:h-auto" : "",
-            "animate-pop-in origin-bottom-right",
+            isClosing ? "animate-pop-out" : "animate-pop-in",
+            "origin-bottom-right",
           ].join(" ")}
         >
           <ChatHeader
@@ -224,11 +242,7 @@ function ChatWidgetInner({ tenantId }) {
               setPanelPosition(null);
             }}
             onExpand={() => setIsMinimized(false)}
-            onClose={() => {
-              setIsOpen(false);
-              setIsMinimized(false);
-              setPanelPosition(null);
-            }}
+            onClose={handleClose}
             onDragStart={handleDragStart}
           />
 

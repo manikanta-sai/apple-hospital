@@ -50,6 +50,10 @@ export default {
           "0%": { opacity: 0, transform: "scale(0.85)" },
           "100%": { opacity: 1, transform: "scale(1)" },
         },
+        "pop-out": {
+          "0%": { opacity: 1, transform: "scale(1)" },
+          "100%": { opacity: 0, transform: "scale(0.8)" },
+        },
         "bounce-dot": {
           "0%, 80%, 100%": { transform: "scale(0.6)", opacity: 0.4 },
           "40%": { transform: "scale(1)", opacity: 1 },
@@ -62,6 +66,7 @@ export default {
       animation: {
         "fade-in-up": "fade-in-up 0.25s ease-out",
         "pop-in": "pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "pop-out": "pop-out 0.2s ease-in forwards",
         "bounce-dot": "bounce-dot 1.2s infinite ease-in-out",
         "pulse-ring": "pulse-ring 2s infinite",
       },
