@@ -219,11 +219,15 @@ function ChatWidgetInner({ tenantId }) {
         >
           <ChatHeader
             isMinimized={isMinimized}
-            onMinimize={() => setIsMinimized(true)}
+            onMinimize={() => {
+              setIsMinimized(true);
+              setPanelPosition(null);
+            }}
             onExpand={() => setIsMinimized(false)}
             onClose={() => {
               setIsOpen(false);
               setIsMinimized(false);
+              setPanelPosition(null);
             }}
             onDragStart={handleDragStart}
           />
