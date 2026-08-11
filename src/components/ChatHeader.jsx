@@ -1,4 +1,4 @@
-import { Minus, X, Stethoscope } from "lucide-react";
+import { Minus, Maximize2, X, Stethoscope } from "lucide-react";
 import { useLanguage } from "../i18n/LanguageContext";
 import LanguageSelector from "./LanguageSelector";
 
@@ -8,14 +8,16 @@ import LanguageSelector from "./LanguageSelector";
  * Brand strip + window controls + language selector. Also acts as the
  * tap target to restore the widget when it's minimized (see ChatWidget).
  */
-export default function ChatHeader({ onMinimize, onClose, isMinimized, onExpand }) {
+export default function ChatHeader({ onMinimize, onClose, isMinimized, onExpand, onDragStart }) {
   const { t } = useLanguage();
 
   return (
     <div
+      onMouseDown={!isMinimized ? onDragStart : undefined}
       onClick={isMinimized ? onExpand : undefined}
       className={[
         "flex items-center justify-between bg-clinical-900 px-4 py-3 text-white",
+        "select-none",
         isMinimized ? "cursor-pointer" : "",
       ].join(" ")}
     >
@@ -41,7 +43,7 @@ export default function ChatHeader({ onMinimize, onClose, isMinimized, onExpand 
           onClick={() => (isMinimized ? onExpand() : onMinimize())}
           className="rounded-lg p-1.5 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
         >
-          <Minus size={16} />
+          {isMinimized ? <Maximize2 size={16} /> : <Minus size={16} />}
         </button>
         <button
           type="button"
