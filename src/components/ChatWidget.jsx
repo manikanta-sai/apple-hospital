@@ -259,7 +259,7 @@ function ChatWidgetInner({ tenantId }) {
                 onSubmitPatientForm={submitPatientForm}
                 onSelectSlot={confirmBooking}
               />
-              <ChatInput onSend={sendMessage} disabled={isTyping} />
+              <ChatInput onSend={sendMessage} disabled={isTyping || isLoadingHistory} />
             </>
           )}
         </div>

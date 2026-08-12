@@ -252,10 +252,15 @@ export function useChatSession({ tenantId } = {}) {
         prev.map((m) => (m.id === messageId ? { ...m, status: "submitted", formData } : m))
       );
       setIsTyping(true);
-      await new Promise((r) => setTimeout(r, 500));
-      const reply = await localizeMockReply(mockCardiologySearch.reply);
-      setMessages((prev) => [...prev, toAssistantMessage(reply)]);
-      setIsTyping(false);
+      try {
+        await new Promise((r) => setTimeout(r, 500));
+        const reply = await localizeMockReply(mockCardiologySearch.reply);
+        setMessages((prev) => [...prev, toAssistantMessage(reply)]);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsTyping(false);
+      }
     },
     [localizeMockReply]
   );

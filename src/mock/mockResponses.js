@@ -44,16 +44,6 @@ export const mockCardiologySearch = {
         slots: ["10:00 AM", "1:00 PM", "4:30 PM", "6:00 PM"],
       },
       {
-        id: "doc_102",
-        name: "Dr. Karthik Iyer",
-        department: "Cardiology",
-        image: "https://randomuser.me/api/portraits/men/45.jpg",
-        availability: "available",
-        nextSlot: "Tomorrow, 10:00 AM",
-        rating: 4.6,
-        slots: ["9:30 AM", "11:00 AM", "3:00 PM"],
-      },
-      {
         id: "doc_103",
         name: "Dr. Priya Menon",
         department: "Cardiology",
@@ -63,6 +53,16 @@ export const mockCardiologySearch = {
         rating: 4.9,
         slots: ["Fri, 2:00 PM", "Fri, 5:00 PM"],
       },
+      {
+        id: "doc_102",
+        name: "Dr. Karthik Iyer",
+        department: "Cardiology",
+        image: "https://randomuser.me/api/portraits/men/45.jpg",
+        availability: "available",
+        nextSlot: "Tomorrow, 10:00 AM",
+        rating: 4.6,
+        slots: ["9:30 AM", "11:00 AM", "3:00 PM"],
+      }
     ],
   },
 };

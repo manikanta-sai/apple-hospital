@@ -4,9 +4,9 @@ import ChatWidget from "./components/ChatWidget";
 const DEPARTMENTS_WITH_TRIGGERS = ["cardiology", "orthopedics", "pediatrics"];
 
 const TRY_MESSAGES = [
-  { text: "Book a cardiologist", result: "Shows the doctor-list cards" },
+  { text: "Book a cardiologist", result: "Shows the Cardiology doctor-list cards" },
   { text: "I need to see a doctor", result: "Shows the doctor-list cards" },
-  { text: "heart checkup", result: "Shows the doctor-list cards" },
+  { text: "heart checkup", result: "Shows the Cardiology doctor only" },
   { text: "I want to see Dr. Mani", result: "Shows the fallback/alternates cards" },
   { text: 'Any message containing "mani"', result: "Shows the fallback/alternates cards" },
 ];
