@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 /**
  * Build a tiny WAV file in memory — no external audio asset needed.
  * Returns an object-URL that can be fed straight to `new Audio(url)`.
@@ -55,26 +53,20 @@ function createChimeWav() {
 }
 
 /**
- * useOpenSound
- * ------------
- * Plays a notification chime **once, immediately on page load**.
- * Uses an in-memory WAV via HTMLAudioElement for the best chance of
- * passing browser autoplay policy (especially on localhost / sites
- * with prior user engagement).
+ * playNotificationChime
+ * ---------------------
+ * Plays the notification chime once. Safe to call from anywhere — if
+ * the browser blocks autoplay the promise rejection is swallowed.
  */
-export function useOpenSound() {
-  useEffect(() => {
+export function playNotificationChime() {
+  try {
     const url = createChimeWav();
     const audio = new Audio(url);
     audio.volume = 0.5;
-
-    // .play() returns a Promise — if the browser blocks autoplay it
-    // rejects silently; we just swallow the error.
     audio.play().catch(() => {});
-
-    return () => {
-      audio.pause();
-      URL.revokeObjectURL(url);
-    };
-  }, []); // run once on mount
+    // Revoke the blob URL after playback finishes.
+    audio.addEventListener("ended", () => URL.revokeObjectURL(url));
+  } catch {
+    // Silently ignore — sound is non-critical UX sugar.
+  }
 }

@@ -4,6 +4,7 @@ import { useLanguage } from "../i18n/LanguageContext";
 import { generateId } from "../utils/generateId";
 import { fetchChatHistory, sendChatMessage, bookDoctorSlot } from "../services/chatApi";
 import { translateText } from "../services/translationProvider";
+import { playNotificationChime } from "./useOpenSound";
 import {
   mockCardiologySearch,
   mockUnavailableFallback,
@@ -51,10 +52,53 @@ export function useChatSession({ tenantId } = {}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessagesRaw] = useState([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState(null);
+
+  // --- Sound-trigger bookkeeping --------------------------------
+  //
+  // `lastSoundedIdRef` holds the `id` of the most recent assistant
+  // message for which we already played the chime.  By comparing
+  // against the last assistant message in every *new* state snapshot
+  // we guarantee:
+  //   • exactly one chime per new assistant message (or batch)
+  //   • no chime on re-renders, duplicate state updates, or history
+  //     hydration (guarded by `hydratingRef`)
+  //   • no chime when an existing message is mutated in-place
+  //     (e.g. form status change / slot selection)
+  const lastSoundedIdRef = useRef(null);
+  const hydratingRef = useRef(true); // true while initial history loads
+
+  /**
+   * Wrapper around the raw setter. After updating the array it checks
+   * whether the newest assistant message is one we haven't chimed for
+   * yet.  If so, it plays the sound and records its id.
+   */
+  const setMessages = useCallback((updater) => {
+    setMessagesRaw((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+
+      // Only consider playing the chime when we're past the initial
+      // history hydration and the array actually grew.
+      if (!hydratingRef.current && next.length > prev.length) {
+        // Find the last assistant message in the new snapshot.
+        for (let i = next.length - 1; i >= 0; i--) {
+          if (next[i].role === "assistant") {
+            if (next[i].id !== lastSoundedIdRef.current) {
+              lastSoundedIdRef.current = next[i].id;
+              // Fire outside the render cycle to avoid React warnings.
+              queueMicrotask(() => playNotificationChime());
+            }
+            break;
+          }
+        }
+      }
+
+      return next;
+    });
+  }, []);
 
   /** Appends one or more messages, stamping missing ids/timestamps. */
   const pushMessages = useCallback((...partials) => {
@@ -66,7 +110,7 @@ export function useChatSession({ tenantId } = {}) {
         ...m,
       })),
     ]);
-  }, []);
+  }, [setMessages]);
 
   /** Converts a raw backend `reply` object into a renderable message. */
   const toAssistantMessage = (reply) => ({
@@ -117,7 +161,10 @@ export function useChatSession({ tenantId } = {}) {
       } catch (err) {
         if (!cancelled) setError(err.message);
       } finally {
-        if (!cancelled) setIsLoadingHistory(false);
+        if (!cancelled) {
+          setIsLoadingHistory(false);
+          hydratingRef.current = false;
+        }
       }
     }
 
