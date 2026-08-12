@@ -6,7 +6,10 @@ import { fetchChatHistory, sendChatMessage, bookDoctorSlot } from "../services/c
 import { translateText } from "../services/translationProvider";
 import { playNotificationChime } from "./useOpenSound";
 import {
+  mockAllDoctorsSearch,
   mockCardiologySearch,
+  mockOrthopedicsSearch,
+  mockPediatricsSearch,
   mockUnavailableFallback,
   mockPlainTextReply,
   mockEnquiryReply,
@@ -179,8 +182,17 @@ export function useChatSession({ tenantId } = {}) {
   function pickMockReply(text) {
     const lower = text.toLowerCase();
     if (lower.includes("mani")) return mockUnavailableFallback;
-    if (lower.includes("cardio") || lower.includes("heart") || lower.includes("doctor")) {
-      return mockCardiologySearch;
+    if (lower.includes("cardio") || lower.includes("heart")) return mockCardiologySearch;
+    if (lower.includes("ortho") || lower.includes("bone") || lower.includes("joint")) return mockOrthopedicsSearch;
+    if (lower.includes("pediatr") || lower.includes("child") || lower.includes("kid")) return mockPediatricsSearch;
+    if (
+      lower.includes("doctor") ||
+      lower.includes("specialist") ||
+      lower.includes("physician") ||
+      lower.includes("see a doctor") ||
+      lower.includes("all")
+    ) {
+      return mockAllDoctorsSearch;
     }
     if (lower.includes("enquiry") || lower.includes("enquire")) return mockEnquiryReply;
     if (lower.includes("address") || lower.includes("location")) return mockAddressReply;
@@ -254,7 +266,7 @@ export function useChatSession({ tenantId } = {}) {
       setIsTyping(true);
       try {
         await new Promise((r) => setTimeout(r, 500));
-        const reply = await localizeMockReply(mockCardiologySearch.reply);
+        const reply = await localizeMockReply(mockAllDoctorsSearch.reply);
         setMessages((prev) => [...prev, toAssistantMessage(reply)]);
       } catch (err) {
         setError(err.message);
