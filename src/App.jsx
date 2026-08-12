@@ -53,7 +53,7 @@ export default function App() {
           session and open/minimized state persist.
         </p>
 
-        <div className="mt-8 rounded-2xl border border-clinical-100 bg-white p-5 shadow-sm">
+        {/* <div className="mt-8 rounded-2xl border border-clinical-100 bg-white p-5 shadow-sm">
           <h2 className="font-display text-sm font-bold text-clinical-900">
             Demo: context-aware trigger
           </h2>
@@ -85,7 +85,7 @@ export default function App() {
               Clear
             </button>
           </div>
-        </div>
+        </div> */}
 
         <div className="mt-6 rounded-2xl border border-clinical-100 bg-white p-5 shadow-sm">
           <h2 className="font-display text-sm font-bold text-clinical-900">
