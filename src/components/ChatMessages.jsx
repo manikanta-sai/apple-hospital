@@ -43,7 +43,7 @@ export default function ChatMessages({
       {/* Empty-state greeting: hospital image -> quick links -> text */}
       {!isLoadingHistory && messages.length === 0 && (
         <div className="flex flex-col items-center gap-4 py-6 text-center">
-          {!imageFailed ? (
+          {/* {!imageFailed ? (
             <img
               src={HOSPITAL_IMAGE}
               alt="Sunrise Multispecialty Hospital building"
@@ -54,11 +54,11 @@ export default function ChatMessages({
             <div className="flex h-32 w-full max-w-[280px] items-center justify-center rounded-2xl bg-clinical-100 text-clinical-700">
               <span className="font-display text-sm font-bold">Sunrise Hospital</span>
             </div>
-          )}
-
-          <QuickLinks onSelect={onQuickLink} />
-
+          )} */}
+          
           <p className="max-w-[240px] text-sm text-ink-600">{t("greeting")}</p>
+          
+          <QuickLinks onSelect={onQuickLink} />
         </div>
       )}
 

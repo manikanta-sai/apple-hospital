@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useChatSession } from "../hooks/useChatSession";
 import { useBehavioralTrigger } from "../hooks/useBehavioralTrigger";
+import { useOpenSound } from "../hooks/useOpenSound";
 import { LanguageProvider } from "../i18n/LanguageContext";
 import ChatHeader from "./ChatHeader";
 import ChatMessages from "./ChatMessages";
@@ -29,6 +30,9 @@ const QUICK_LINK_MESSAGES = {
 function ChatWidgetInner({ tenantId }) {
   const [isOpen, setIsOpen] = useLocalStorage("hc_widget_open", false);
   const [isMinimized, setIsMinimized] = useLocalStorage("hc_widget_minimized", false);
+
+  // Play a gentle chime once on page load.
+  useOpenSound();
 
   const {
     messages,
