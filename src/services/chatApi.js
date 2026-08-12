@@ -11,6 +11,7 @@
  */
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+const MOCK_MODE = import.meta.env.VITE_CHAT_MOCK_MODE !== "false";
 
 function buildHeaders(tenantId) {
   return {
@@ -52,13 +53,84 @@ export async function fetchChatHistory(sessionId, tenantId) {
  * (dosages, symptom terms, etc.) far better than a translation pass
  * bolted on after the fact.
  */
-export async function sendChatMessage(sessionId, message, tenantId, targetLanguage = "en") {
+export async function sendChatMessage(sessionId, message, tenantId, targetLanguage = "en", attachments = []) {
   const res = await fetch(`${API_BASE_URL}/chat/message`, {
     method: "POST",
     headers: buildHeaders(tenantId),
-    body: JSON.stringify({ sessionId, message, targetLanguage }),
+    body: JSON.stringify({ sessionId, message, attachments, targetLanguage }),
   });
   return handleResponse(res);
+}
+
+export async function uploadChatAttachments(sessionId, entries, tenantId, onProgress) {
+  if (MOCK_MODE) {
+    return Promise.all(
+      entries.map((entry) =>
+        new Promise((resolve) => {
+          const total = entry.file.size;
+          let loaded = 0;
+          const tick = Math.max(10240, Math.round(total / 12));
+          const interval = window.setInterval(() => {
+            loaded = Math.min(total, loaded + tick);
+            onProgress?.(entry.id, loaded, total);
+            if (loaded >= total) {
+              window.clearInterval(interval);
+              resolve({
+                id: entry.id,
+                name: entry.file.name,
+                type: entry.file.type,
+                size: entry.file.size,
+                url: entry.file.type.startsWith("image/") ? URL.createObjectURL(entry.file) : null,
+              });
+            }
+          }, 90);
+        })
+      )
+    );
+  }
+
+  return Promise.all(
+    entries.map(
+      (entry) =>
+        new Promise((resolve, reject) => {
+          const formData = new FormData();
+          formData.append("sessionId", sessionId);
+          formData.append("attachments", entry.file, entry.file.name);
+
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", `${API_BASE_URL}/chat/attachments`);
+          if (tenantId) xhr.setRequestHeader("X-Tenant-Id", tenantId);
+
+          xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+              onProgress?.(entry.id, event.loaded, event.total);
+            }
+          };
+
+          xhr.onload = () => {
+            try {
+              const response = JSON.parse(xhr.responseText || "{}");
+              if (xhr.status >= 200 && xhr.status < 300) {
+                resolve({
+                  id: entry.id,
+                  name: response.name || entry.file.name,
+                  type: response.type || entry.file.type,
+                  size: response.size || entry.file.size,
+                  url: response.url || null,
+                });
+              } else {
+                reject(new Error(response.message || `Upload failed with status ${xhr.status}`));
+              }
+            } catch (err) {
+              reject(new Error("Failed to parse upload response."));
+            }
+          };
+
+          xhr.onerror = () => reject(new Error("Network error uploading attachments."));
+          xhr.send(formData);
+        })
+    )
+  );
 }
 
 /**

@@ -4,9 +4,9 @@ import ChatWidget from "./components/ChatWidget";
 const DEPARTMENTS_WITH_TRIGGERS = ["cardiology", "orthopedics", "pediatrics"];
 
 const TRY_MESSAGES = [
-  { text: "Book a cardiologist", result: "Shows the Cardiology doctor-list cards" },
+  { text: "Book a cardiologist", result: "Shows the doctor-list cards" },
   { text: "I need to see a doctor", result: "Shows the doctor-list cards" },
-  { text: "heart checkup", result: "Shows the Cardiology doctor only" },
+  { text: "heart checkup", result: "Shows the doctor-list cards" },
   { text: "I want to see Dr. Mani", result: "Shows the fallback/alternates cards" },
   { text: 'Any message containing "mani"', result: "Shows the fallback/alternates cards" },
 ];
@@ -53,7 +53,7 @@ export default function App() {
           session and open/minimized state persist.
         </p>
 
-        {/* <div className="mt-8 rounded-2xl border border-clinical-100 bg-white p-5 shadow-sm">
+        <div className="mt-8 rounded-2xl border border-clinical-100 bg-white p-5 shadow-sm">
           <h2 className="font-display text-sm font-bold text-clinical-900">
             Demo: context-aware trigger
           </h2>
@@ -85,7 +85,7 @@ export default function App() {
               Clear
             </button>
           </div>
-        </div> */}
+        </div>
 
         <div className="mt-6 rounded-2xl border border-clinical-100 bg-white p-5 shadow-sm">
           <h2 className="font-display text-sm font-bold text-clinical-900">

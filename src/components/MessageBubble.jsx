@@ -135,8 +135,34 @@ export default function MessageBubble({ message, onSpeak, speakingId, speechSupp
             : "rounded-bl-sm bg-clinical-100 text-ink-900",
         ].join(" ")}
       >
-        <div className="chat-markdown min-h-[1.25rem]">
+          <div className="chat-markdown min-h-[1.25rem]">
           <div dangerouslySetInnerHTML={{ __html: html }} />
+          {Array.isArray(message.attachments) && message.attachments.length > 0 && (
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {message.attachments.map((attachment) => (
+                <div
+                  key={attachment.id}
+                  className="overflow-hidden rounded-3xl border border-clinical-200 bg-white p-3 text-left"
+                >
+                  {attachment.type?.startsWith("image/") && attachment.url ? (
+                    <img
+                      src={attachment.url}
+                      alt={attachment.name}
+                      className="h-28 w-full rounded-2xl object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-28 items-center justify-center rounded-2xl bg-clinical-50 text-clinical-700">
+                      <span className="text-sm font-semibold">PDF</span>
+                    </div>
+                  )}
+                  <div className="mt-2 space-y-1 text-xs text-ink-700">
+                    <p className="truncate font-medium">{attachment.name}</p>
+                    {attachment.size ? <p className="text-ink-500">{(attachment.size / 1024).toFixed(1)} KB</p> : null}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div className={`mt-2 text-[10px] ${isUser ? "text-white/60" : "text-ink-600/60"}`}>
           {new Date(message.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}

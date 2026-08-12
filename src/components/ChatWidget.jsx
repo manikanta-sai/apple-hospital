@@ -4,10 +4,11 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useChatSession } from "../hooks/useChatSession";
 import { useBehavioralTrigger } from "../hooks/useBehavioralTrigger";
 import { playNotificationChime } from "../hooks/useOpenSound";
+import { uploadChatAttachments } from "../services/chatApi";
 import { LanguageProvider } from "../i18n/LanguageContext";
 import ChatHeader from "./ChatHeader";
 import ChatMessages from "./ChatMessages";
-import ChatInput from "./ChatInput";
+import AttachmentComposer from "./AttachmentComposer";
 import ProactiveTriggerBubble from "./ProactiveTriggerBubble";
 
 // Quick-link id -> canned message sent through the normal chat pipeline.
@@ -32,6 +33,7 @@ function ChatWidgetInner({ tenantId }) {
   const [isMinimized, setIsMinimized] = useLocalStorage("hc_widget_minimized", false);
 
   const {
+    sessionId,
     messages,
     isLoadingHistory,
     isTyping,
@@ -42,6 +44,7 @@ function ChatWidgetInner({ tenantId }) {
     requestSlots,
     confirmBooking,
   } = useChatSession({ tenantId });
+  const [isUploading, setIsUploading] = useState(false);
 
   const [tooltipDismissed, setTooltipDismissed] = useLocalStorage("hc_tooltip_dismissed", false);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -166,6 +169,34 @@ function ChatWidgetInner({ tenantId }) {
     if (text) sendMessage(text);
   };
 
+  const handleSendWithAttachments = useCallback(
+    async (text, attachments, onProgress) => {
+      if (isUploading) return false;
+      setIsUploading(true);
+      try {
+        let uploadedAttachments = [];
+        if (attachments.length > 0) {
+          const uploadResults = await uploadChatAttachments(sessionId, attachments, tenantId, onProgress);
+          uploadedAttachments = uploadResults.map((entry) => ({
+            id: entry.id,
+            name: entry.name,
+            type: entry.type,
+            size: entry.size,
+            url: entry.url,
+          }));
+        }
+        return await sendMessage(text, uploadedAttachments);
+      } catch (err) {
+        console.error(err);
+        setError(err.message || "Upload failed. Please try again.");
+        return false;
+      } finally {
+        setIsUploading(false);
+      }
+    },
+    [isUploading, sendMessage, tenantId]
+  );
+
   // User tapped "Chat now" on the proactive bubble: open the panel,
   // drop the contextual greeting straight into the stream, then follow
   // up with the department's canned quick-action so doctor cards
@@ -259,7 +290,11 @@ function ChatWidgetInner({ tenantId }) {
                 onSubmitPatientForm={submitPatientForm}
                 onSelectSlot={confirmBooking}
               />
-              <ChatInput onSend={sendMessage} disabled={isTyping || isLoadingHistory} />
+              <AttachmentComposer
+                onSend={handleSendWithAttachments}
+                disabled={isTyping || isLoadingHistory || isUploading}
+                isBotBusy={isTyping || isLoadingHistory}
+              />
             </>
           )}
         </div>

@@ -202,24 +202,23 @@ export function useChatSession({ tenantId } = {}) {
 
   // --- Send a free-typed (or quick-link-triggered) user message ---
   const sendMessage = useCallback(
-    async (text) => {
+    async (text, attachments = []) => {
       const trimmed = text.trim();
-      if (!trimmed) return;
+      if (!trimmed && attachments.length === 0) return false;
 
-      pushMessages({ role: "user", type: "text", text: trimmed });
+      pushMessages({ role: "user", type: "text", text: trimmed, attachments });
       setIsTyping(true);
       setError(null);
 
+      let success = true;
       try {
         let reply;
         if (MOCK_MODE) {
           await new Promise((r) => setTimeout(r, 700 + Math.random() * 500));
-          const payload = pickMockReply(trimmed);
+          const payload = pickMockReply(trimmed || "");
           reply = await localizeMockReply(payload.reply);
         } else {
-          // Real backend: forward the active language so the model
-          // generates its reply natively in it.
-          const payload = await sendChatMessage(sessionIdRef.current, trimmed, tenantId, language);
+          const payload = await sendChatMessage(sessionIdRef.current, trimmed, tenantId, language, attachments);
           reply = payload.reply;
         }
         setMessages((prev) => [...prev, toAssistantMessage(reply)]);
@@ -230,9 +229,12 @@ export function useChatSession({ tenantId } = {}) {
           type: "text",
           text: "Sorry, something went wrong reaching our servers. Please try again in a moment.",
         });
+        success = false;
       } finally {
         setIsTyping(false);
       }
+
+      return success;
     },
     [tenantId, language, localizeMockReply, pushMessages]
   );

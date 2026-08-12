@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { Send, Mic, MicOff } from "lucide-react";
 import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
 import { useLanguage } from "../i18n/LanguageContext";
@@ -11,8 +11,7 @@ import { useLanguage } from "../i18n/LanguageContext";
  * sees words appear as they speak, then can edit before sending -
  * dictation replaces typing, it never auto-sends.
  */
-export default function ChatInput({ onSend, disabled }) {
-  const [value, setValue] = useState("");
+export default function ChatInput({ onSend, onValueChange, value = "", disabled, hasAttachments, onListeningChange, addButton }) {
   const inputRef = useRef(null);
   const { t, speechLang } = useLanguage();
 
@@ -21,19 +20,25 @@ export default function ChatInput({ onSend, disabled }) {
   // rather than overwriting it.
   const baseTextRef = useRef("");
 
-  const handleSpeechResult = useCallback((transcript, isFinal) => {
-    setValue((baseTextRef.current + " " + transcript).trim());
-    if (isFinal) {
-      // Lock in the finalized transcript as the new base so a second
-      // dictation burst (continuous=false restarts) appends correctly.
-      baseTextRef.current = (baseTextRef.current + " " + transcript).trim();
-    }
-  }, []);
+  const handleSpeechResult = useCallback(
+    (transcript, isFinal) => {
+      const nextValue = (baseTextRef.current + " " + transcript).trim();
+      onValueChange?.(nextValue);
+      if (isFinal) {
+        baseTextRef.current = nextValue;
+      }
+    },
+    [onValueChange]
+  );
 
   const { isSupported: micSupported, isListening, start, stop } = useSpeechRecognition({
     lang: speechLang,
     onResult: handleSpeechResult,
   });
+
+  useEffect(() => {
+    onListeningChange?.(isListening);
+  }, [isListening, onListeningChange]);
 
   // --- Controls Disabled State Calculation ---
   // `disabled` represents bot loading / typing / API request in progress
@@ -42,8 +47,8 @@ export default function ChatInput({ onSend, disabled }) {
   // 1. Text input disabled when bot is busy OR speech-to-text is actively listening
   const isInputDisabled = isBotBusy || isListening;
 
-  // 2. Submit button disabled when bot is busy OR speech-to-text is listening OR input is empty
-  const isSubmitDisabled = isBotBusy || isListening || !value.trim();
+  // 2. Submit button disabled when bot is busy OR speech-to-text is listening OR input is empty (unless attachments are present)
+  const isSubmitDisabled = isBotBusy || isListening || (!value.trim() && !hasAttachments);
 
   // 3. Mic control disabled ONLY when bot is busy
   //    (remains enabled while listening so user can tap to stop dictation)
@@ -55,6 +60,7 @@ export default function ChatInput({ onSend, disabled }) {
   // 1. Stop voice dictation if bot becomes busy while listening.
   // 2. Re-focus text input when it transitions from disabled to enabled.
   useEffect(() => {
+    onListeningChange?.(isListening);
     if (isBotBusy && isListening) {
       stop();
     }
@@ -62,7 +68,7 @@ export default function ChatInput({ onSend, disabled }) {
       inputRef.current?.focus();
     }
     prevInputDisabledRef.current = isInputDisabled;
-  }, [isBotBusy, isListening, isInputDisabled, stop]);
+  }, [isBotBusy, isListening, isInputDisabled, onListeningChange, stop]);
 
   const toggleMic = () => {
     if (isMicDisabled) return;
@@ -79,8 +85,6 @@ export default function ChatInput({ onSend, disabled }) {
     if (isSubmitDisabled) return;
     if (isListening) stop();
     onSend(value);
-    setValue("");
-    baseTextRef.current = "";
   };
 
   return (
@@ -107,13 +111,15 @@ export default function ChatInput({ onSend, disabled }) {
         </button>
       )}
 
+      {addButton}
+
       {/* Text input field - disabled while bot is busy OR while speech-to-text is listening */}
       <input
         ref={inputRef}
         type="text"
         value={value}
         onChange={(e) => {
-          setValue(e.target.value);
+          onValueChange?.(e.target.value);
           baseTextRef.current = e.target.value;
         }}
         placeholder={isListening ? t("listening") : t("inputPlaceholder")}
