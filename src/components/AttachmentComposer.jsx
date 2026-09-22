@@ -13,15 +13,26 @@ const SUPPORTED_TYPES = [
   "application/pdf",
 ];
 
-function createAttachment(file) {
+function createAttachment(file, previewUrlsRef) {
+  const previewUrl = file.type.startsWith("image/") ? URL.createObjectURL(file) : null;
+  if (previewUrl) {
+    previewUrlsRef.current.push(previewUrl);
+  }
+
   return {
     id: generateId("att"),
     file,
     name: file.name,
     size: file.size,
     type: file.type,
-    previewUrl: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
+    previewUrl,
   };
+}
+
+function revokePreviewUrl(previewUrl, previewUrlsRef) {
+  if (!previewUrl) return;
+  URL.revokeObjectURL(previewUrl);
+  previewUrlsRef.current = previewUrlsRef.current.filter((url) => url !== previewUrl);
 }
 
 export default function AttachmentComposer({
@@ -29,6 +40,7 @@ export default function AttachmentComposer({
   disabled,
   isBotBusy,
 }) {
+  const previewUrlsRef = useRef([]);
   const [pendingAttachments, setPendingAttachments] = useState([]);
   const [attachmentError, setAttachmentError] = useState("");
   const [uploadError, setUploadError] = useState("");
@@ -61,7 +73,11 @@ export default function AttachmentComposer({
     };
 
     window.addEventListener("mousedown", handleClickOutside);
-    return () => window.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      window.removeEventListener("mousedown", handleClickOutside);
+      previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+      previewUrlsRef.current = [];
+    };
   }, []);
 
   const isComposerBusy = isBotBusy || isUploading || isListening;
@@ -176,7 +192,7 @@ export default function AttachmentComposer({
           error = "This file is too large. Please choose a file that is 5 MB or smaller.";
           return;
         }
-        valid.push(createAttachment(file));
+        valid.push(createAttachment(file, previewUrlsRef));
       });
 
       return { valid, error };
@@ -203,7 +219,9 @@ export default function AttachmentComposer({
     setPendingAttachments((current) => {
       const next = current.filter((attachment) => attachment.id !== id);
       const removed = current.find((attachment) => attachment.id === id);
-      if (removed?.previewUrl) URL.revokeObjectURL(removed.previewUrl);
+      if (removed?.previewUrl) {
+        revokePreviewUrl(removed.previewUrl, previewUrlsRef);
+      }
       return next;
     });
     setUploadProgress((current) => {
@@ -215,7 +233,7 @@ export default function AttachmentComposer({
 
   const clearAttachments = () => {
     pendingAttachments.forEach((attachment) => {
-      if (attachment.previewUrl) URL.revokeObjectURL(attachment.previewUrl);
+      revokePreviewUrl(attachment.previewUrl, previewUrlsRef);
     });
     setPendingAttachments([]);
     setUploadProgress({});

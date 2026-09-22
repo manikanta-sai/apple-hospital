@@ -67,6 +67,126 @@ export const mockCardiologySearch = {
   },
 };
 
+export const mockOrthopedicsSearch = {
+  sessionId: "demo-session",
+  reply: {
+    type: "doctor-list",
+    text: "I found 3 orthopedic specialists available soon. Choose a doctor to view slots:",
+    doctors: [
+      {
+        id: "doc_201",
+        name: "Dr. Suresh Nair",
+        department: "Orthopedics",
+        image: "https://randomuser.me/api/portraits/men/32.jpg",
+        availability: "available",
+        nextSlot: "Today, 6:00 PM",
+        rating: 4.7,
+        slots: ["1:00 PM", "3:30 PM", "6:00 PM"],
+      },
+      {
+        id: "doc_202",
+        name: "Dr. Fatima Sheikh",
+        department: "Orthopedics",
+        image: "https://randomuser.me/api/portraits/women/50.jpg",
+        availability: "available",
+        nextSlot: "Tomorrow, 9:30 AM",
+        rating: 4.5,
+        slots: ["9:30 AM", "12:00 PM", "5:00 PM"],
+      },
+      {
+        id: "doc_203",
+        name: "Dr. Rohan Pillai",
+        department: "Orthopedics",
+        image: "https://randomuser.me/api/portraits/men/76.jpg",
+        availability: "busy",
+        nextSlot: "Mon, 11:00 AM",
+        rating: 4.8,
+        slots: ["Mon, 11:00 AM", "Mon, 2:00 PM"],
+      },
+    ],
+  },
+};
+
+export const mockPediatricsSearch = {
+  sessionId: "demo-session",
+  reply: {
+    type: "doctor-list",
+    text: "I found 3 pediatricians available this week. Tap a card to see available slots:",
+    doctors: [
+      {
+        id: "doc_301",
+        name: "Dr. Meera Iyer",
+        department: "Pediatrics",
+        image: "https://randomuser.me/api/portraits/women/33.jpg",
+        availability: "available",
+        nextSlot: "Today, 2:30 PM",
+        rating: 4.9,
+        slots: ["2:30 PM", "3:15 PM", "5:00 PM"],
+      },
+      {
+        id: "doc_302",
+        name: "Dr. Arjun Nair",
+        department: "Pediatrics",
+        image: "https://randomuser.me/api/portraits/men/57.jpg",
+        availability: "available",
+        nextSlot: "Tomorrow, 10:30 AM",
+        rating: 4.7,
+        slots: ["10:30 AM", "12:00 PM", "4:00 PM"],
+      },
+      {
+        id: "doc_303",
+        name: "Dr. Shreya Menon",
+        department: "Pediatrics",
+        image: "https://randomuser.me/api/portraits/women/71.jpg",
+        availability: "busy",
+        nextSlot: "Wed, 9:00 AM",
+        rating: 4.8,
+        slots: ["Wed, 9:00 AM", "Wed, 1:00 PM"],
+      },
+    ],
+  },
+};
+
+export const mockAllDoctorsSearch = {
+  sessionId: "demo-session",
+  reply: {
+    type: "doctor-list",
+    text: "Here are some specialists you can consult. Choose a doctor to view the next available appointment:",
+    doctors: [
+      {
+        id: "doc_401",
+        name: "Dr. Ananya Rao",
+        department: "Cardiology",
+        image: "https://randomuser.me/api/portraits/women/68.jpg",
+        availability: "available",
+        nextSlot: "Today, 4:30 PM",
+        rating: 4.8,
+        slots: ["10:00 AM", "1:00 PM", "4:30 PM", "6:00 PM"],
+      },
+      {
+        id: "doc_402",
+        name: "Dr. Suresh Nair",
+        department: "Orthopedics",
+        image: "https://randomuser.me/api/portraits/men/32.jpg",
+        availability: "available",
+        nextSlot: "Today, 6:00 PM",
+        rating: 4.7,
+        slots: ["1:00 PM", "3:30 PM", "6:00 PM"],
+      },
+      {
+        id: "doc_403",
+        name: "Dr. Meera Iyer",
+        department: "Pediatrics",
+        image: "https://randomuser.me/api/portraits/women/33.jpg",
+        availability: "available",
+        nextSlot: "Today, 2:30 PM",
+        rating: 4.9,
+        slots: ["2:30 PM", "3:15 PM", "5:00 PM"],
+      },
+    ],
+  },
+};
+
 // Scenario 2: user asks "I want to see Dr. Mani" but Dr. Mani is fully
 // booked - backend returns a graceful fallback with alternatives.
 export const mockUnavailableFallback = {

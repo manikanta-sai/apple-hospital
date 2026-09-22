@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import MessageBubble from "./MessageBubble";
 import DoctorCardList from "./DoctorCardList";
 import TypingIndicator from "./TypingIndicator";
@@ -38,8 +38,43 @@ export default function ChatMessages({
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, isTyping]);
 
+  const renderedMessages = useMemo(
+    () =>
+      messages.map((message) => {
+        switch (message.type) {
+          case "doctor-list":
+          case "fallback":
+            return <DoctorCardList key={message.id} message={message} onBookSlot={onBookSlot} />;
+          case "patient-form":
+            return (
+              <PatientRegistrationForm key={message.id} message={message} onSubmit={onSubmitPatientForm} />
+            );
+          case "slot-picker":
+            return <SlotPicker key={message.id} message={message} onSelectSlot={onSelectSlot} />;
+          case "booking-success":
+            return <BookingConfirmation key={message.id} message={message} />;
+          default:
+            return (
+              <MessageBubble
+                key={message.id}
+                message={message}
+                onSpeak={speak}
+                speakingId={speakingId}
+                speechSupported={speechSupported}
+              />
+            );
+        }
+      }),
+    [messages, onBookSlot, onSelectSlot, onSubmitPatientForm, speak, speakingId, speechSupported]
+  );
+
   return (
-    <div className="scrollbar-thin flex-1 space-y-3 overflow-y-auto bg-clinical-50 px-4 py-4">
+    <div
+      className="scrollbar-thin flex-1 space-y-3 overflow-y-auto bg-clinical-50 px-4 py-4"
+      role="log"
+      aria-live="polite"
+      aria-relevant="additions text"
+    >
       {/* Empty-state greeting: hospital image -> quick links -> text */}
       {!isLoadingHistory && messages.length === 0 && (
         <div className="flex flex-col items-center gap-4 py-6 text-center">
@@ -68,31 +103,7 @@ export default function ChatMessages({
         </div>
       )}
 
-      {messages.map((message) => {
-        switch (message.type) {
-          case "doctor-list":
-          case "fallback":
-            return <DoctorCardList key={message.id} message={message} onBookSlot={onBookSlot} />;
-          case "patient-form":
-            return (
-              <PatientRegistrationForm key={message.id} message={message} onSubmit={onSubmitPatientForm} />
-            );
-          case "slot-picker":
-            return <SlotPicker key={message.id} message={message} onSelectSlot={onSelectSlot} />;
-          case "booking-success":
-            return <BookingConfirmation key={message.id} message={message} />;
-          default:
-            return (
-              <MessageBubble
-                key={message.id}
-                message={message}
-                onSpeak={speak}
-                speakingId={speakingId}
-                speechSupported={speechSupported}
-              />
-            );
-        }
-      })}
+      {renderedMessages}
 
       {isTyping && <TypingIndicator />}
 

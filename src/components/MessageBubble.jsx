@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import DOMPurify from "dompurify";
 import { Volume2, VolumeX } from "lucide-react";
 import { useLanguage } from "../i18n/LanguageContext";
 
@@ -109,7 +110,29 @@ export default function MessageBubble({ message, onSpeak, speakingId, speechSupp
   const { speechLang, t } = useLanguage();
   const isSpeaking = speakingId === message.id;
 
-  const html = useMemo(() => parseMarkdown(message.text), [message.text]);
+  const html = useMemo(() => {
+    const unsafeHtml = parseMarkdown(message.text);
+    return DOMPurify.sanitize(unsafeHtml, {
+      ALLOWED_TAGS: [
+        "a",
+        "b",
+        "br",
+        "code",
+        "em",
+        "h1",
+        "h2",
+        "h3",
+        "i",
+        "li",
+        "ol",
+        "p",
+        "pre",
+        "strong",
+        "ul",
+      ],
+      ALLOWED_ATTR: ["href", "target", "rel", "class"],
+    });
+  }, [message.text]);
 
   return (
     <div className={`flex w-full items-end gap-1.5 ${isUser ? "justify-end" : "justify-start"}`}>

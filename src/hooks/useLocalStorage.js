@@ -38,7 +38,7 @@ export function useLocalStorage(key, initialValue) {
   // Also expose a functional-update-safe setter identical to useState's,
   // memoized so it can be passed down without triggering re-renders.
   const setStoredValue = useCallback((next) => {
-    setValue(next);
+    setValue((prev) => (typeof next === "function" ? next(prev) : next));
   }, []);
 
   return [value, setStoredValue];

@@ -38,6 +38,7 @@ function ChatWidgetInner({ tenantId }) {
     isLoadingHistory,
     isTyping,
     sendMessage,
+    setError,
     injectAssistantMessage,
     startBookingFlow,
     submitPatientForm,

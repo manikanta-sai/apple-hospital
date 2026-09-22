@@ -1,5 +1,7 @@
-import { useState } from "react";
-import ChatWidget from "./components/ChatWidget";
+import { Suspense, lazy, useState } from "react";
+import ErrorBoundary from "./components/ErrorBoundary";
+
+const ChatWidget = lazy(() => import("./components/ChatWidget"));
 
 const DEPARTMENTS_WITH_TRIGGERS = ["cardiology", "orthopedics", "pediatrics"];
 
@@ -114,7 +116,11 @@ export default function App() {
       {/* tenantId identifies which hospital/branch this widget instance
           belongs to - forwarded to every API call for multi-tenant
           backend routing. */}
-      <ChatWidget tenantId="sunrise-hospital-main" />
+      <ErrorBoundary>
+        <Suspense fallback={null}>
+          <ChatWidget tenantId="sunrise-hospital-main" />
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 }

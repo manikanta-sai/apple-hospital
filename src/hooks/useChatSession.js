@@ -330,6 +330,7 @@ export function useChatSession({ tenantId } = {}) {
     isLoadingHistory,
     isTyping,
     error,
+    setError,
     sendMessage,
     injectAssistantMessage,
     startBookingFlow,
