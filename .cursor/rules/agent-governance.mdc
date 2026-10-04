@@ -1,0 +1,35 @@
+---
+description: Ask user before installs, shell commands, or destructive actions
+alwaysApply: true
+---
+
+# Agent governance — permission first
+
+Before taking **any** action that changes the machine, network, or git history, **stop and ask the user for explicit approval**. Do not assume consent from earlier messages.
+
+## Requires approval (always ask first)
+
+- `npm install`, `npm ci`, `npx …`, adding/removing packages
+- `npm run …` (dev, build, test, preview, playwright, etc.)
+- Any other shell/terminal command
+- Creating commits, pushes, or PRs
+- Editing `.env` or files that may hold secrets
+- Installing browser deps (`playwright install`)
+
+## What to include in the ask
+
+1. **What** you want to run or install (exact command)
+2. **Why** it is needed
+3. **Risk** (network, lockfile change, long runtime)
+
+Wait for a clear yes/no. If the user declines, propose a code-only alternative (e.g. show diff without running tests).
+
+## Allowed without asking
+
+- Reading/searching files in the workspace
+- Writing/editing source under `src/`, `tests/`, `.cursor/` when the user requested implementation
+- Explaining architecture or reviewing code (no commands)
+
+## After approval
+
+Run only the approved command(s). If the next step needs another command, ask again.

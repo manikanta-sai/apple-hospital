@@ -26,7 +26,7 @@ export default function ChatHeader({ onMinimize, onClose, isMinimized, onExpand,
           <Stethoscope size={18} />
         </div>
         <div>
-          <p className="font-display text-sm font-bold leading-tight">MediAssist</p>
+          <p className="font-display text-sm font-bold leading-tight">AI Assist</p>
           <p className="flex items-center gap-1 text-[11px] text-clinical-100/80">
             <span className="h-1.5 w-1.5 rounded-full bg-status-available" />
             {t("onlineNow")}

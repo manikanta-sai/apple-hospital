@@ -243,7 +243,7 @@ export const mockAddressReply = {
   sessionId: "demo-session",
   reply: {
     type: "text",
-    text: "Sunrise Multispecialty Hospital, 4th Cross Road, Anna Nagar, Chennai - 600040. Landmark: Opposite Anna Nagar Tower Park.",
+    text: "Get Well Multispecialty Hospital, 4th Cross Road, Anna Nagar, Chennai - 600040. Landmark: Opposite Anna Nagar Tower Park.",
   },
 };
 

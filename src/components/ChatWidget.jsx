@@ -58,6 +58,18 @@ function ChatWidgetInner({ tenantId }) {
   const dragRef = useRef({ active: false, startX: 0, startY: 0, originX: 0, originY: 0, width: 0, height: 0 });
 
   useEffect(() => {
+    const handleDemoDepartmentSelected = () => {
+      setIsOpen(false);
+      setIsMinimized(false);
+      setPanelPosition(null);
+      setIsClosing(false);
+    };
+
+    window.addEventListener("hospital-demo-department-selected", handleDemoDepartmentSelected);
+    return () => window.removeEventListener("hospital-demo-department-selected", handleDemoDepartmentSelected);
+  }, [setIsMinimized, setIsOpen]);
+
+  useEffect(() => {
     if (isOpen || tooltipDismissed) return undefined;
 
     const timeout = window.setTimeout(() => {
@@ -247,7 +259,7 @@ function ChatWidgetInner({ tenantId }) {
               setIsOpen(true);
               setIsMinimized(false);
             }}
-            aria-label="Open chat with MediAssist"
+            aria-label="Open chat with AI Assist"
             className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-clinical-700 text-white shadow-lg transition-transform hover:scale-105 active:scale-95 sm:bottom-6 sm:right-6 animate-pulse-ring"
           >
             <MessageCircle size={24} />

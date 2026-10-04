@@ -1,0 +1,15 @@
+---
+description: Node event loop, non-blocking I/O, middleware logging and errors for server/
+globs: server/**/*
+alwaysApply: false
+---
+
+# Node backend (server/)
+
+- Keep the **event loop free**: no sync `fs`, long CPU, or unbounded work in HTTP handlers.
+- **Async I/O** for DB/files/LLM; always **timeouts** on outbound calls; forward rejections with `next(err)` or `asyncHandler`.
+- **CPU-intensive** tasks → worker thread, job queue, or separate service — not inline in controllers.
+- **Middleware (order matters):** `requestId` → structured **logger** → routes → `notFound` → **errorHandler** (last, 4-arg).
+- Logs: `requestId`, `tenantId`, status, duration — **redact** PHI, tokens, secrets.
+
+See `.cursor/skills/hospital-chatbot-backend/node-runtime.md`.

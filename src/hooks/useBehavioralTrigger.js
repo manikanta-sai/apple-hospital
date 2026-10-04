@@ -79,6 +79,7 @@ export function useBehavioralTrigger({ enabled = true } = {}) {
 
     function evaluate() {
       clearTimeout(timerRef.current);
+      setTrigger(null);
 
       const department = detectDepartment();
       if (!department) return;
@@ -86,11 +87,12 @@ export function useBehavioralTrigger({ enabled = true } = {}) {
       const config = DEPARTMENT_TRIGGERS[department];
       if (!config) return; // no proactive copy configured for this department
 
-      if (isDismissedThisSession(department)) return;
+      const demoTrigger = document.body.hasAttribute("data-hospital-demo-trigger");
+      if (!demoTrigger && isDismissedThisSession(department)) return;
 
       timerRef.current = setTimeout(() => {
         setTrigger({ department, ...config });
-      }, DWELL_TIME_MS);
+      }, demoTrigger ? 0 : DWELL_TIME_MS);
     }
 
     evaluate();
@@ -102,7 +104,7 @@ export function useBehavioralTrigger({ enabled = true } = {}) {
     const observer = new MutationObserver(evaluate);
     observer.observe(document.body, {
       attributes: true,
-      attributeFilter: ["data-hospital-department"],
+      attributeFilter: ["data-hospital-department", "data-hospital-demo-trigger"],
       subtree: true,
     });
 
