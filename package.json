@@ -6,7 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "playwright test",
+    "test:html": "playwright test --reporter=html",
+    "test:report": "playwright show-report",
+    "test:headed": "playwright test --headed",
+    "test:report:open": "playwright test --reporter=html && playwright show-report"
   },
   "dependencies": {
     "@tanstack/react-virtual": "^3.14.13",
@@ -16,6 +21,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.0",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.39",
