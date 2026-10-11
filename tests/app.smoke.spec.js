@@ -2,6 +2,117 @@ import { test, expect } from '@playwright/test';
 import { attachTestMetrics } from './helpers/testMetrics';
 
 test.describe('Hospital chatbot widget smoke tests', () => {
+  test('opens Speech to Text and edits the transcript', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.__speechRecognitionInstances = [];
+      window.SpeechRecognition = class {
+        constructor() {
+          this.startCount = 0;
+          window.__speechRecognitionInstances.push(this);
+        }
+        start() {
+          this.startCount += 1;
+        }
+        stop() {
+          this.onend?.();
+        }
+        emitResult(resultIndex, segments) {
+          const results = segments.map(({ transcript, isFinal }) => {
+            const result = [{ transcript }];
+            result.isFinal = isFinal;
+            return result;
+          });
+          this.onresult?.({ resultIndex, results });
+        }
+      };
+    });
+    await page.goto('/');
+
+    await page.getByRole('link', { name: /Speech to Text/ }).click();
+    await expect(page).toHaveURL(/\/speech-to-text$/);
+    await expect(page.getByText('Voice workspace')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'New transcript' })).toHaveCount(0);
+    await expect(page.getByText('Dictate directly into an editable draft.')).toBeVisible();
+    await expect(page.getByText('Ready to listen')).toBeVisible();
+    await expect(page.getByText('Press Start to let your browser microphone listen.')).toBeVisible();
+    await expect(page.getByText('Browser recognition uses the selected language. Mixed English, Hindi, and Telugu may be transcribed inaccurately.')).toBeVisible();
+    await expect(page.getByRole('combobox', { name: 'Language' })).toHaveValue('en-IN');
+    await expect(page.getByRole('button', { name: 'Start', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Pause', exact: true })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Resume', exact: true })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Stop', exact: true })).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Start', exact: true }).click();
+    await expect(page.getByText('Listening', { exact: true })).toBeVisible();
+    await expect(page.getByText('Transcribing into your draft. Click Stop when you finish speaking. Listening stops automatically after 2 minutes.')).toBeVisible();
+    await expect(page.locator('.speech-wave')).toBeVisible();
+    const transcript = page.getByLabel('Transcript text');
+    await expect(transcript).toHaveCSS('min-height', '256px');
+    await page.evaluate(() => {
+      const instance = window.__speechRecognitionInstances[window.__speechRecognitionInstances.length - 1];
+      instance.emitResult(0, [{ transcript: 'Patient needs', isFinal: false }]);
+    });
+    await expect(transcript).toHaveValue('Patient needs');
+    await page.evaluate(() => {
+      const instance = window.__speechRecognitionInstances[window.__speechRecognitionInstances.length - 1];
+      instance.emitResult(0, [
+        { transcript: 'Patient needs', isFinal: true },
+        { transcript: 'an appointment', isFinal: false },
+      ]);
+    });
+    await expect(transcript).toHaveValue('Patient needs an appointment');
+    await page.evaluate(() => {
+      const instance = window.__speechRecognitionInstances[window.__speechRecognitionInstances.length - 1];
+      instance.emitResult(1, [
+        { transcript: 'Patient needs', isFinal: true },
+        { transcript: 'an appointment tomorrow.', isFinal: true },
+      ]);
+    });
+    await expect(transcript).toHaveValue('Patient needs an appointment tomorrow.');
+    await page.evaluate(() => {
+      const instance = window.__speechRecognitionInstances[window.__speechRecognitionInstances.length - 1];
+      instance.onend();
+    });
+    await expect.poll(() => page.evaluate(() => {
+      const instance = window.__speechRecognitionInstances[window.__speechRecognitionInstances.length - 1];
+      return instance.startCount;
+    })).toBeGreaterThan(1);
+    await expect(page.getByText('Listening', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Pause', exact: true })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Start', exact: true })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Stop', exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Stop', exact: true }).click();
+    await expect(page.getByText('Ready to listen')).toBeVisible();
+    await expect(page.locator('.speech-wave')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Start', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Stop', exact: true })).toHaveCount(0);
+
+    await transcript.fill('Patient requested an appointment next week.');
+    await expect(transcript).toHaveValue('Patient requested an appointment next week.');
+    await page.getByRole('button', { name: 'Clear' }).click();
+    await expect(transcript).toHaveValue('');
+
+    await page.clock.install();
+    await page.getByRole('button', { name: 'Start', exact: true }).click();
+    await page.clock.fastForward(120_000);
+    await expect(page.getByText('Two-minute listening limit reached')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Start', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Stop', exact: true })).toHaveCount(0);
+  });
+
+  test('dashboard tile opens the Insights analytics dashboard with a sample audio demo', async ({ page }) => {
+    await page.goto('/');
+
+    await expect(page.getByRole('link', { name: /Insights/ })).toBeVisible();
+    await page.getByRole('link', { name: /Insights/ }).click();
+    await expect(page).toHaveURL(/\/insights$/);
+    await expect(page.getByRole('heading', { name: /AI Sales Call Monitoring And Scoring/i })).toBeVisible();
+    await expect(page.getByText('Sales Call Analysis')).toBeVisible();
+    await expect(page.getByRole('button', { name: /Play audio/i })).toBeVisible();
+    await page.getByRole('button', { name: /Play audio/i }).first().click();
+    await expect(page.getByText('Playing audio...')).toBeVisible();
+  });
+
   test('dashboard tile opens the existing chatbot screen', async ({ page }, testInfo) => {
     const metrics = await attachTestMetrics(page, testInfo);
 

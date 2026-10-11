@@ -1,7 +1,9 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { ArrowRight, Bot, FileText, Headphones, Megaphone, Mic, Ticket } from "lucide-react";
+import { ArrowRight, BarChart3, Bot, FileText, Headphones, Megaphone, Mic, Ticket } from "lucide-react";
 import ErrorBoundary from "./components/ErrorBoundary";
+import InsightsDashboard from "./components/InsightsDashboard";
 import TokenDesk from "./components/TokenDesk";
+import SpeechToText from "./components/SpeechToText";
 
 const ChatWidget = lazy(() => import("./components/ChatWidget"));
 
@@ -24,10 +26,19 @@ const PRODUCTS = [
     accent: "bg-clinical-100 text-clinical-700",
   },
   {
+    name: "Insights",
+    description: "Track patient trends, operational metrics, and care performance at a glance.",
+    icon: BarChart3,
+    available: true,
+    href: "/insights",
+    accent: "bg-violet-100 text-violet-800",
+  },
+  {
     name: "Speech to Text",
     description: "Turn spoken conversations into editable text.",
     icon: Mic,
-    available: false,
+    available: true,
+    href: "/speech-to-text",
     accent: "bg-sky-100 text-sky-800",
   },
   {
@@ -76,7 +87,7 @@ export default function App() {
 
   useEffect(() => {
     const syncRoute = () => {
-      const validPaths = ["/", "/chatbot", "/tokens", "/waiting-pool", "/announcer"];
+      const validPaths = ["/", "/chatbot", "/insights", "/speech-to-text", "/tokens", "/waiting-pool", "/announcer"];
       const path = validPaths.includes(window.location.pathname) ? window.location.pathname : "/";
       if (path !== window.location.pathname) {
         window.history.replaceState({}, "", path);
@@ -96,6 +107,8 @@ export default function App() {
     setCurrentPath(path);
   };
   const showChatbot = currentPath === "/chatbot";
+  const showInsights = currentPath === "/insights";
+  const showSpeechToText = currentPath === "/speech-to-text";
   const showTokenDesk = ["/tokens", "/waiting-pool", "/announcer"].includes(currentPath);
 
   // Simulates what a real department page would do: mark itself with
@@ -119,6 +132,14 @@ export default function App() {
     return <TokenDesk currentPath={currentPath} navigateTo={navigateTo} />;
   }
 
+  if (showSpeechToText) {
+    return <SpeechToText navigateTo={navigateTo} />;
+  }
+
+  if (showInsights) {
+    return <InsightsDashboard navigateTo={navigateTo} />;
+  }
+
   if (!showChatbot) {
     return (
       <div className="min-h-screen bg-clinical-50 font-sans text-ink-900">
@@ -139,7 +160,7 @@ export default function App() {
           <section aria-label="Products" className="mt-9">
             <div className="mb-4 flex items-center justify-between gap-4">
               <h3 className="font-display text-sm font-bold text-clinical-950">Product suite</h3>
-              <p className="text-xs text-ink-600">3 available · 3 in development</p>
+              <p className="text-xs text-ink-600">5 available · 2 in development</p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {PRODUCTS.map((product) => {

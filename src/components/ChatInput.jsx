@@ -21,12 +21,12 @@ export default function ChatInput({ onSend, onValueChange, value = "", disabled,
   const baseTextRef = useRef("");
 
   const handleSpeechResult = useCallback(
-    (transcript, isFinal) => {
-      const nextValue = (baseTextRef.current + " " + transcript).trim();
-      onValueChange?.(nextValue);
-      if (isFinal) {
-        baseTextRef.current = nextValue;
+    ({ finalTranscript, interimTranscript }) => {
+      if (finalTranscript) {
+        baseTextRef.current = [baseTextRef.current, finalTranscript].filter(Boolean).join(" ").trim();
       }
+      const nextValue = [baseTextRef.current, interimTranscript].filter(Boolean).join(" ").trim();
+      onValueChange?.(nextValue);
     },
     [onValueChange]
   );

@@ -101,6 +101,53 @@
     animation: blink-cursor 1.1s steps(2, start) infinite;
   }
 
+  .speech-wave {
+    display: inline-flex;
+    height: 20px;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .speech-wave-bar {
+    width: 3px;
+    flex: 0 0 3px;
+    border-radius: 999px;
+    background: #a7eee0;
+    transform: scaleY(0.35);
+    transform-origin: center;
+    animation: speech-wave 850ms ease-in-out infinite;
+  }
+
+  @keyframes speech-wave {
+    0%, 100% {
+      opacity: 0.65;
+      transform: scaleY(0.35);
+    }
+    50% {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes fadeSlideIn {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .speech-wave-bar {
+      animation: none;
+      opacity: 1;
+      transform: scaleY(0.7);
+    }
+  }
+
   .chat-markdown {
     min-height: 1.25rem;
     white-space: pre-wrap;

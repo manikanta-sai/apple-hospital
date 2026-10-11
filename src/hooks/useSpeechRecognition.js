@@ -10,14 +10,19 @@ import { useEffect, useRef, useState, useCallback } from "react";
  * button rather than render a dead control.
  *
  * @param {string} lang        BCP-47 tag, e.g. "en-US", "hi-IN"
- * @param {function} onResult  (transcript: string, isFinal: boolean) => void
+ * @param {function} onResult  ({ finalTranscript, interimTranscript }) => void
+ * @param {boolean} continuous Keep the recognition service open for continuous speech.
+ * @param {boolean} restartOnEnd Restart when the browser ends a recognition session.
  */
-export function useSpeechRecognition({ lang = "en-US", onResult } = {}) {
+export function useSpeechRecognition({ lang = "en-US", onResult, continuous = false, restartOnEnd = false } = {}) {
   const [isListening, setIsListening] = useState(false);
+  const [recognitionError, setRecognitionError] = useState("");
   const [isSupported] = useState(
     () => typeof window !== "undefined" && !!(window.SpeechRecognition || window.webkitSpeechRecognition)
   );
   const recognitionRef = useRef(null);
+  const shouldListenRef = useRef(false);
+  const restartTimerRef = useRef(null);
   // Keep the latest callback in a ref so we don't have to tear down and
   // rebuild the recognition instance every time the parent re-renders
   // with a new inline function.
@@ -31,44 +36,107 @@ export function useSpeechRecognition({ lang = "en-US", onResult } = {}) {
 
     const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognitionCtor();
-    recognition.continuous = false; // stop automatically after a pause
+    recognition.continuous = continuous;
     recognition.interimResults = true; // stream partial words as the user speaks
     recognition.lang = lang;
 
-    recognition.onresult = (event) => {
-      let transcript = "";
-      let isFinal = false;
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
-        if (event.results[i].isFinal) isFinal = true;
-      }
-      onResultRef.current?.(transcript, isFinal);
+    let restartAttempts = 0;
+    const scheduleRestart = () => {
+      if (!shouldListenRef.current) return;
+      window.clearTimeout(restartTimerRef.current);
+      restartTimerRef.current = window.setTimeout(() => {
+        restartTimerRef.current = null;
+        if (!shouldListenRef.current) return;
+        try {
+          recognition.start();
+          restartAttempts = 0;
+        } catch {
+          restartAttempts += 1;
+          if (restartAttempts < 4) {
+            scheduleRestart();
+          } else {
+            shouldListenRef.current = false;
+            setRecognitionError("restart-failed");
+            setIsListening(false);
+          }
+        }
+      }, 250);
     };
-    recognition.onend = () => setIsListening(false);
-    recognition.onerror = () => setIsListening(false);
+
+    recognition.onresult = (event) => {
+      let finalTranscript = "";
+      let interimTranscript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
+      }
+      if (finalTranscript || interimTranscript) setRecognitionError("");
+      onResultRef.current?.({ finalTranscript, interimTranscript });
+    };
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => {
+      if (restartOnEnd && shouldListenRef.current) {
+        scheduleRestart();
+      } else {
+        setIsListening(false);
+      }
+    };
+    recognition.onerror = (event) => {
+      if (event.error !== "aborted" && shouldListenRef.current) {
+        setRecognitionError(event.error);
+      }
+      if (["not-allowed", "service-not-allowed", "audio-capture", "language-not-supported"].includes(event.error)) {
+        shouldListenRef.current = false;
+        window.clearTimeout(restartTimerRef.current);
+        restartTimerRef.current = null;
+        setIsListening(false);
+      }
+    };
 
     recognitionRef.current = recognition;
     return () => {
+      shouldListenRef.current = false;
+      window.clearTimeout(restartTimerRef.current);
+      restartTimerRef.current = null;
       recognition.onresult = null;
+      recognition.onstart = null;
       recognition.onend = null;
       recognition.onerror = null;
-      recognition.stop();
+      try {
+        recognition.stop();
+      } catch {
+        // The browser can reject stop() when recognition has already ended.
+      }
     };
-  }, [lang, isSupported]);
+  }, [continuous, lang, isSupported, restartOnEnd]);
 
   const start = useCallback(() => {
-    if (!recognitionRef.current || isListening) return;
+    if (!recognitionRef.current || shouldListenRef.current) return;
+    shouldListenRef.current = true;
+    setRecognitionError("");
     try {
       recognitionRef.current.start();
       setIsListening(true);
-    } catch {
-      // Calling start() while already active throws in some browsers -
-      // safe to ignore, state will resync via onend/onerror.
+    } catch (error) {
+      setRecognitionError(error.name || "start-failed");
+      shouldListenRef.current = error.name === "InvalidStateError";
+      setIsListening(error.name === "InvalidStateError");
     }
-  }, [isListening]);
+  }, []);
 
   const stop = useCallback(() => {
-    recognitionRef.current?.stop();
+    shouldListenRef.current = false;
+    setRecognitionError("");
+    window.clearTimeout(restartTimerRef.current);
+    restartTimerRef.current = null;
+    try {
+      recognitionRef.current?.stop();
+    } catch {
+      // The browser can reject stop() when recognition has already ended.
+    }
     setIsListening(false);
   }, []);
 
@@ -76,5 +144,5 @@ export function useSpeechRecognition({ lang = "en-US", onResult } = {}) {
     isListening ? stop() : start();
   }, [isListening, start, stop]);
 
-  return { isSupported, isListening, start, stop, toggle };
+  return { isSupported, isListening, recognitionError, start, stop, toggle };
 }
