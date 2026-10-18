@@ -373,35 +373,37 @@ export default function AudioPlayer({
         </div>
       </div>
 
-      <div className="audio-player__time" aria-live="off">
-        <span>{formatTime(currentTime)}</span>
-        <span aria-hidden="true">/</span>
-        <span>{formatTime(duration)}</span>
-      </div>
+      <div className="audio-player__details">
+        <div className="audio-player__time" aria-live="off">
+          <span>{formatTime(currentTime)}</span>
+          <span aria-hidden="true">/</span>
+          <span>{formatTime(duration)}</span>
+        </div>
 
-      <div className="audio-player__volume">
-        <button
-          type="button"
-          className="audio-player__mute"
-          onClick={toggleMute}
-          disabled={Boolean(audioError)}
-          aria-label={isMuted ? "Unmute audio" : "Mute audio"}
-          title={isMuted ? "Unmute audio" : "Mute audio"}
-        >
-          {isMuted ? <VolumeX size={17} aria-hidden="true" /> : volume < 0.5 ? <Volume1 size={17} aria-hidden="true" /> : <Volume2 size={17} aria-hidden="true" />}
-        </button>
-        <input
-          className="audio-player__volume-range"
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={volumeFill}
-          onChange={changeVolume}
-          style={{ "--volume-fill": `${volumeFill * 100}%` }}
-          disabled={Boolean(audioError)}
-          aria-label="Volume"
-        />
+        <div className="audio-player__volume">
+          <button
+            type="button"
+            className="audio-player__mute"
+            onClick={toggleMute}
+            disabled={Boolean(audioError)}
+            aria-label={isMuted ? "Unmute audio" : "Mute audio"}
+            title={isMuted ? "Unmute audio" : "Mute audio"}
+          >
+            {isMuted ? <VolumeX size={17} aria-hidden="true" /> : volume < 0.5 ? <Volume1 size={17} aria-hidden="true" /> : <Volume2 size={17} aria-hidden="true" />}
+          </button>
+          <input
+            className="audio-player__volume-range"
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={volumeFill}
+            onChange={changeVolume}
+            style={{ "--volume-fill": `${volumeFill * 100}%` }}
+            disabled={Boolean(audioError)}
+            aria-label="Volume"
+          />
+        </div>
       </div>
 
       {statusMessage && (
