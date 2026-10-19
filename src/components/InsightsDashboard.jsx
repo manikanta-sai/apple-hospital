@@ -1,17 +1,17 @@
 import { useMemo, useState } from "react";
 import {
   ArrowLeft,
-  ArrowUpRight,
   BarChart3,
-  Bell,
-  ChevronDown,
-  CirclePlay,
+  CheckCircle2,
   Clock3,
-  Download,
-  Mic,
+  FileText,
+  MessageSquare,
   PhoneCall,
   Sparkles,
   TrendingUp,
+  XCircle,
+  NotepadText,
+  CircleCheck
 } from "lucide-react";
 import AudioPlayer from "./AudioPlayer.jsx";
 
@@ -35,6 +35,10 @@ const CALLS = [
       "Asked about onboarding support and migration options.",
       "Strong signal for a discovery call follow-up.",
     ],
+    improvements: [
+      "Confirm the decision timeline before wrapping up.",
+      "Agree on a specific follow-up date with the prospect.",
+    ],
   },
   {
     id: "jennifer-davis",
@@ -54,6 +58,10 @@ const CALLS = [
       "Needed more clarity on ROI and implementation effort.",
       "Respected product value but requested additional references.",
       "Opportunity remains open for a later follow-up.",
+    ],
+    improvements: [
+      "Explore the prospect's main concerns earlier in the conversation.",
+      "Offer a clear next step before ending the call.",
     ],
   },
   {
@@ -75,6 +83,10 @@ const CALLS = [
       "Product fit questions were raised early in the call.",
       "Follow-up depends on a future strategic review.",
     ],
+    improvements: [
+      "Acknowledge objections and confirm they were understood.",
+      "Ask permission before closing or scheduling another contact.",
+    ],
   },
   {
     id: "sarah-lee",
@@ -95,6 +107,10 @@ const CALLS = [
       "Asked for a tailored product walkthrough.",
       "Promising sales path with near-term momentum.",
     ],
+    improvements: [
+      "Confirm who else will join the requested walkthrough.",
+      "Summarize the agreed action items at the end of the call.",
+    ],
   },
 ];
 
@@ -107,11 +123,31 @@ const statCards = [
 
 export default function InsightsDashboard({ navigateTo }) {
   const [selectedCallId, setSelectedCallId] = useState(CALLS[0].id);
+  const [activeCallTab, setActiveCallTab] = useState("summary");
 
   const selectedCall = useMemo(
     () => CALLS.find((call) => call.id === selectedCallId) ?? CALLS[0],
     [selectedCallId],
   );
+  const callTabs = [
+    { id: "summary", label: "Summary", icon: FileText },
+    { id: "transcript", label: "Transcript", icon: MessageSquare },
+    { id: "analytics", label: "Analytics", icon: BarChart3 },
+    { id: "coaching", label: "Coaching", icon: Sparkles },
+  ];
+  const handleTabKeyDown = (event, currentIndex) => {
+    const lastIndex = callTabs.length - 1;
+    let nextIndex = currentIndex;
+    if (event.key === "ArrowRight") nextIndex = currentIndex === lastIndex ? 0 : currentIndex + 1;
+    else if (event.key === "ArrowLeft") nextIndex = currentIndex === 0 ? lastIndex : currentIndex - 1;
+    else if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = lastIndex;
+    else return;
+
+    event.preventDefault();
+    setActiveCallTab(callTabs[nextIndex].id);
+    event.currentTarget.parentElement.querySelectorAll('[role="tab"]')[nextIndex]?.focus();
+  };
 
   return (
     <div className="min-h-screen bg-[#efefed] px-0 py-0 text-ink-900">
@@ -122,32 +158,19 @@ export default function InsightsDashboard({ navigateTo }) {
               <div className="flex h-8 w-8 items-center justify-center rounded-md border border-[#d8e7e3] bg-[#edf5f3] text-[#146d63]">
                 <BarChart3 size={16} aria-hidden="true" />
               </div>
-              <div className="font-semibold text-[#1d2e2b]">CallInsights</div>
+              <div className="font-semibold text-[#1d2e2b]">Calls Analysis</div>
             </div>
-            <div className="inline-flex items-center gap-3 rounded-md border border-[#dfe4df] bg-white px-3 py-2 text-xs font-medium text-[#586d69] shadow-sm">
-              <span className="inline-flex items-center gap-2">
-                <Bell size={12} aria-hidden="true" />
-                Sep 1, 2024 - Sep 30, 2024
-              </span>
-              <ChevronDown size={12} aria-hidden="true" />
-            </div>
+            <button
+              type="button"
+              onClick={() => navigateTo("/")}
+              className="inline-flex min-h-10 items-center gap-2 rounded-md border border-[#dfe4df] bg-white px-3 py-2 text-xs font-semibold text-[#23574f] transition hover:bg-[#f9faf9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#147cc1] focus-visible:ring-offset-2"
+            >
+              <ArrowLeft size={14} aria-hidden="true" />
+              Back to dashboard
+            </button>
           </div>
 
           <div className="grid gap-4 p-4 md:p-6">
-            <div className="flex items-center justify-between gap-4">
-              <h2 className="font-display text-[2.05rem] font-bold tracking-[-0.05em] text-[#1a1d1d]">
-                Sales Call Analysis
-              </h2>
-              <button
-                type="button"
-                onClick={() => navigateTo("/")}
-                className="inline-flex items-center gap-2 rounded-md border border-[#dfe4df] bg-white px-3 py-2 text-xs font-semibold text-[#23574f] transition hover:bg-[#f9faf9]"
-              >
-                <ArrowLeft size={14} aria-hidden="true" />
-                Back to dashboard
-              </button>
-            </div>
-
             <div className="grid gap-3 md:grid-cols-4">
               {statCards.map(({ label, value, delta, tone, icon: Icon }) => (
                 <div key={label} className="rounded-xl border border-[#e3eaec] bg-white p-4 shadow-sm">
@@ -157,16 +180,16 @@ export default function InsightsDashboard({ navigateTo }) {
                       <Icon size={18} aria-hidden="true" />
                     </div>
                   </div>
-                  <div className="mt-4 flex items-end justify-between gap-2">
+                  <div className="flex items-end justify-between gap-2">
                     <div className="text-[1.8rem] font-bold tracking-[-0.04em] text-[#1b201f]">{value}</div>
                     <div className="text-[11px] font-semibold text-[#0f7d64]">{delta}</div>
                   </div>
-                  <div className="mt-1 text-[11px] text-[#6a7675]">vs. last month</div>
+                  <div className="text-[11px] text-[#6a7675]">vs. last month</div>
                 </div>
               ))}
             </div>
 
-            <div className="grid gap-4 xl:grid-cols-[1.7fr_0.9fr]">
+            <div className="-mt-2 grid gap-4 xl:grid-cols-[1.7fr_0.9fr]">
               <div className="min-w-0 rounded-xl border border-[#e9ece9] bg-white p-4 shadow-sm">
                 <div className="mb-3 flex items-center justify-between gap-4">
                   <div className="font-semibold text-[#1d2a29]">Recent Calls</div>
@@ -197,7 +220,10 @@ export default function InsightsDashboard({ navigateTo }) {
                         <tr
                           key={call.id}
                           className={`cursor-pointer border-t border-[#edf1ef] transition ${selectedCallId === call.id ? "bg-[#f4f8fe]" : "bg-white hover:bg-[#f9fbfb]"}`}
-                          onClick={() => setSelectedCallId(call.id)}
+                          onClick={() => {
+                            setSelectedCallId(call.id);
+                            setActiveCallTab("summary");
+                          }}
                         >
                           <td className="px-3 py-3">
                             <div className="flex items-center gap-2">
@@ -270,36 +296,100 @@ export default function InsightsDashboard({ navigateTo }) {
                     <AudioPlayer audioUrl={selectedCall.audioUrl} />
                   </div>
 
-                  <div className="mt-5">
-                    <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#65736f]">
-                      Call Summary
-                    </div>
-                    <p className="text-[0.98rem] leading-7 text-[#465956]">{selectedCall.summary}</p>
+                  <div role="tablist" aria-label={`${selectedCall.name} call details`} className="mt-1 mb-2 flex items-center gap-1 border-b border-[#e8edeb]">
+                    {callTabs.map(({ id, label, icon: TabIcon }, index) => (
+                      <button
+                        key={id}
+                        id={`${selectedCall.id}-${id}-tab`}
+                        type="button"
+                        role="tab"
+                        aria-selected={activeCallTab === id}
+                        aria-controls={`${selectedCall.id}-tabpanel`}
+                        tabIndex={activeCallTab === id ? 0 : -1}
+                        onClick={() => setActiveCallTab(id)}
+                        onKeyDown={(event) => handleTabKeyDown(event, index)}
+                        style={activeCallTab === id ? {
+                          color: "#147cc1",
+                          borderBottomColor: "#147cc1",
+                          borderBottomStyle: "solid",
+                          borderBottomWidth: "2px",
+                          backgroundColor: "#f3f9fd",
+                        } : undefined}
+                        className={`inline-flex min-h-11 flex-1 items-center justify-center gap-1.5 border-b-2 px-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#147cc1] sm:flex-none sm:gap-2 sm:px-3.5 ${activeCallTab === id ? "border-[#147cc1] bg-[#f3f9fd] font-bold text-[#147cc1]" : "border-transparent text-[#71807c] hover:text-[#314d48]"}`}
+                      >
+                        <TabIcon size={14} aria-hidden="true" />
+                        {label}
+                      </button>
+                    ))}
                   </div>
 
-                  <div className="mt-5">
-                    <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#65736f]">
-                      Key Highlights
-                    </div>
-                    <ul className="space-y-3 text-[1.02rem] font-medium leading-7 text-[#465956]">
-                      {selectedCall.highlights.map((item) => (
-                        <li key={item} className="flex items-start gap-3">
-                          <span className="mt-2.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#3a9f83] text-[#1b7d5d]">
-                            <span className="h-1.5 w-1.5 rounded-full bg-white" aria-hidden="true" />
-                          </span>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <section
+                    id={`${selectedCall.id}-tabpanel`}
+                    role="tabpanel"
+                    aria-labelledby={`${selectedCall.id}-${activeCallTab}-tab`}
+                    tabIndex={0}
+                    className="min-h-[250px] pt-7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#147cc1]"
+                  >
+                    {activeCallTab === "summary" && (
+                      <div className="space-y-7">
+                        <div className="flex items-start gap-3 mb-2">
+                          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#edf5f3] text-[#146d63]"><FileText size={17} aria-hidden="true" /></span>
+                          <div className="min-w-0">
+                            <h3 className="text-sm font-bold text-[#1d2e2b] mt-2">Call Summary</h3>
+                            <p className="mt-1.5 pb-4 text-[11px] leading-2 text-[#52635f]">{selectedCall.summary}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#edf5f3] text-[#146d63]"><NotepadText size={17} aria-hidden="true" /></span>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-sm font-bold text-[#1d2e2b] mt-1.5">Key Highlights</h3>
+                            <ul className="mt-2.5 space-y-2.5">
+                              {selectedCall.highlights.map((item) => <li key={item} className="flex items-start gap-2.5 text-[12px] leading-3 text-[#008000]"><CircleCheck size={17} className="mt-0.5 shrink-0 text-[#008000]" aria-hidden="true" /><span>{item}</span></li>)}
+                              {selectedCall.improvements.map((item) => <li key={item} className="flex items-start gap-2.5 text-[12px] leading-3 text-[#52635f]"><XCircle size={17} className="mt-0.5 shrink-0 text-[#c76d65]" aria-hidden="true" /><span>{item}</span></li>)}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
-                  <div className="mt-5 flex items-center justify-between">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#69756f]">Outcome</div>
-                    <div className="inline-flex items-center gap-2 rounded-full bg-[#dff7ef] px-3 py-1.5 text-[11px] font-semibold text-[#1a7d5d]">
-                      <CirclePlay size={12} aria-hidden="true" />
-                      {selectedCall.outcome}
-                    </div>
-                  </div>
+                    {activeCallTab === "transcript" && (
+                      <div className="flex min-h-[210px] flex-col items-center justify-center rounded-xl border border-dashed border-[#d9e3df] bg-[#fbfcfb] px-5 py-8 text-center">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#edf5f3] text-[#146d63]"><MessageSquare size={19} aria-hidden="true" /></span>
+                        <h3 className="mt-3 text-sm font-bold text-[#1d2e2b]">Transcript unavailable</h3>
+                        <p className="mt-1.5 max-w-[260px] text-xs leading-5 text-[#687774]">A transcript hasn’t been added for this sample recording yet.</p>
+                      </div>
+                    )}
+
+                    {activeCallTab === "analytics" && (
+                      <div>
+                        <div className="grid grid-cols-2 gap-3">
+                          {[
+                            { label: "Call score", value: `${selectedCall.score}/100` },
+                            { label: "Duration", value: selectedCall.duration },
+                            { label: "Sentiment", value: selectedCall.sentiment },
+                            { label: "Call outcome", value: selectedCall.outcome },
+                          ].map((metric) => <div key={metric.label} className="rounded-lg border border-[#e8edeb] bg-[#fbfcfb] p-3"><div className="text-[11px] font-medium text-[#71807c]">{metric.label}</div><div className="mt-1.5 text-sm font-bold text-[#1d2e2b]">{metric.value}</div></div>)}
+                        </div>
+                        <div className="mt-4 rounded-lg bg-[#f2f7f6] p-3.5">
+                          <div className="flex items-center justify-between gap-3 text-xs"><span className="font-semibold text-[#314d48]">Quality score</span><span className="font-bold tabular-nums text-[#146d63]">{selectedCall.score}%</span></div>
+                          <div className="mt-2 h-2 overflow-hidden rounded-full bg-white"><div className="h-full rounded-full bg-[#16807e]" style={{ width: `${selectedCall.score}%` }} /></div>
+                        </div>
+                        <div className="mt-3 text-xs text-[#687774]">Call category: <span className="font-semibold text-[#314d48]">{selectedCall.tag}</span></div>
+                      </div>
+                    )}
+
+                    {activeCallTab === "coaching" && (
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3 rounded-lg bg-[#f2f7f6] p-3.5">
+                          <Sparkles size={17} className="mt-0.5 shrink-0 text-[#146d63]" aria-hidden="true" />
+                          <div><h3 className="text-sm font-bold text-[#1d2e2b]">Suggested coaching focus</h3><p className="mt-1 mb-2 text-xs leading-3 text-[#52635f]">Use these moments to reinforce clear discovery, confident responses, and a specific next step.</p></div>
+                        </div>
+                        <ul className="space-y-3">
+                          {selectedCall.improvements.map((item, index) => <li key={item} className="flex items-start gap-3 rounded-lg border border-[#e8edeb] px-3.5 py-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#edf5f3] text-[11px] font-bold text-[#146d63]">{index + 1}</span><span className="pt-0.5 text-[13px] leading-2.5 text-[#52635f]">{item}</span></li>)}
+                        </ul>
+                      </div>
+                    )}
+                  </section>
                 </div>
               </aside>
             </div>

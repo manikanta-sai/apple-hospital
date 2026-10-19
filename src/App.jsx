@@ -151,7 +151,7 @@ export default function App() {
     return (
       <div className="min-h-screen bg-clinical-50 font-sans text-ink-900">
         <header className="border-b border-clinical-100 bg-white">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
+          <div className="mx-auto flex items-center justify-between gap-4 px-5 py-4 sm:px-8">
             <div>
               <h1 className="font-display text-lg font-bold text-clinical-900">
                 Get Well Multispecialty Hospital
@@ -163,13 +163,13 @@ export default function App() {
           </div>
         </header>
 
-        <main className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
-          <section aria-label="Products" className="mt-9">
+        <main className="mx-auto px-5 py-5 sm:px-8 sm:py-6">
+          <section aria-label="Products" className="mt-3">
             <div className="mb-4 flex items-center justify-between gap-4">
               <h3 className="font-display text-sm font-bold text-clinical-950">Product suite</h3>
               <p className="text-xs text-ink-600">5 available · 3 in development</p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {PRODUCTS.map((product) => {
                 const ProductIcon = product.icon;
                 const Tile = product.available ? "a" : "article";
@@ -182,10 +182,10 @@ export default function App() {
                       event.preventDefault();
                       navigateTo(product.href || "/chatbot");
                     } : undefined}
-                    className={`group flex min-h-52 w-full flex-col rounded-lg border bg-white p-5 text-left shadow-sm transition duration-200 ${
+                    className={`group flex min-h-52 w-full flex-col rounded-lg border p-5 text-left shadow-sm transition duration-200 ${
                       product.available
-                        ? "cursor-pointer border-clinical-100 hover:-translate-y-1 hover:border-clinical-500 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clinical-500 focus-visible:ring-offset-2"
-                        : "border-clinical-100/80"
+                        ? "cursor-pointer bg-white border-clinical-100 hover:-translate-y-1 hover:border-clinical-500 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clinical-500 focus-visible:ring-offset-2"
+                        : "border-clinical-100/80  bg-[#f5faf9]"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
