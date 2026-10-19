@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { ArrowRight, BarChart3, Bot, FileText, Headphones, Megaphone, Mic, Ticket } from "lucide-react";
+import { ArrowRight, BarChart3, Bot, FileText, Headphones, Megaphone, Mic, Ticket, Video } from "lucide-react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import InsightsDashboard from "./components/InsightsDashboard";
 import TokenDesk from "./components/TokenDesk";
@@ -26,8 +26,8 @@ const PRODUCTS = [
     accent: "bg-clinical-100 text-clinical-700",
   },
   {
-    name: "Insights",
-    description: "Track patient trends, operational metrics, and care performance at a glance.",
+    name: "Call Center",
+    description: "Review call recordings, monitor agent performance, and find coaching opportunities.",
     icon: BarChart3,
     available: true,
     href: "/insights",
@@ -47,6 +47,13 @@ const PRODUCTS = [
     icon: Headphones,
     available: false,
     accent: "bg-amber-100 text-amber-800",
+  },
+  {
+    name: "Video Library",
+    description: "Browse helpful hospital and patient education videos.",
+    icon: Video,
+    available: false,
+    accent: "bg-indigo-100 text-indigo-800",
   },
   {
     name: "PDF to Form Auto Fill",
@@ -160,7 +167,7 @@ export default function App() {
           <section aria-label="Products" className="mt-9">
             <div className="mb-4 flex items-center justify-between gap-4">
               <h3 className="font-display text-sm font-bold text-clinical-950">Product suite</h3>
-              <p className="text-xs text-ink-600">5 available · 2 in development</p>
+              <p className="text-xs text-ink-600">5 available · 3 in development</p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {PRODUCTS.map((product) => {
