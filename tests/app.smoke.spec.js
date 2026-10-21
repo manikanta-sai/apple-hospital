@@ -103,14 +103,38 @@ test.describe('Hospital chatbot widget smoke tests', () => {
   test('dashboard tile opens the Insights analytics dashboard with a sample audio demo', async ({ page }) => {
     await page.goto('/');
 
-    await expect(page.getByRole('link', { name: /Insights/ })).toBeVisible();
-    await page.getByRole('link', { name: /Insights/ }).click();
+    await expect(page.getByRole('link', { name: /Call Center|Insights/i })).toBeVisible();
+    await page.getByRole('link', { name: /Call Center|Insights/i }).click();
     await expect(page).toHaveURL(/\/insights$/);
     await expect(page.getByRole('heading', { name: /AI Sales Call Monitoring And Scoring/i })).toBeVisible();
     await expect(page.getByText('Sales Call Analysis')).toBeVisible();
     await expect(page.getByRole('button', { name: /Play audio/i })).toBeVisible();
     await page.getByRole('button', { name: /Play audio/i }).first().click();
     await expect(page.getByText('Playing audio...')).toBeVisible();
+  });
+
+  test('dashboard tile opens the Healthcare URL Generator, tests module cards, and navigates back', async ({ page }) => {
+    await page.goto('/');
+
+    await expect(page.getByText('URL Generator', { exact: true })).toBeVisible();
+    await expect(page.getByText('Create and manage links for lab reports, telehealth, patient feedback, and surveys.')).toBeVisible();
+
+    await page.getByRole('link', { name: /URL Generator/i }).click();
+    await expect(page).toHaveURL(/\/url-generator$/);
+
+    await expect(page.getByRole('heading', { name: /Create and Manage Healthcare Links/i })).toBeVisible();
+    await expect(page.getByText('Total URLs Created')).toBeVisible();
+
+    // Verify 4 module creation cards
+    await expect(page.getByRole('heading', { name: 'Lab Reports' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Telehealth' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Patient Feedback' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Survey' })).toBeVisible();
+
+    // Navigate back to suite
+    await page.getByRole('button', { name: /Back to Suite/i }).click();
+    await expect(page).toHaveURL(/\//);
+    await expect(page.getByRole('heading', { name: 'Get Well Multispecialty Hospital' })).toBeVisible();
   });
 
   test('dashboard tile opens the existing chatbot screen', async ({ page }, testInfo) => {

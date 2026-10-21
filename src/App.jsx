@@ -1,9 +1,10 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { ArrowRight, BarChart3, Bot, FileText, Headphones, Megaphone, Mic, Ticket, Video } from "lucide-react";
+import { ArrowRight, BarChart3, Bot, FileText, Headphones, Link2, Megaphone, Mic, Ticket, Video } from "lucide-react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import InsightsDashboard from "./components/InsightsDashboard";
 import TokenDesk from "./components/TokenDesk";
 import SpeechToText from "./components/SpeechToText";
+import HealthcareUrlGenerator from "./components/url-generator/HealthcareUrlGenerator";
 
 const ChatWidget = lazy(() => import("./components/ChatWidget"));
 
@@ -78,6 +79,14 @@ const PRODUCTS = [
     href: "/announcer",
     accent: "bg-orange-100 text-orange-800",
   },
+  {
+    name: "URL Generator",
+    description: "Create and manage links for lab reports, telehealth, patient feedback, and surveys.",
+    icon: Link2,
+    available: true,
+    href: "/url-generator",
+    accent: "bg-teal-100 text-teal-800",
+  },
 ];
 
 /**
@@ -94,8 +103,16 @@ export default function App() {
 
   useEffect(() => {
     const syncRoute = () => {
-      const validPaths = ["/", "/chatbot", "/insights", "/speech-to-text", "/tokens", "/waiting-pool", "/announcer"];
-      const path = validPaths.includes(window.location.pathname) ? window.location.pathname : "/";
+      const validPaths = ["/", "/chatbot", "/insights", "/speech-to-text", "/tokens", "/waiting-pool", "/announcer", "/url-generator", "/url-shortener"];
+      const isDynamic =
+        window.location.pathname.startsWith("/s/") ||
+        window.location.pathname.startsWith("/reports/") ||
+        window.location.pathname.startsWith("/meetings/") ||
+        window.location.pathname.startsWith("/feedback") ||
+        window.location.pathname.startsWith("/lab-reports/") ||
+        window.location.pathname.startsWith("/telehealth/") ||
+        window.location.pathname.startsWith("/survey/");
+      const path = isDynamic || validPaths.includes(window.location.pathname) ? window.location.pathname : "/";
       if (path !== window.location.pathname) {
         window.history.replaceState({}, "", path);
       }
@@ -117,6 +134,16 @@ export default function App() {
   const showInsights = currentPath === "/insights";
   const showSpeechToText = currentPath === "/speech-to-text";
   const showTokenDesk = ["/tokens", "/waiting-pool", "/announcer"].includes(currentPath);
+  const showUrlGenerator =
+    currentPath.startsWith("/url-generator") ||
+    currentPath === "/url-shortener" ||
+    currentPath.startsWith("/s/") ||
+    currentPath.startsWith("/reports/") ||
+    currentPath.startsWith("/meetings/") ||
+    currentPath.startsWith("/feedback") ||
+    currentPath.startsWith("/lab-reports/") ||
+    currentPath.startsWith("/telehealth/") ||
+    currentPath.startsWith("/survey/");
 
   // Simulates what a real department page would do: mark itself with
   // data-hospital-department so useBehavioralTrigger can detect it.
@@ -147,6 +174,15 @@ export default function App() {
     return <InsightsDashboard navigateTo={navigateTo} />;
   }
 
+  if (showUrlGenerator) {
+    const generatorSubPath = currentPath.startsWith("/url-generator")
+      ? currentPath.replace(/^\/url-generator/, "") || "/"
+      : currentPath === "/url-shortener"
+      ? "/"
+      : currentPath;
+    return <HealthcareUrlGenerator navigateTo={navigateTo} initialPath={generatorSubPath} />;
+  }
+
   if (!showChatbot) {
     return (
       <div className="min-h-screen bg-clinical-50 font-sans text-ink-900">
@@ -167,7 +203,9 @@ export default function App() {
           <section aria-label="Products" className="mt-3">
             <div className="mb-4 flex items-center justify-between gap-4">
               <h3 className="font-display text-sm font-bold text-clinical-950">Product suite</h3>
-              <p className="text-xs text-ink-600">5 available · 3 in development</p>
+              <p className="text-xs text-ink-600">
+                {PRODUCTS.filter((p) => p.available).length} available · {PRODUCTS.filter((p) => !p.available).length} in development
+              </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {PRODUCTS.map((product) => {
