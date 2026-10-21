@@ -200,7 +200,7 @@ Call log:
   118 | 
   119 |     await page.goto('/');
   120 | 
-  121 |     await expect(page.getByRole('heading', { name: 'Get Well Multispecialty Hospital' })).toBeVisible();
+  121 |     await expect(page.getByRole('heading', { name: 'Apple Multispecialty Hospital' })).toBeVisible();
   122 |     await expect(page.getByText('Digital tools for patient support and smoother hospital workflows.')).toBeVisible();
   123 |     await expect(page.getByText('Speech to Text', { exact: true })).toBeVisible();
   124 |     await expect(page.getByText('Audio File to Text', { exact: true })).toBeVisible();

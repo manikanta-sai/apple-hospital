@@ -110,7 +110,7 @@ export default function ReportViewer({ reportId, onBack }) {
               <ShieldCheck size={14} /> Official Medical Laboratory Result
             </span>
             <span className="text-[11px] text-ink-600">
-              Get Well Multispecialty Hospital
+              Apple Multispecialty Hospital
             </span>
           </div>
 

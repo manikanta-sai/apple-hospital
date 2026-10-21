@@ -243,7 +243,7 @@ export const mockAddressReply = {
   sessionId: "demo-session",
   reply: {
     type: "text",
-    text: "Get Well Multispecialty Hospital, 4th Cross Road, Anna Nagar, Chennai - 600040. Landmark: Opposite Anna Nagar Tower Park.",
+    text: "Apple Multispecialty Hospital, 4th Cross Road, Anna Nagar, Chennai - 600040. Landmark: Opposite Anna Nagar Tower Park.",
   },
 };
 

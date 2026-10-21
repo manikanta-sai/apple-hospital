@@ -190,7 +190,7 @@ export default function App() {
           <div className="mx-auto flex items-center justify-between gap-4 px-5 py-4 sm:px-8">
             <div>
               <h1 className="font-display text-lg font-bold text-clinical-900">
-                Get Well Multispecialty Hospital
+                Apple Multispecialty Hospital
               </h1>
               <p className="mt-1 text-xs text-ink-600">
                 Digital tools for patient support and smoother hospital workflows.
@@ -264,7 +264,7 @@ export default function App() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="font-display text-lg font-bold text-clinical-900">
-              Get Well Multispecialty Hospital
+              Apple Multispecialty Hospital
             </h1>
             <p className="text-sm text-ink-600">Patient Portal</p>
           </div>

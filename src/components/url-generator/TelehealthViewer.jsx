@@ -75,7 +75,7 @@ export default function TelehealthViewer({ meetingId, onBack }) {
               <Video size={13} /> Virtual Outpatient Tele-Consultation
             </span>
             <span className="text-[11px] text-ink-600">
-              Get Well Multispecialty Hospital
+              Apple Multispecialty Hospital
             </span>
           </div>
 

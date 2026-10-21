@@ -106,7 +106,7 @@ export default function SpeechToText({ navigateTo }) {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
           <div>
             <h1 className="font-display text-lg font-bold text-clinical-900">
-              Get Well Multispecialty Hospital
+              Apple Multispecialty Hospital
             </h1>
             <p className="mt-1 text-xs text-ink-600">Speech tools</p>
           </div>

@@ -301,7 +301,7 @@ export default function TokenDesk({ currentPath, navigateTo }) {
           <div className="flex min-w-0 items-center gap-3">
             <button onClick={() => navigateTo("/")} aria-label="Back to dashboard" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-clinical-100 text-clinical-700 hover:bg-clinical-50"><ArrowLeft size={17} /></button>
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-clinical-500">Get Well Multispecialty Hospital</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-clinical-500">Apple Multispecialty Hospital</p>
               <h1 className="truncate font-display text-lg font-bold text-clinical-950">Outpatient token desk</h1>
             </div>
           </div>
@@ -490,7 +490,7 @@ export default function TokenDesk({ currentPath, navigateTo }) {
               <div className="flex items-center gap-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-md bg-clinical-100 text-clinical-700"><Megaphone size={19} /></span>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-clinical-600">Get Well Multispecialty Hospital</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-clinical-600">Apple Multispecialty Hospital</p>
                   <h3 className="mt-0.5 font-display text-lg font-bold text-clinical-950">Now calling patients</h3>
                 </div>
               </div>

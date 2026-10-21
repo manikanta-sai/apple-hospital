@@ -128,7 +128,7 @@ export default function HealthcareUrlGenerator({ navigateTo, initialPath = "/" }
                   Healthcare URL Generator
                 </span>
                 <h1 className="font-display text-sm sm:text-base font-bold text-clinical-950">
-                  Get Well Multispecialty Hospital
+                  Apple Multispecialty Hospital
                 </h1>
               </div>
             </div>
@@ -225,7 +225,7 @@ export default function HealthcareUrlGenerator({ navigateTo, initialPath = "/" }
       {/* Footer */}
       <footer className="border-t border-clinical-100 bg-white py-4 text-center text-xs text-ink-600 mt-auto">
         <div className="mx-auto  px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>Healthcare URL Generator · Get Well Multispecialty Hospital</span>
+          <span>Healthcare URL Generator · Apple Multispecialty Hospital</span>
           <span className="text-[11px] text-ink-600">
             Powered by React, Dexie.js, IndexedDB & Tailwind CSS
           </span>

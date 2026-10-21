@@ -134,7 +134,7 @@ test.describe('Hospital chatbot widget smoke tests', () => {
     // Navigate back to suite
     await page.getByRole('button', { name: /Back to Suite/i }).click();
     await expect(page).toHaveURL(/\//);
-    await expect(page.getByRole('heading', { name: 'Get Well Multispecialty Hospital' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Apple Multispecialty Hospital' })).toBeVisible();
   });
 
   test('dashboard tile opens the existing chatbot screen', async ({ page }, testInfo) => {
@@ -142,7 +142,7 @@ test.describe('Hospital chatbot widget smoke tests', () => {
 
     await page.goto('/');
 
-    await expect(page.getByRole('heading', { name: 'Get Well Multispecialty Hospital' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Apple Multispecialty Hospital' })).toBeVisible();
     await expect(page.getByText('Digital tools for patient support and smoother hospital workflows.')).toBeVisible();
     await expect(page.getByText('Speech to Text', { exact: true })).toBeVisible();
     await expect(page.getByText('Audio File to Text', { exact: true })).toBeVisible();

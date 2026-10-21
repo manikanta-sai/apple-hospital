@@ -129,7 +129,7 @@ export async function seedInitialDataIfEmpty() {
   const surveyId = await db.surveys.add({
     title: "Annual Hospital Patient Experience & Quality Survey",
     originalUrl: "https://forms.google.com/d/e/1FAIpQLSc_GetWellHospitalSurvey/viewform",
-    description: "Help Get Well Multispecialty Hospital improve patient wait times and pharmacy services.",
+    description: "Help Apple Multispecialty Hospital improve patient wait times and pharmacy services.",
     createdAt: now - 172800000,
   });
 
