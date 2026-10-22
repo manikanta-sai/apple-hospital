@@ -321,7 +321,7 @@ function ChatWidgetInner({ tenantId }) {
  * ----------
  * Public entry point a host app mounts, e.g.:
  *
- *   <ChatWidget tenantId="apollo-hospitals-chennai" />
+ *   <ChatWidget tenantId="apple-multispecialty-hospital" />
  *
  * Wraps everything in <LanguageProvider> so the widget is a fully
  * self-contained i18n boundary - the host app doesn't need to know or

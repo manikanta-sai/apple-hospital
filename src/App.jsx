@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { ArrowRight, BarChart3, Bot, FileText, Headphones, Link2, Megaphone, Mic, Search, Ticket, Video, Stethoscope } from "lucide-react";
+import { ArrowRight, BarChart3, Bot, FileText, Headphones, Link2, Megaphone, Mic, Search, Ticket, Video, Stethoscope, MessageSquare } from "lucide-react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { initDailyStats } from "./services/hospitalStatsService.js";
 import {
@@ -11,6 +11,7 @@ import {
   SpeechToTextSkeleton,
   UrlGeneratorSkeleton,
   PortfolioHomeSkeleton,
+  CrmSkeleton,
 } from "./components/common/PageSkeletons.jsx";
 import ScrollToTopButton from "./components/common/ScrollToTopButton.jsx";
 
@@ -24,6 +25,7 @@ const OpdPortalLayout = lazy(() => import("./components/opd-portal/OpdPortalLayo
 const HospitalStatsDashboard = lazy(() => import("./components/hospital-stats/HospitalStatsDashboard"));
 const DeveloperPortfolioHome = lazy(() => import("./components/portfolio/DeveloperPortfolioHome"));
 const ChatWidget = lazy(() => import("./components/ChatWidget"));
+const HospitalCrmApp = lazy(() => import("./components/crm/HospitalCrmApp"));
 
 function PageLoadingSpinner() {
   return (
@@ -50,6 +52,22 @@ const TRY_MESSAGES = [
 
 /** Per-product design tokens — white/light glass UI */
 const PRODUCTS = [
+  {
+    name: "Omnichannel CRM & Unified Inbox",
+    description: "Intercom & WhatsApp Business unified inbox across 7 channels with patient 360° profile & smart notes.",
+    icon: MessageSquare,
+    available: true,
+    featured: true,
+    href: "/crm",
+    glow: "rgba(13,148,136,0.10)",
+    iconBg: "rgba(13,148,136,0.14)",
+    iconBorder: "rgba(13,148,136,0.30)",
+    iconColor: "#0d9488",
+    tagColor: "rgba(13,148,136,0.08)",
+    tagText: "#0f766e",
+    linkColor: "#0d9488",
+    tags: ["WhatsApp Business", "Unified Inbox", "Patient 360°", "Intercom Style"],
+  },
   {
     name: "OPD Consultation & Queue",
     description: "Multi-lane triage queue, live doctor desk spotlight, and digital prescriptions.",
@@ -245,6 +263,9 @@ export default function App() {
         "/opd/profile",
         "/opd-consultation",
         "/hospital-stats",
+        "/crm",
+        "/inbox",
+        "/omnichannel-crm",
         "/products",
         "/suite",
       ];
@@ -291,6 +312,7 @@ export default function App() {
   const showOpd = pathname === "/opd" || pathname.startsWith("/opd/") || pathname === "/opd-queue";
   const showOpdConsultation = pathname.startsWith("/opd-consultation");
   const showTokenDesk = ["/tokens", "/waiting-pool", "/announcer"].includes(pathname);
+  const showCrm = ["/crm", "/inbox", "/omnichannel-crm"].includes(pathname);
   const showUrlGenerator =
     pathname.startsWith("/url-generator") ||
     pathname === "/url-shortener" ||
@@ -301,11 +323,6 @@ export default function App() {
     pathname.startsWith("/lab-reports/") ||
     pathname.startsWith("/telehealth/") ||
     pathname.startsWith("/survey/");
-    currentPath.startsWith("/meetings/") ||
-    currentPath.startsWith("/feedback") ||
-    currentPath.startsWith("/lab-reports/") ||
-    currentPath.startsWith("/telehealth/") ||
-    currentPath.startsWith("/survey/");
 
   // Simulates what a real department page would do: mark itself with
   // data-hospital-department so useBehavioralTrigger can detect it.
@@ -323,6 +340,16 @@ export default function App() {
     document.body.removeAttribute("data-hospital-demo-trigger");
     setActiveDepartment(null);
   };
+
+  if (showCrm) {
+    return (
+      <Suspense fallback={<CrmSkeleton />}>
+        <div key="crm-workspace" className="animate-slide-up">
+          <HospitalCrmApp />
+        </div>
+      </Suspense>
+    );
+  }
 
   if (showTokenDesk) {
     return (

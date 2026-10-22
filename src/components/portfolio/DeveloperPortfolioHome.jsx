@@ -131,6 +131,94 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
       ),
     },
     {
+      id: "omnichannel-crm",
+      title: "Omnichannel CRM & Unified Inbox",
+      tagline: "Intercom & WhatsApp Business inbox across 7 channels with patient 360° profile, internal notes & SLA desk.",
+      path: "/crm",
+      badge: "Flagship CRM",
+      badgeColor: "bg-teal-600 text-white",
+      tags: ["WhatsApp Business", "7-Channel Inbox", "Patient 360°", "SLA Desk"],
+      renderBanner: () => (
+        <div className="relative w-full h-40 bg-gradient-to-br from-slate-900 via-teal-950 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
+          <div className="flex items-center justify-between z-10">
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              7 Channels Live
+            </span>
+            <span className="text-[10px] font-bold bg-teal-500 text-white px-2 py-0.5 rounded-full shadow-xs">
+              Intercom / WhatsApp
+            </span>
+          </div>
+
+          <div className="z-10 flex items-end justify-between gap-2 mt-auto">
+            <div className="space-y-0.5">
+              <span className="text-xl font-black text-teal-200 block">
+                Apple CRM Pro
+              </span>
+              <span className="text-[10px] text-slate-300 block">
+                WhatsApp • Meta • Email • Chat
+              </span>
+              <span className="text-[9px] text-emerald-400 font-semibold flex items-center gap-1">
+                <span>★ 4.92 CSAT</span>
+                <span>•</span>
+                <span>&lt; 2m First Response SLA</span>
+              </span>
+            </div>
+
+            {/* Attractive 3D Product Objects: Omnichannel Chat Stream, Yellow Note Sticky & Channel Badges */}
+            <div className="relative shrink-0">
+              <svg viewBox="0 0 130 90" className="w-28 h-20 drop-shadow-xl overflow-visible">
+                <defs>
+                  <linearGradient id="waGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#25D366" />
+                    <stop offset="100%" stopColor="#128C7E" />
+                  </linearGradient>
+                  <linearGradient id="crmPanelGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#1e293b" />
+                    <stop offset="100%" stopColor="#0f172a" />
+                  </linearGradient>
+                </defs>
+                {/* 3-Panel Mini Preview Window */}
+                <rect x="6" y="6" width="118" height="74" rx="8" fill="url(#crmPanelGrad)" stroke="#334155" strokeWidth="1" />
+                {/* Window Top Controls */}
+                <circle cx="14" cy="13" r="2" fill="#ef4444" />
+                <circle cx="20" cy="13" r="2" fill="#f59e0b" />
+                <circle cx="26" cy="13" r="2" fill="#10b981" />
+                <line x1="6" y1="19" x2="124" y2="19" stroke="#334155" strokeWidth="0.8" />
+                {/* Left Mini Rail */}
+                <rect x="9" y="23" width="26" height="52" rx="3" fill="#0f172a" />
+                <rect x="12" y="27" width="20" height="4" rx="1.5" fill="#38bdf8" />
+                <rect x="12" y="34" width="20" height="7" rx="2" fill="#1e293b" />
+                <rect x="12" y="44" width="20" height="7" rx="2" fill="#1e293b" />
+                <rect x="12" y="54" width="20" height="7" rx="2" fill="#1e293b" />
+                {/* Center Chat Bubble (Patient Incoming) */}
+                <rect x="39" y="24" width="46" height="14" rx="4" fill="#334155" />
+                <text x="43" y="33" fill="#cbd5e1" fontSize="4.5">Can I reschedule OPD?</text>
+                {/* Internal Yellow Note Card (Mockup Signature!) */}
+                <rect x="39" y="41" width="48" height="16" rx="4" fill="#fef3c7" stroke="#fcd34d" strokeWidth="0.8" />
+                <text x="43" y="49" fill="#92400e" fontSize="4" fontWeight="bold">NOTE: Dr. Rao in OT</text>
+                <text x="43" y="54" fill="#b45309" fontSize="3.5">Suggest 4 PM slot</text>
+                {/* Agent Reply Bubble with WhatsApp Green accent */}
+                <rect x="49" y="60" width="38" height="14" rx="4" fill="url(#waGrad)" />
+                <text x="53" y="68" fill="#ffffff" fontSize="4" fontWeight="bold">Confirmed for 4 PM ✓✓</text>
+                {/* Right 360 Profile Mini Card */}
+                <rect x="90" y="23" width="31" height="52" rx="3" fill="#1e293b" />
+                <circle cx="105" cy="32" r="5" fill="#0d9488" />
+                <rect x="95" y="40" width="21" height="3" rx="1" fill="#94a3b8" />
+                <rect x="95" y="46" width="16" height="2.5" rx="1" fill="#64748b" />
+                <rect x="94" y="52" width="23" height="7" rx="2" fill="#0d9488" />
+                <text x="96" y="57" fill="#ffffff" fontSize="3.5" fontWeight="bold">BOOK OPD</text>
+                <rect x="94" y="62" width="23" height="7" rx="2" fill="#3b82f6" />
+                <text x="96" y="67" fill="#ffffff" fontSize="3.5" fontWeight="bold">PAY LINK</text>
+              </svg>
+            </div>
+          </div>
+
+          <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-teal-500/20 rounded-full blur-xl pointer-events-none" />
+        </div>
+      ),
+    },
+    {
       id: "hospital-stats",
       title: "Hospital Stats & Floor Telemetry",
       tagline: "Interactive 3D isometric floors with real-time bed census & staffing ratios.",

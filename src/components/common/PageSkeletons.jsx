@@ -428,3 +428,95 @@ export function PortfolioHomeSkeleton() {
     </div>
   );
 }
+
+
+/**
+ * 9. Hospital Omnichannel CRM & Unified Inbox Skeleton
+ */
+export function CrmSkeleton() {
+  return (
+    <div className="flex h-screen w-screen overflow-hidden bg-slate-100 font-sans animate-pulse">
+      {/* Sidebar Skeleton */}
+      <div className="w-64 bg-slate-900 border-r border-slate-800 p-4 hidden md:flex flex-col justify-between">
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <Shimmer className="w-8 h-8 rounded-xl bg-slate-800" />
+            <div className="space-y-1">
+              <Shimmer className="w-24 h-4 rounded bg-slate-800" />
+              <Shimmer className="w-16 h-3 rounded bg-slate-800" />
+            </div>
+          </div>
+          <div className="space-y-2 pt-2">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <Shimmer key={i} className="w-full h-9 rounded-xl bg-slate-800/80" />
+            ))}
+          </div>
+        </div>
+        <Shimmer className="w-full h-12 rounded-xl bg-slate-800" />
+      </div>
+
+      {/* 3-Panel Skeleton */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Panel 1: Conversation Rail */}
+        <div className="w-80 bg-white border-r border-slate-200 p-4 space-y-4 hidden sm:block shrink-0">
+          <Shimmer className="w-full h-9 rounded-xl" />
+          <div className="flex gap-2">
+            <Shimmer className="w-16 h-6 rounded-full" />
+            <Shimmer className="w-16 h-6 rounded-full" />
+            <Shimmer className="w-16 h-6 rounded-full" />
+          </div>
+          <div className="space-y-3 pt-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="p-3 bg-slate-50 rounded-xl space-y-2">
+                <div className="flex justify-between items-center">
+                  <Shimmer className="w-28 h-4 rounded" />
+                  <Shimmer className="w-12 h-3 rounded" />
+                </div>
+                <Shimmer className="w-full h-3 rounded" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Panel 2: Chat Stream */}
+        <div className="flex-1 bg-white flex flex-col justify-between p-6">
+          <div className="h-14 border-b border-slate-100 flex items-center justify-between pb-4">
+            <div className="flex items-center gap-3">
+              <Shimmer className="w-10 h-10 rounded-full" />
+              <div className="space-y-1.5">
+                <Shimmer className="w-36 h-4 rounded" />
+                <Shimmer className="w-24 h-3 rounded" />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Shimmer className="w-24 h-8 rounded-lg" />
+            </div>
+          </div>
+
+          <div className="space-y-4 py-6 flex-1">
+            <Shimmer className="w-3/5 h-16 rounded-2xl ml-auto" />
+            <Shimmer className="w-2/5 h-12 rounded-2xl" />
+            <Shimmer className="w-4/5 h-20 rounded-2xl bg-amber-50/70 border border-amber-200/50" />
+            <Shimmer className="w-1/2 h-14 rounded-2xl ml-auto" />
+          </div>
+
+          <Shimmer className="w-full h-24 rounded-2xl" />
+        </div>
+
+        {/* Panel 3: Patient Profile */}
+        <div className="w-80 bg-white border-l border-slate-200 p-5 space-y-4 hidden lg:block shrink-0">
+          <div className="flex flex-col items-center space-y-2 pb-4 border-b border-slate-100">
+            <Shimmer className="w-16 h-16 rounded-full" />
+            <Shimmer className="w-32 h-5 rounded" />
+            <Shimmer className="w-24 h-3 rounded" />
+          </div>
+          <div className="space-y-3">
+            <Shimmer className="w-full h-10 rounded-xl" />
+            <Shimmer className="w-full h-10 rounded-xl" />
+            <Shimmer className="w-full h-24 rounded-xl" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
