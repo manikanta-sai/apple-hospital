@@ -102,19 +102,32 @@ export default function ConsultationRightPane({
               medications={prescription.medications}
             />
 
-            {/* 3. Interactive 2D Anatomical Body Map */}
-            <AnatomicalBodyMap
+            {/* 3. Interactive 2D Anatomical Body Map (Hidden as requested for now) */}
+            {/* <AnatomicalBodyMap
               activeComplaints={prescription.chiefComplaints}
               onAddComplaint={onAddComplaint}
               onRemoveComplaint={onRemoveComplaint}
-            />
+            /> */}
 
-            {/* 4. AI Copilot Chatbot Panel */}
-            <AiCopilotPanel
-              patient={patient}
-              rxForm={prescription}
-              onApplyTemplate={onApplyTemplate}
-            />
+            {/* Live A4 Prescription Preview Sheet */}
+            <div className="pt-2">
+              <div className="flex items-center justify-between pb-2 px-1">
+                <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Live Prescription Sheet
+                </span>
+                <span className="text-[11px] text-slate-400">
+                  AI Copilot is floating in bottom corner
+                </span>
+              </div>
+              <DigitalPrescriptionPreviewPane
+                patient={patient}
+                prescription={prescription}
+                isSaving={isSaving}
+                onSaveDraft={onSaveDraft}
+                onSendToLab={onSendToLab}
+                onFinalizeAndPrint={onFinalizeAndPrint}
+              />
+            </div>
           </div>
         ) : (
           /* Live Printable A4 Prescription Preview Pane */

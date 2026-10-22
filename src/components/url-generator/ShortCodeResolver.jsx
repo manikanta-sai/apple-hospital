@@ -43,7 +43,7 @@ export default function ShortCodeResolver({ shortCode, onNavigate, onBack }) {
     return (
       <div className="mx-auto max-w-md py-16 text-center">
         <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-clinical-700 border-r-transparent"></div>
-        <p className="mt-3 text-xs text-ink-600">Resolving healthcare short code from IndexedDB...</p>
+        <p className="mt-3 text-xs text-ink-600">Resolving healthcare short code...</p>
       </div>
     );
   }
@@ -59,7 +59,7 @@ export default function ShortCodeResolver({ shortCode, onNavigate, onBack }) {
             Link Code Not Found
           </h2>
           <p className="mt-2 text-xs text-ink-600 leading-relaxed">
-            The code <code className="font-bold text-clinical-950">"{shortCode}"</code> was not found in this browser's IndexedDB database.
+            The code <code className="font-bold text-clinical-950">"{shortCode}"</code> was not found in the hospital records directory.
           </p>
           <div className="mt-6 pt-4 border-t border-clinical-100">
             <button

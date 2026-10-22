@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Pill,
   Plus,
@@ -9,6 +9,8 @@ import {
   AlertCircle,
   FileText,
   Check,
+  Search,
+  ChevronDown,
 } from "lucide-react";
 import { generateId } from "../../utils/generateId.js";
 
@@ -34,6 +36,16 @@ const FREQUENT_MEDS = [
     instructions: "Complete full 5 days antibiotic course without skipping",
   },
   {
+    drugName: "Tab. Azithromycin 500mg",
+    genericName: "Azithromycin 500mg",
+    form: "Tablet",
+    dosage: "500mg",
+    frequency: "1-0-0",
+    timing: "Empty Stomach",
+    durationDays: 3,
+    instructions: "Take 1 hour before or 2 hours after meals once daily",
+  },
+  {
     drugName: "Tab. Pantoprazole 40mg",
     genericName: "Pantoprazole Sodium 40mg",
     form: "Tablet",
@@ -42,6 +54,16 @@ const FREQUENT_MEDS = [
     timing: "Empty Stomach",
     durationDays: 7,
     instructions: "Take 30 minutes before breakfast",
+  },
+  {
+    drugName: "Tab. Montelukast 10mg + Levocetirizine 5mg",
+    genericName: "Montelukast 10mg + Levocetirizine 5mg",
+    form: "Tablet",
+    dosage: "10mg/5mg",
+    frequency: "0-0-1",
+    timing: "At Bedtime",
+    durationDays: 10,
+    instructions: "Take at night for allergic rhinitis and respiratory congestion",
   },
   {
     drugName: "Tab. Bilastine 20mg",
@@ -62,6 +84,46 @@ const FREQUENT_MEDS = [
     timing: "After Food",
     durationDays: 30,
     instructions: "Take immediately after morning and night meals",
+  },
+  {
+    drugName: "Tab. Telmisartan 40mg",
+    genericName: "Telmisartan 40mg",
+    form: "Tablet",
+    dosage: "40mg",
+    frequency: "1-0-0",
+    timing: "Before Food",
+    durationDays: 30,
+    instructions: "Take every morning for blood pressure maintenance",
+  },
+  {
+    drugName: "Tab. Aceclofenac 100mg + Paracetamol 325mg",
+    genericName: "Aceclofenac 100mg + Paracetamol 325mg",
+    form: "Tablet",
+    dosage: "100/325mg",
+    frequency: "1-0-1",
+    timing: "After Food",
+    durationDays: 5,
+    instructions: "Take after food with antacid for joint/musculoskeletal pain",
+  },
+  {
+    drugName: "Tab. Cefixime 200mg",
+    genericName: "Cefixime 200mg",
+    form: "Tablet",
+    dosage: "200mg",
+    frequency: "1-0-1",
+    timing: "After Food",
+    durationDays: 5,
+    instructions: "Take twice daily after meals for bacterial infections",
+  },
+  {
+    drugName: "Syp. Cough Relief (Ambroxol + Levosalbutamol)",
+    genericName: "Ambroxol 30mg + Levosalbutamol 1mg",
+    form: "Syrup",
+    dosage: "10ml",
+    frequency: "1-1-1",
+    timing: "After Food",
+    durationDays: 5,
+    instructions: "Shake well before use, take 10ml thrice daily",
   },
   {
     drugName: "Fluticasone Nasal Spray",
@@ -94,6 +156,7 @@ const TIMINGS = ["After Food", "Before Food", "Empty Stomach", "At Bedtime"];
 export default function MedicationBuilderModule({
   medications = [],
   onChange = () => {},
+  hideHeader = false,
 }) {
   const [drugName, setDrugName] = useState("");
   const [genericName, setGenericName] = useState("");
@@ -103,6 +166,20 @@ export default function MedicationBuilderModule({
   const [timing, setTiming] = useState("After Food");
   const [durationDays, setDurationDays] = useState("5");
   const [instructions, setInstructions] = useState("Take after meals with water");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
 
   // Calculate total units
   const calculateTotalQuantity = (freq, days) => {
@@ -137,9 +214,22 @@ export default function MedicationBuilderModule({
     // Reset fields
     setDrugName("");
     setGenericName("");
+    setShowSuggestions(false);
   };
 
-  const handleAddPreset = (preset) => {
+  const handleSelectSuggestion = (preset) => {
+    setDrugName(preset.drugName);
+    setGenericName(preset.genericName || preset.drugName);
+    if (preset.form) setForm(preset.form);
+    if (preset.dosage) setDosage(preset.dosage);
+    if (preset.frequency) setFrequency(preset.frequency);
+    if (preset.timing) setTiming(preset.timing);
+    if (preset.durationDays) setDurationDays(String(preset.durationDays));
+    if (preset.instructions) setInstructions(preset.instructions);
+    setShowSuggestions(false);
+  };
+
+  const handleAddPresetDirect = (preset) => {
     const totalQty = calculateTotalQuantity(preset.frequency, preset.durationDays);
     const newMed = {
       id: generateId("med"),
@@ -153,44 +243,46 @@ export default function MedicationBuilderModule({
     onChange(medications.filter((m) => m.id !== id));
   };
 
+  const query = drugName.trim().toLowerCase();
+  const filteredSuggestions = query
+    ? FREQUENT_MEDS.filter(
+        (m) =>
+          m.drugName.toLowerCase().includes(query) ||
+          m.genericName.toLowerCase().includes(query)
+      )
+    : FREQUENT_MEDS;
+
   return (
-    <div
-      style={{
-        background: "rgba(255, 255, 255, 0.90)",
-        backdropFilter: "blur(14px)",
-        border: "1px solid #e2e8f0",
-        borderRadius: 18,
-        boxShadow: "0 2px 12px rgba(0,0,0,0.02)",
-      }}
-      className="p-4 sm:p-5 space-y-4"
-    >
+    <div className={hideHeader ? "space-y-4" : "p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-4"}>
       {/* Section Header */}
-      <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold text-xs">
-            4
+      {!hideHeader && (
+        <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold text-xs">
+              4
+            </div>
+            <div>
+              <h3 className="font-bold text-sm text-slate-900">Medications Prescribed (℞)</h3>
+              <p className="text-[11px] text-slate-500">Pharmacopeia dosing, timing, and quantity with search suggestion</p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-bold text-sm text-slate-900">Medications Prescribed (℞)</h3>
-            <p className="text-[11px] text-slate-500">Pharmacopeia dosing, timing, and quantity</p>
-          </div>
+          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono">
+            {medications.length} Prescribed
+          </span>
         </div>
-        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono">
-          {medications.length} Prescribed
-        </span>
-      </div>
+      )}
 
       {/* Quick Common Presets */}
       <div>
         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-          Frequent OPD Prescriptions:
+          Frequent OPD Prescriptions (Quick Add):
         </span>
         <div className="flex items-center gap-1.5 flex-wrap">
-          {FREQUENT_MEDS.map((preset) => (
+          {FREQUENT_MEDS.slice(0, 6).map((preset) => (
             <button
               key={preset.drugName}
               type="button"
-              onClick={() => handleAddPreset(preset)}
+              onClick={() => handleAddPresetDirect(preset)}
               className="px-2.5 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1 bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-900 border border-slate-200 hover:border-emerald-300 transition-colors cursor-pointer"
             >
               <span>{preset.drugName}</span>
@@ -259,18 +351,67 @@ export default function MedicationBuilderModule({
 
         {/* Drug Name & Dosage */}
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
-          <div className="sm:col-span-6">
+          {/* Drug Name with Dropdown Autocomplete */}
+          <div ref={dropdownRef} className="relative sm:col-span-6">
             <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-              Drug Name / Brand <span className="text-rose-500">*</span>
+              Frequent OPD Prescriptions (Search or Type Free Text) <span className="text-rose-500">*</span>
             </label>
-            <input
-              type="text"
-              required
-              value={drugName}
-              onChange={(e) => setDrugName(e.target.value)}
-              placeholder="e.g. Tab. Azithromycin 500mg"
-              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-            />
+            <div className="relative flex items-center">
+              <input
+                type="text"
+                required
+                value={drugName}
+                onFocus={() => setShowSuggestions(true)}
+                onChange={(e) => {
+                  setDrugName(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                placeholder="Search prescription or type free text..."
+                className="w-full px-3 py-1.5 pr-8 bg-white border border-slate-200 rounded-lg text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              />
+              <button
+                type="button"
+                onClick={() => setShowSuggestions(!showSuggestions)}
+                className="absolute right-2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+              >
+                <ChevronDown size={14} />
+              </button>
+            </div>
+
+            {/* Dropdown Suggestions */}
+            {showSuggestions && filteredSuggestions.length > 0 && (
+              <div className="absolute left-0 right-0 top-full mt-1 bg-white rounded-xl shadow-2xl border border-slate-200 z-50 max-h-60 overflow-y-auto divide-y divide-slate-100 animate-fade-in">
+                <div className="p-1.5 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider sticky top-0 flex items-center justify-between">
+                  <span>Suggested OPD Prescriptions ({filteredSuggestions.length}):</span>
+                  <span className="text-[9px] text-emerald-700 lowercase font-normal">click to auto-fill</span>
+                </div>
+                {filteredSuggestions.map((preset) => (
+                  <button
+                    key={preset.drugName}
+                    type="button"
+                    onClick={() => handleSelectSuggestion(preset)}
+                    className="w-full text-left p-2.5 hover:bg-emerald-50/70 transition-colors flex items-center justify-between gap-2 text-xs cursor-pointer group"
+                  >
+                    <div>
+                      <span className="font-semibold text-slate-800 group-hover:text-emerald-900 block">
+                        {preset.drugName}
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                        {preset.genericName}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-100 text-slate-700">
+                        {preset.frequency}
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                        {preset.timing}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="sm:col-span-3">

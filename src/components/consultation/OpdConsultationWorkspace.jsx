@@ -10,21 +10,40 @@ import {
   CheckCircle2,
   Sparkles,
   Printer,
+  HeartPulse,
+  ShieldAlert,
+  PanelLeftOpen,
+  PanelLeftClose,
+  Save,
+  ArrowRight,
+  ChevronDown,
+  Video,
 } from "lucide-react";
 import { useHospitalData } from "../../hooks/useHospitalData.js";
 import ConsultationPatientHeader from "./ConsultationPatientHeader.jsx";
 import ChiefComplaintsModule from "./ChiefComplaintsModule.jsx";
+import VitalsEntryModule from "./VitalsEntryModule.jsx";
+import AllergiesEntryModule from "./AllergiesEntryModule.jsx";
 import ClinicalObservationsModule from "./ClinicalObservationsModule.jsx";
 import DiagnosisModule from "./DiagnosisModule.jsx";
 import MedicationBuilderModule from "./MedicationBuilderModule.jsx";
 import InvestigationsOrderModule from "./InvestigationsOrderModule.jsx";
-import AdviceAndFollowUpModule from "./AdviceAndFollowUpModule.jsx";
+import AdviceAndFollowUpModule, {
+  DietaryAdviceModule,
+  FollowUpPlanModule,
+  ReferralsAndIpdModule,
+} from "./AdviceAndFollowUpModule.jsx";
 import DigitalPrescriptionPreviewPane from "./DigitalPrescriptionPreviewPane.jsx";
-import ConsultationRightPane from "./ConsultationRightPane.jsx";
+import TelehealthVideoDock from "./TelehealthVideoDock.jsx";
+import AiCopilotPanel from "./AiCopilotPanel.jsx";
+import PrescriptionSectionTree from "./PrescriptionSectionTree.jsx";
+import AiCdssAlertCard from "./AiCdssAlertCard.jsx";
 import { generateId } from "../../utils/generateId.js";
 
 const CLINICAL_SECTIONS = [
   { id: "sec-complaints", label: "Complaints", icon: FileText },
+  { id: "sec-vitals", label: "Vitals", icon: HeartPulse },
+  { id: "sec-allergies", label: "Allergies", icon: ShieldAlert },
   { id: "sec-observations", label: "Examination", icon: Activity },
   { id: "sec-diagnosis", label: "Diagnosis", icon: Stethoscope },
   { id: "sec-medications", label: "Medications (Rx)", icon: Pill },
@@ -43,22 +62,45 @@ export default function OpdConsultationWorkspace({
     savePrescription,
     sendToLabs,
     finalizePrescription,
+    updatePatient,
+    updatePatientVitals,
   } = useHospitalData();
 
   // Find target patient, active in-consultation patient, or fallback
   const patient =
     patients.find((p) => p.id === patientId) ||
+    patients.find((p) => p.uhid === patientId || p.uhid?.toLowerCase() === patientId?.toLowerCase()) ||
+    patients.find((p) => p.tokenNumber === patientId) ||
+    patients.find((p) => p.id === "pat_10482") ||
     patients.find((p) => p.queueStatus === "in_consultation") ||
-    null;
+    patients.find((p) => p.queueStatus === "waiting") ||
+    (patients.length > 0 ? patients[0] : null);
 
-  const activeId = patient ? patient.id : patientId;
+  const activeId = patient ? patient.id : patientId || "pat_10482";
 
   // Find existing prescription or generate default
   const existingRx = prescriptions.find((rx) => rx.patientId === activeId) || null;
 
   const [activeSection, setActiveSection] = useState("sec-complaints");
+  const [leftPanelStep, setLeftPanelStep] = useState("prescription"); // 'prescription' | 'copilot' | 'preview'
+  const [isOverviewOpen, setIsOverviewOpen] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+
+  const prescriptionScrollRef = useRef(null);
+  const isManualScrollingRef = useRef(false);
+
+  const isTelehealth =
+    patient?.consultationType === "tele_consultation" ||
+    patient?.tokenNumber?.startsWith("TC");
+
+  const [showVideoDock, setShowVideoDock] = useState(false);
+
+  useEffect(() => {
+    if (patient?.consultationType === "tele_consultation" || patient?.tokenNumber?.startsWith("TC")) {
+      setShowVideoDock(true);
+    }
+  }, [patient?.id, patient?.consultationType, patient?.tokenNumber]);
 
   // Clinical Rx Form State
   const [rxForm, setRxForm] = useState({
@@ -66,6 +108,19 @@ export default function OpdConsultationWorkspace({
     patientId: patientId || "",
     status: "draft",
     chiefComplaints: [],
+    vitals: {
+      bp: "120/80",
+      pulse: "76",
+      temp: "98.6",
+      spo2: "99",
+      respiratoryRate: "18",
+      height: "165",
+      weight: "64",
+      bmi: "23.5",
+      bloodGlucose: "",
+      notes: "",
+    },
+    allergies: ["NKDA"],
     clinicalObservations: "",
     diagnosis: { provisional: "", final: "", icd10Code: "" },
     medications: [],
@@ -91,6 +146,19 @@ export default function OpdConsultationWorkspace({
         patientId: existingRx.patientId,
         status: existingRx.status || "draft",
         chiefComplaints: existingRx.chiefComplaints || [],
+        vitals: existingRx.vitals || patient?.vitals || {
+          bp: "120/80",
+          pulse: "76",
+          temp: "98.6",
+          spo2: "99",
+          respiratoryRate: "18",
+          height: "165",
+          weight: "64",
+          bmi: "23.5",
+          bloodGlucose: "",
+          notes: "",
+        },
+        allergies: existingRx.allergies || patient?.allergies || ["NKDA"],
         clinicalObservations: existingRx.clinicalObservations || "",
         diagnosis: existingRx.diagnosis || { provisional: "", final: "", icd10Code: "" },
         medications: existingRx.medications || [],
@@ -126,6 +194,8 @@ export default function OpdConsultationWorkspace({
         ...prev,
         patientId: patient.id,
         chiefComplaints: initialComplaints,
+        vitals: patient.vitals || prev.vitals,
+        allergies: patient.allergies || prev.allergies,
       }));
     }
   }, [existingRx?.id, patient?.id]);
@@ -197,13 +267,114 @@ export default function OpdConsultationWorkspace({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [rxForm, patient]);
 
+  // Real-time Scrollspy observer for prescription sections
+  useEffect(() => {
+    if (leftPanelStep !== "prescription") return;
+
+    const sectionIds = [
+      "sec-complaints",
+      "sec-vitals",
+      "sec-allergies",
+      "sec-observations",
+      "sec-diagnosis",
+      "sec-medications",
+      "sec-investigations",
+      "sec-dietary",
+      "sec-followup",
+      "sec-referrals",
+      "sec-submission",
+    ];
+
+    const handleScroll = () => {
+      if (isManualScrollingRef.current) return;
+
+      let currentSection = sectionIds[0];
+
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          // Active when near top of viewport (offset 160px for sticky header)
+          if (rect.top <= 160) {
+            currentSection = id;
+          }
+        }
+      }
+
+      setActiveSection(currentSection);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    const scrollContainer = prescriptionScrollRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
+    }
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollContainer) {
+        scrollContainer.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [leftPanelStep]);
+
+  // Smooth Anchor Navigation with visual highlight pulse
   const scrollToSection = (id) => {
     setActiveSection(id);
+    isManualScrollingRef.current = true;
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Add brief focus highlight flash
+      element.classList.add("ring-4", "ring-teal-400", "ring-offset-2");
+      setTimeout(() => {
+        element.classList.remove("ring-4", "ring-teal-400", "ring-offset-2");
+      }, 1200);
     }
+    setTimeout(() => {
+      isManualScrollingRef.current = false;
+    }, 800);
   };
+
+  // Save & Next Section navigation with auto-scroll
+  const handleSaveAndNext = (nextSectionId) => {
+    handleSaveDraft();
+    scrollToSection(nextSectionId);
+  };
+
+  // Update vitals with patient & prescription synchronization
+  const handleUpdateVitals = useCallback(
+    async (updatedVitals) => {
+      setRxForm((prev) => ({ ...prev, vitals: updatedVitals }));
+      if (patient?.id) {
+        try {
+          await updatePatientVitals(patient.id, updatedVitals);
+        } catch (e) {
+          console.warn("Could not sync vitals to patient in DB:", e);
+        }
+      }
+    },
+    [patient?.id, updatePatientVitals]
+  );
+
+  // Update allergies with patient & prescription synchronization
+  const handleUpdateAllergies = useCallback(
+    async (updatedAllergies) => {
+      setRxForm((prev) => ({ ...prev, allergies: updatedAllergies }));
+      if (patient?.id) {
+        try {
+          const stringList = updatedAllergies.map((a) =>
+            typeof a === "string" ? a : a.name
+          );
+          await updatePatient(patient.id, { allergies: stringList });
+        } catch (e) {
+          console.warn("Could not sync allergies to patient in DB:", e);
+        }
+      }
+    },
+    [patient?.id, updatePatient]
+  );
 
   // Add complaint pinned from 2D Anatomical Body Map
   const handleAddComplaintFromMap = (newComplaint) => {
@@ -318,6 +489,17 @@ export default function OpdConsultationWorkspace({
   // Finalize, Sign & Print Action
   const handleFinalizeAndPrint = async () => {
     if (!patient) return;
+
+    if (!isMandatoryComplete) {
+      const missing = [];
+      if (!isComplaintsFilled) missing.push("Chief Complaints");
+      if (!isDiagnosisFilled) missing.push("Diagnosis");
+      if (!isMedicationsFilled) missing.push("Medications");
+      if (!isFollowUpFilled) missing.push("Follow-up");
+      showToast(`Cannot Finalize: Please complete mandatory sections (${missing.join(", ")}).`);
+      return;
+    }
+
     setIsSaving(true);
     try {
       const rxToSave = {
@@ -330,10 +512,13 @@ export default function OpdConsultationWorkspace({
       await finalizePrescription(patient.id, rxToSave);
       showToast(`Prescription for ${patient.name} finalized and digitally signed.`);
 
+      // Switch to Step 3: Print Preview before opening print dialog
+      setLeftPanelStep("preview");
+
       // Open print dialog
       setTimeout(() => {
         window.print();
-      }, 400);
+      }, 500);
 
       // Offer smooth navigation back after print
       setTimeout(() => {
@@ -376,129 +561,711 @@ export default function OpdConsultationWorkspace({
     );
   }
 
+  // Mandatory fields completion status for full prescription
+  const isDiagnosisFilled = !!(rxForm.diagnosis?.provisional?.trim() || rxForm.diagnosis?.final?.trim());
+  const isComplaintsFilled = (rxForm.chiefComplaints || []).length > 0;
+  const isMedicationsFilled = (rxForm.medications || []).length > 0;
+  const isFollowUpFilled = !!(rxForm.followUp?.timeline || rxForm.followUp?.date);
+  const isMandatoryComplete = isDiagnosisFilled && isComplaintsFilled && isMedicationsFilled && isFollowUpFilled;
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100/60 text-slate-900">
-      {/* 1. Header Banner with Autosave & Mandatory Checklist */}
-      <div className="shrink-0 print:hidden">
+    <div className="min-h-screen bg-slate-100/60 text-slate-900 flex flex-col">
+      {/* 1. Header Banner with Demographics, Autosave & Compact 3-Step Switcher */}
+      <header className="print:hidden">
         <ConsultationPatientHeader
           patient={patient}
           rxForm={rxForm}
           prescriptionStatus={rxForm.status}
+          leftPanelStep={leftPanelStep}
+          setLeftPanelStep={setLeftPanelStep}
           onBackToQueue={onBackToQueue}
           onSaveDraft={handleSaveDraft}
+          onFinalize={handleFinalizeAndPrint}
+          isMandatoryComplete={isMandatoryComplete}
+          showVideoDock={showVideoDock}
+          onToggleVideoDock={setShowVideoDock}
           onJumpToSection={scrollToSection}
           isSaving={isSaving}
         />
-      </div>
+      </header>
 
-      {/* 2. Split Dual-Pane Consultation Workspace */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* LEFT PANE (50% on desktop): Clinical Data Entry Form */}
-        <div className="w-full lg:w-1/2 flex flex-col h-full border-r border-slate-200 bg-white/60 print:hidden">
-          {/* Quick-Jump Section Navigator Pills */}
-          <div className="px-4 py-2 bg-white/90 backdrop-blur-md border-b border-slate-200/80 flex items-center gap-1.5 overflow-x-auto shrink-0 scrollbar-none">
-            {CLINICAL_SECTIONS.map((sec) => {
-              const Icon = sec.icon;
-              const isActive = activeSection === sec.id;
-              return (
-                <button
-                  key={sec.id}
-                  type="button"
-                  onClick={() => scrollToSection(sec.id)}
-                  className={`text-xs px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
-                    isActive
-                      ? "bg-teal-700 text-white shadow-xs"
-                      : "bg-slate-100 hover:bg-slate-200/80 text-slate-700 hover:text-slate-900 border border-slate-200/60"
-                  }`}
+      {/* 2. Main Consultation Body Content (Compact Spacing) */}
+      <main className="flex-1 w-full max-w-[1600px] mx-auto px-3 sm:px-6 py-3 sm:py-4">
+        {/* STEP 1: Prescription with Section Names Tree */}
+        {leftPanelStep === "prescription" && (
+          <div className="flex items-start gap-4 xl:gap-6 relative">
+            {/* Left Overview Sticky Panel with Merged NABH Checklist & Scrollspy */}
+            <div className="sticky top-4 self-start shrink-0 z-30">
+              <PrescriptionSectionTree
+                rxForm={rxForm}
+                patient={patient}
+                activeSection={activeSection}
+                onSelectSection={scrollToSection}
+                isOpen={isOverviewOpen}
+                onToggleOpen={() => setIsOverviewOpen((prev) => !prev)}
+              />
+            </div>
+
+            {/* Form Modules with Colorful Clinical Section Cards */}
+            <div
+              ref={prescriptionScrollRef}
+              className="flex-1 min-w-0 space-y-6"
+            >
+              {/* Floating pill to reopen overview if closed */}
+              {!isOverviewOpen && (
+                <div className="sticky top-4 z-25 flex items-center justify-between p-2.5 bg-white/95 backdrop-blur-md rounded-xl border border-teal-200 shadow-sm mb-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsOverviewOpen(true)}
+                    className="flex items-center gap-2 text-xs font-bold text-teal-800 hover:text-teal-950 bg-teal-50 hover:bg-teal-100 border border-teal-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <PanelLeftOpen size={15} />
+                    <span>Open Prescription Overview & NABH Checklist</span>
+                  </button>
+                  <span className="text-[11px] font-mono text-slate-500">
+                    Active: <span className="font-bold text-teal-700 capitalize">{activeSection.replace("sec-", "")}</span>
+                  </span>
+                </div>
+              )}
+
+                {/* Section 1: Chief Complaints (Teal Theme) */}
+                <div
+                  id="sec-complaints"
+                  style={{ zIndex: 40 }}
+                  className="scroll-mt-4 rounded-2xl border-2 border-teal-200/90 bg-white shadow-xs relative overflow-visible"
                 >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span>{sec.label}</span>
-                </button>
-              );
-            })}
-          </div>
+                  <div className="sticky top-0 z-20 px-4 py-3 bg-teal-50 border-b border-teal-200 rounded-t-xl shadow-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-teal-600 text-white font-bold flex items-center justify-center text-sm shadow-2xs">
+                        1
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-sm text-teal-950">Chief Complaints</h3>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-900 border border-teal-300 font-mono">
+                            NABH Mandatory
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-teal-700/80">Primary symptoms, duration, onset, and severity profile</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-teal-100/70 text-teal-900 border border-teal-200">
+                      {(rxForm.chiefComplaints || []).length} Recorded
+                    </span>
+                  </div>
+                  <div className="p-4 sm:p-5 pt-3">
+                    <ChiefComplaintsModule
+                      complaints={rxForm.chiefComplaints}
+                      onChange={(updated) =>
+                        setRxForm((prev) => ({ ...prev, chiefComplaints: updated }))
+                      }
+                      hideHeader={true}
+                    />
+                  </div>
+                  {/* Section Bottom Nav: Save & Next */}
+                  <div className="px-4 sm:px-5 py-2.5 bg-slate-50 border-t border-slate-200/80 rounded-b-xl flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-500 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span>Autosaved</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveAndNext("sec-vitals")}
+                      className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 font-bold border border-slate-300 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <span>Save & Next</span>
+                      <ChevronDown size={14} className="text-slate-600" />
+                    </button>
+                  </div>
+                </div>
 
-          {/* Scrollable Form Modules */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-6">
-            {/* Section 1: Chief Complaints */}
-            <div id="sec-complaints">
-              <ChiefComplaintsModule
-                complaints={rxForm.chiefComplaints}
-                onChange={(updated) =>
-                  setRxForm((prev) => ({ ...prev, chiefComplaints: updated }))
-                }
-              />
+                {/* Section 2: Vitals & Biometrics (Rose Theme) */}
+                <div
+                  id="sec-vitals"
+                  style={{ zIndex: 38 }}
+                  className="scroll-mt-4 rounded-2xl border-2 border-rose-200/90 bg-white shadow-xs relative overflow-visible"
+                >
+                  <div className="sticky top-0 z-20 px-4 py-3 bg-rose-50 border-b border-rose-200 rounded-t-xl shadow-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-rose-600 text-white font-bold flex items-center justify-center text-sm shadow-2xs">
+                        2
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-sm text-rose-950">Vitals & Biometric Parameters</h3>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-900 border border-rose-300 font-mono">
+                            NABH Mandatory
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-rose-700/80">Blood pressure, heart rate, temperature, SpO2, and BMI monitoring</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-rose-100/70 text-rose-900 border border-rose-200">
+                      BP: {rxForm.vitals?.bp || "Pending"}
+                    </span>
+                  </div>
+                  <div className="p-4 sm:p-5 pt-3">
+                    <VitalsEntryModule
+                      vitals={rxForm.vitals}
+                      patient={patient}
+                      onChange={handleUpdateVitals}
+                      hideHeader={true}
+                    />
+                  </div>
+                  {/* Section Bottom Nav: Save & Next */}
+                  <div className="px-4 sm:px-5 py-2.5 bg-slate-50 border-t border-slate-200/80 rounded-b-xl flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-500 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span>Autosaved</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveAndNext("sec-allergies")}
+                      className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 font-bold border border-slate-300 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <span>Save & Next</span>
+                      <ChevronDown size={14} className="text-slate-600" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Section 3: Allergies & ADR (Amber Theme) */}
+                <div
+                  id="sec-allergies"
+                  style={{ zIndex: 36 }}
+                  className="scroll-mt-4 rounded-2xl border-2 border-amber-200/90 bg-white shadow-xs relative overflow-visible"
+                >
+                  <div className="sticky top-0 z-20 px-4 py-3 bg-amber-50 border-b border-amber-200 rounded-t-xl shadow-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-amber-600 text-white font-bold flex items-center justify-center text-sm shadow-2xs">
+                        3
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-sm text-amber-950">Allergies & Adverse Drug Reactions (ADR)</h3>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-mono">
+                            NABH Mandatory
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-amber-700/80">Medication contraindication screening and allergens</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-amber-100/70 text-amber-900 border border-amber-200">
+                      {(rxForm.allergies || []).length} Logged
+                    </span>
+                  </div>
+                  <div className="p-4 sm:p-5 pt-3">
+                    <AllergiesEntryModule
+                      allergies={rxForm.allergies}
+                      patient={patient}
+                      onChange={handleUpdateAllergies}
+                      hideHeader={true}
+                    />
+                  </div>
+                  {/* Section Bottom Nav: Save & Next */}
+                  <div className="px-4 sm:px-5 py-2.5 bg-slate-50 border-t border-slate-200/80 rounded-b-xl flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-500 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span>Autosaved</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveAndNext("sec-observations")}
+                      className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 font-bold border border-slate-300 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <span>Save & Next</span>
+                      <ChevronDown size={14} className="text-slate-600" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Section 4: Clinical Examination & Observations (Sky Theme) */}
+                <div
+                  id="sec-observations"
+                  style={{ zIndex: 34 }}
+                  className="scroll-mt-4 rounded-2xl border-2 border-sky-200/90 bg-white shadow-xs relative overflow-visible"
+                >
+                  <div className="sticky top-0 z-20 px-4 py-3 bg-sky-50 border-b border-sky-200 rounded-t-xl shadow-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-sky-600 text-white font-bold flex items-center justify-center text-sm shadow-2xs">
+                        4
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-sm text-sky-950">Clinical Examination & Systemic Observations</h3>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-900 border border-sky-300 font-mono">
+                            Clinical Notes
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-sky-700/80">General physical condition, systemic examination, and doctor notes</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 sm:p-5 pt-3">
+                    <ClinicalObservationsModule
+                      observations={rxForm.clinicalObservations}
+                      onChange={(updated) =>
+                        setRxForm((prev) => ({ ...prev, clinicalObservations: updated }))
+                      }
+                      hideHeader={true}
+                    />
+                  </div>
+                  {/* Section Bottom Nav: Save & Next */}
+                  <div className="px-4 sm:px-5 py-2.5 bg-slate-50 border-t border-slate-200/80 rounded-b-xl flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-500 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span>Autosaved</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveAndNext("sec-diagnosis")}
+                      className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 font-bold border border-slate-300 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <span>Save & Next</span>
+                      <ChevronDown size={14} className="text-slate-600" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Section 5: Clinical Diagnosis (Purple Theme) */}
+                <div
+                  id="sec-diagnosis"
+                  style={{ zIndex: 32 }}
+                  className="scroll-mt-4 rounded-2xl border-2 border-purple-200/90 bg-white shadow-xs relative overflow-visible"
+                >
+                  <div className="sticky top-0 z-20 px-4 py-3 bg-purple-50 border-b border-purple-200 rounded-t-xl shadow-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-purple-600 text-white font-bold flex items-center justify-center text-sm shadow-2xs">
+                        5
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-sm text-purple-950">Clinical Diagnosis (ICD-10 Codification)</h3>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300 font-mono">
+                            NABH Mandatory
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-purple-700/80">Provisional diagnosis, differential assessment, and WHO ICD-10 codes</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-purple-100/70 text-purple-900 border border-purple-200">
+                      {rxForm.diagnosis?.final || rxForm.diagnosis?.provisional ? "Diagnosed" : "Pending"}
+                    </span>
+                  </div>
+                  <div className="p-4 sm:p-5 pt-3">
+                    <DiagnosisModule
+                      diagnosis={rxForm.diagnosis}
+                      onChange={(updated) =>
+                        setRxForm((prev) => ({ ...prev, diagnosis: updated }))
+                      }
+                      hideHeader={true}
+                    />
+                  </div>
+                  {/* Section Bottom Nav: Save & Next */}
+                  <div className="px-4 sm:px-5 py-2.5 bg-slate-50 border-t border-slate-200/80 rounded-b-xl flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-500 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span>Autosaved</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveAndNext("sec-medications")}
+                      className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 font-bold border border-slate-300 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <span>Save & Next</span>
+                      <ChevronDown size={14} className="text-slate-600" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Section 6: Medication Builder (Emerald Theme) */}
+                <div
+                  id="sec-medications"
+                  style={{ zIndex: 30 }}
+                  className="scroll-mt-4 rounded-2xl border-2 border-emerald-300/90 bg-white shadow-xs relative overflow-visible"
+                >
+                  <div className="sticky top-0 z-20 px-4 py-3 bg-emerald-50 border-b border-emerald-200 rounded-t-xl shadow-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-sm shadow-2xs">
+                        6
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-sm text-emerald-950">Medications Matrix Prescribed (℞)</h3>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-mono">
+                            NABH Mandatory
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-emerald-700/80">Standard pharmacopeia dosing, timing, frequency, and total unit calculation</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-emerald-100/70 text-emerald-900 border border-emerald-200">
+                      {(rxForm.medications || []).length} Prescribed
+                    </span>
+                  </div>
+                  <div className="p-4 sm:p-5 pt-3">
+                    <MedicationBuilderModule
+                      medications={rxForm.medications}
+                      onChange={(updated) =>
+                        setRxForm((prev) => ({ ...prev, medications: updated }))
+                      }
+                      hideHeader={true}
+                    />
+                  </div>
+                  {/* Section Bottom Nav: Save & Next */}
+                  <div className="px-4 sm:px-5 py-2.5 bg-slate-50 border-t border-slate-200/80 rounded-b-xl flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-500 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span>Autosaved</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveAndNext("sec-investigations")}
+                      className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 font-bold border border-slate-300 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <span>Save & Next</span>
+                      <ChevronDown size={14} className="text-slate-600" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Section 7: Lab & Diagnostic Investigations (Indigo Theme) */}
+                <div
+                  id="sec-investigations"
+                  style={{ zIndex: 28 }}
+                  className="scroll-mt-4 rounded-2xl border-2 border-indigo-200/90 bg-white shadow-xs relative overflow-visible"
+                >
+                  <div className="sticky top-0 z-20 px-4 py-3 bg-indigo-50 border-b border-indigo-200 rounded-t-xl shadow-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-2xs">
+                        7
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-sm text-indigo-950">Diagnostic Lab & Radiology Investigations</h3>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-900 border border-indigo-300 font-mono">
+                            Requisition Order
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-indigo-700/80">Blood tests, urine analytics, imaging scans, and cardiology panels</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-indigo-100/70 text-indigo-900 border border-indigo-200">
+                      {(rxForm.investigationsOrdered || []).length} Ordered
+                    </span>
+                  </div>
+                  <div className="p-4 sm:p-5 pt-3">
+                    <InvestigationsOrderModule
+                      investigations={rxForm.investigationsOrdered}
+                      onChange={(updated) =>
+                        setRxForm((prev) => ({ ...prev, investigationsOrdered: updated }))
+                      }
+                      hideHeader={true}
+                    />
+                  </div>
+                  {/* Section Bottom Nav: Save & Next */}
+                  <div className="px-4 sm:px-5 py-2.5 bg-slate-50 border-t border-slate-200/80 rounded-b-xl flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-500 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span>Autosaved</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveAndNext("sec-dietary")}
+                      className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 font-bold border border-slate-300 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <span>Save & Next</span>
+                      <ChevronDown size={14} className="text-slate-600" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Section 8: Dietary & Lifestyle Advice (Amber Theme - Separate Section) */}
+                <div
+                  id="sec-dietary"
+                  style={{ zIndex: 26 }}
+                  className="scroll-mt-4 rounded-2xl border-2 border-amber-200/90 bg-white shadow-xs relative overflow-visible"
+                >
+                  <div className="sticky top-0 z-20 px-4 py-3 bg-amber-50 border-b border-amber-200 rounded-t-xl shadow-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-amber-600 text-white font-bold flex items-center justify-center text-sm shadow-2xs">
+                        8
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-sm text-amber-950">Dietary & Lifestyle Advice</h3>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-mono">
+                            Patient Instructions
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-amber-700/80">Patient care instructions, dietary precautions, and hydration guidance</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-amber-100/70 text-amber-900 border border-amber-200">
+                      {(rxForm.dietaryAdvice || "").trim() ? "Documented" : "Optional"}
+                    </span>
+                  </div>
+                  <div className="p-4 sm:p-5 pt-3">
+                    <DietaryAdviceModule
+                      dietaryAdvice={rxForm.dietaryAdvice}
+                      onChange={(updatedDiet) =>
+                        setRxForm((prev) => ({ ...prev, dietaryAdvice: updatedDiet }))
+                      }
+                    />
+                  </div>
+                  {/* Section Bottom Nav: Save & Next */}
+                  <div className="px-4 sm:px-5 py-2.5 bg-slate-50 border-t border-slate-200/80 rounded-b-xl flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-500 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span>Autosaved</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveAndNext("sec-followup")}
+                      className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 font-bold border border-slate-300 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <span>Save & Next</span>
+                      <ChevronDown size={14} className="text-slate-600" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Section 9: Follow-Up & Review Plan (Fuchsia Theme - Separate Section) */}
+                <div
+                  id="sec-followup"
+                  style={{ zIndex: 24 }}
+                  className="scroll-mt-4 rounded-2xl border-2 border-fuchsia-200/90 bg-white shadow-xs relative overflow-visible"
+                >
+                  <div className="sticky top-0 z-20 px-4 py-3 bg-fuchsia-50 border-b border-fuchsia-200 rounded-t-xl shadow-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-fuchsia-600 text-white font-bold flex items-center justify-center text-sm shadow-2xs">
+                        9
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-sm text-fuchsia-950">Follow-Up & Review Plan</h3>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-fuchsia-100 text-fuchsia-900 border border-fuchsia-300 font-mono">
+                            NABH Mandatory
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-fuchsia-700/80">Next scheduled visit timeline, emergency SOS warnings, and repeat tests</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-fuchsia-100/70 text-fuchsia-900 border border-fuchsia-200">
+                      Review: {rxForm.followUp?.timeline || "Pending"}
+                    </span>
+                  </div>
+                  <div className="p-4 sm:p-5 pt-3">
+                    <FollowUpPlanModule
+                      followUp={rxForm.followUp}
+                      onChange={(updatedFollowUp) =>
+                        setRxForm((prev) => ({ ...prev, followUp: updatedFollowUp }))
+                      }
+                    />
+                  </div>
+                  {/* Section Bottom Nav: Save & Next */}
+                  <div className="px-4 sm:px-5 py-2.5 bg-slate-50 border-t border-slate-200/80 rounded-b-xl flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-500 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span>Autosaved</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveAndNext("sec-referrals")}
+                      className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 font-bold border border-slate-300 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <span>Save & Next</span>
+                      <ChevronDown size={14} className="text-slate-600" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Section 10: Specialist Referrals & Hospital IPD Admission (Blue Theme - Separate Section) */}
+                <div
+                  id="sec-referrals"
+                  style={{ zIndex: 22 }}
+                  className="scroll-mt-4 rounded-2xl border-2 border-blue-200/90 bg-white shadow-xs relative overflow-visible"
+                >
+                  <div className="sticky top-0 z-20 px-4 py-3 bg-blue-50 border-b border-blue-200 rounded-t-xl shadow-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center text-sm shadow-2xs">
+                        10
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-sm text-blue-950">Specialist Referrals & Hospital IPD Admission</h3>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 border border-blue-300 font-mono">
+                            Cross-Consultation
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-blue-700/80">Inter-department transfers, specialist referral reasons, and IPD ward bed requests</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-blue-100/70 text-blue-900 border border-blue-200">
+                      {rxForm.isAdmitRecommended ? "Admit Req" : rxForm.referrals?.department ? rxForm.referrals.department : "Outpatient"}
+                    </span>
+                  </div>
+                  <div className="p-4 sm:p-5 pt-3">
+                    <ReferralsAndIpdModule
+                      referrals={rxForm.referrals}
+                      isAdmitRecommended={rxForm.isAdmitRecommended}
+                      admitDetails={rxForm.admitDetails}
+                      onChange={(updatedRefAdmit) =>
+                        setRxForm((prev) => ({ ...prev, ...updatedRefAdmit }))
+                      }
+                    />
+                  </div>
+                  {/* Section Bottom Nav: Save & Next -> scrolls down to Submission Desk */}
+                  <div className="px-4 sm:px-5 py-2.5 bg-slate-50 border-t border-slate-200/80 rounded-b-xl flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-500 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span>Autosaved</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveAndNext("sec-submission")}
+                      className="px-3.5 py-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 font-bold border border-teal-300 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <span>Save & Next</span>
+                      <ChevronDown size={14} className="text-teal-700" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Full OPD Prescription Submission & Action Desk */}
+                <div id="sec-submission" className="scroll-mt-4 rounded-2xl border-2 border-teal-300 bg-white p-5 sm:p-6 shadow-sm space-y-4">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="w-2.5 h-2.5 rounded-full bg-teal-600 animate-pulse" />
+                        <h4 className="font-bold text-base text-slate-900">
+                          Full OPD Prescription Submission Desk
+                        </h4>
+                        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-900 border border-teal-200">
+                          Full Save (All 10 Sections Combined)
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 mt-1 max-w-2xl">
+                        <strong>All 10 sections are unified into a single comprehensive OPD prescription.</strong> You do not need to save each section individually. All changes automatically sync to local database in real-time.
+                      </p>
+                    </div>
+
+                    {/* Quick mandatory indicators */}
+                    <div className="flex items-center gap-1.5 text-xs font-semibold flex-wrap">
+                      <span className={`px-2.5 py-1 rounded-lg border ${isComplaintsFilled ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-slate-100 text-slate-500 border-slate-200"}`}>
+                        {isComplaintsFilled ? "✓ Complaints" : "○ Complaints"}
+                      </span>
+                      <span className={`px-2.5 py-1 rounded-lg border ${isDiagnosisFilled ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-slate-100 text-slate-500 border-slate-200"}`}>
+                        {isDiagnosisFilled ? "✓ Diagnosis" : "○ Diagnosis"}
+                      </span>
+                      <span className={`px-2.5 py-1 rounded-lg border ${isMedicationsFilled ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-slate-100 text-slate-500 border-slate-200"}`}>
+                        {isMedicationsFilled ? "✓ Medications" : "○ Medications"}
+                      </span>
+                      <span className={`px-2.5 py-1 rounded-lg border ${isFollowUpFilled ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-slate-100 text-slate-500 border-slate-200"}`}>
+                        {isFollowUpFilled ? "✓ Follow-up" : "○ Follow-up"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleSaveDraft}
+                        disabled={isSaving}
+                        className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-300 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                        title="Save entire draft prescription (Ctrl+S)"
+                      >
+                        <Save size={14} className="text-slate-600" />
+                        <span>Save Full Draft (Ctrl+S)</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleSendToLabs}
+                        disabled={isSaving}
+                        className="px-4 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs border border-indigo-200 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                        title="Save draft and send patient to diagnostic lab queue"
+                      >
+                        <FlaskConical size={14} className="text-indigo-600" />
+                        <span>Send to Labs</span>
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setLeftPanelStep("preview")}
+                        className="px-4 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 font-bold text-xs border border-teal-200 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                        title="Switch to Step 3: Print Preview"
+                      >
+                        <FileText size={14} />
+                        <span>Step 3: Print Preview</span>
+                        <ArrowRight size={13} />
+                      </button>
+
+                      {isMandatoryComplete ? (
+                        <button
+                          type="button"
+                          onClick={handleFinalizeAndPrint}
+                          disabled={isSaving}
+                          className="px-5 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-600 text-white font-extrabold text-xs shadow-md flex items-center gap-2 transition-all cursor-pointer animate-fade-in"
+                          title="Digitally sign and finalize full OPD prescription"
+                        >
+                          <CheckCircle2 size={16} />
+                          <span>Finalize, Sign & Submit Rx</span>
+                        </button>
+                      ) : (
+                        <div className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl flex items-center gap-1.5">
+                          <AlertCircle size={14} className="text-amber-600 shrink-0" />
+                          <span>Complete 4 required sections to unlock Finalize</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+          )}
 
-            {/* Section 2: Clinical Examination & Observations */}
-            <div id="sec-observations">
-              <ClinicalObservationsModule
-                observations={rxForm.clinicalObservations}
-                onChange={(updated) =>
-                  setRxForm((prev) => ({ ...prev, clinicalObservations: updated }))
-                }
-              />
-            </div>
-
-            {/* Section 3: Clinical Diagnosis */}
-            <div id="sec-diagnosis">
-              <DiagnosisModule
-                diagnosis={rxForm.diagnosis}
-                onChange={(updated) =>
-                  setRxForm((prev) => ({ ...prev, diagnosis: updated }))
-                }
-              />
-            </div>
-
-            {/* Section 4: Medication Builder (Rx) */}
-            <div id="sec-medications">
-              <MedicationBuilderModule
+          {/* STEP 2: AI Copilot & Visuals */}
+          {leftPanelStep === "copilot" && (
+            <div className="space-y-4 max-w-4xl mx-auto w-full">
+              <AiCdssAlertCard
+                patient={patient}
                 medications={rxForm.medications}
-                onChange={(updated) =>
-                  setRxForm((prev) => ({ ...prev, medications: updated }))
-                }
+              />
+              <div className="rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
+                <AiCopilotPanel
+                  patient={patient}
+                  rxForm={rxForm}
+                  onApplyTemplate={handleApplyTemplate}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* STEP 3: Print Preview */}
+          {leftPanelStep === "preview" && (
+            <div className="max-w-4xl mx-auto w-full">
+              <DigitalPrescriptionPreviewPane
+                patient={patient}
+                prescription={rxForm}
+                isSaving={isSaving}
+                onSaveDraft={handleSaveDraft}
+                onSendToLab={handleSendToLabs}
+                onFinalizeAndPrint={handleFinalizeAndPrint}
               />
             </div>
+          )}
+        </main>
 
-            {/* Section 5: Lab & Diagnostic Investigations */}
-            <div id="sec-investigations">
-              <InvestigationsOrderModule
-                investigations={rxForm.investigationsOrdered}
-                onChange={(updated) =>
-                  setRxForm((prev) => ({ ...prev, investigationsOrdered: updated }))
-                }
-              />
-            </div>
-
-            {/* Section 6: Dietary Advice, Referral, IPD Admission & Follow-Up */}
-            <div id="sec-advice">
-              <AdviceAndFollowUpModule
-                dietaryAdvice={rxForm.dietaryAdvice}
-                referrals={rxForm.referrals}
-                isAdmitRecommended={rxForm.isAdmitRecommended}
-                admitDetails={rxForm.admitDetails}
-                followUp={rxForm.followUp}
-                onChange={(updated) => setRxForm((prev) => ({ ...prev, ...updated }))}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT PANE (50% on desktop): AI Copilot, 2D Body Map & Paper Preview */}
-        <div className="w-full lg:w-1/2 flex flex-col h-full bg-slate-100">
-          <ConsultationRightPane
-            patient={patient}
-            prescription={rxForm}
-            isSaving={isSaving}
-            onSaveDraft={handleSaveDraft}
-            onSendToLab={handleSendToLabs}
-            onFinalizeAndPrint={handleFinalizeAndPrint}
-            onAddComplaint={handleAddComplaintFromMap}
-            onRemoveComplaint={handleRemoveComplaintFromMap}
-            onApplyTemplate={handleApplyTemplate}
-          />
-        </div>
-      </div>
+      {/* 3. AI Medical Copilot (Positionable: Bottom-Corner by default, Sticky, Left, Right with Min/Max/Resize) */}
+      <AiCopilotPanel
+        patient={patient}
+        rxForm={rxForm}
+        onApplyTemplate={handleApplyTemplate}
+      />
 
       {/* Toast Notification */}
       {toastMessage && (
@@ -508,6 +1275,27 @@ export default function OpdConsultationWorkspace({
             <span>{toastMessage}</span>
           </div>
         </div>
+      )}
+
+      {/* 4. Draggable Floating Telehealth Video Window for Tele-Consultations */}
+      {isTelehealth && showVideoDock && (
+        <TelehealthVideoDock
+          patient={patient}
+          onEndCall={() => setShowVideoDock(false)}
+        />
+      )}
+
+      {/* Floating pill to reopen video window if closed during tele-consultation */}
+      {isTelehealth && !showVideoDock && (
+        <button
+          type="button"
+          onClick={() => setShowVideoDock(true)}
+          className="fixed bottom-6 left-6 z-50 px-4 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-2xl border border-teal-500/50 flex items-center gap-2 cursor-pointer transition-all hover:scale-105"
+        >
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+          <Video size={15} className="text-teal-400" />
+          <span>Reopen Tele-Video Window</span>
+        </button>
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import AnimatedCounter from "./common/AnimatedCounter.jsx";
 import {
   ArrowLeft,
   ArrowDown,
@@ -36,8 +37,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-const STORAGE_KEY = "get-well-op-tokens-v1";
-const PATIENTS_STORAGE_KEY = "get-well-op-patients-v1";
+const STORAGE_KEY = "amh-op-tokens-v1";
+const PATIENTS_STORAGE_KEY = "amh-op-patients-v1";
 
 const DOCTORS = [
   { id: "rao", name: "Dr. Ananya Rao", degree: "MBBS, MD, DM", specialty: "Cardiology", experience: "16 years", room: "204", floor: "2nd Floor - Wing A", color: "#0d9488", status: "In Room" },
@@ -59,11 +60,11 @@ const INITIAL_PATIENTS = [
 ];
 
 const INITIAL_TOKENS = [
-  { id: "demo-1", number: "GW-041", patientId: "p-1001", doctorId: "rao", status: "Waiting", priority: "Standard", visitType: "Consultation", createdAt: "09:18 AM" },
-  { id: "demo-2", number: "GW-042", patientId: "p-1002", doctorId: "rao", status: "Announced", priority: "Standard", visitType: "Follow-up", createdAt: "09:24 AM", announcedAt: Date.now() - 30000 },
-  { id: "demo-3", number: "GW-043", patientId: "p-1004", doctorId: "mehta", status: "Checked in", priority: "Senior Citizen", visitType: "Consultation", createdAt: "09:31 AM" },
-  { id: "demo-4", number: "GW-044", patientId: "p-1003", doctorId: "mani", status: "Waiting", priority: "Pediatric", visitType: "Consultation", createdAt: "09:36 AM" },
-  { id: "demo-5", number: "GW-045", patientId: "p-1005", doctorId: "shah", status: "Waiting", priority: "Standard", visitType: "Report Review", createdAt: "09:41 AM" },
+  { id: "demo-1", number: "AMH-041", patientId: "p-1001", doctorId: "rao", status: "Waiting", priority: "Standard", visitType: "Consultation", createdAt: "09:18 AM" },
+  { id: "demo-2", number: "AMH-042", patientId: "p-1002", doctorId: "rao", status: "Announced", priority: "Standard", visitType: "Follow-up", createdAt: "09:24 AM", announcedAt: Date.now() - 30000 },
+  { id: "demo-3", number: "AMH-043", patientId: "p-1004", doctorId: "mehta", status: "Checked in", priority: "Senior Citizen", visitType: "Consultation", createdAt: "09:31 AM" },
+  { id: "demo-4", number: "AMH-044", patientId: "p-1003", doctorId: "mani", status: "Waiting", priority: "Pediatric", visitType: "Consultation", createdAt: "09:36 AM" },
+  { id: "demo-5", number: "AMH-045", patientId: "p-1005", doctorId: "shah", status: "Waiting", priority: "Standard", visitType: "Report Review", createdAt: "09:41 AM" },
 ];
 
 const statusStyles = {
@@ -84,7 +85,7 @@ const priorityBadges = {
 
 function getStoredTokens() {
   try {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
+    const saved = window.localStorage.getItem(STORAGE_KEY) || window.localStorage.getItem("get-well-op-tokens-v1");
     return saved ? JSON.parse(saved) : INITIAL_TOKENS;
   } catch {
     return INITIAL_TOKENS;
@@ -93,7 +94,7 @@ function getStoredTokens() {
 
 function getStoredPatients() {
   try {
-    const saved = window.localStorage.getItem(PATIENTS_STORAGE_KEY);
+    const saved = window.localStorage.getItem(PATIENTS_STORAGE_KEY) || window.localStorage.getItem("get-well-op-patients-v1");
     return saved ? JSON.parse(saved) : INITIAL_PATIENTS;
   } catch {
     return INITIAL_PATIENTS;
@@ -306,7 +307,7 @@ export default function TokenDesk({ currentPath, navigateTo }) {
 
     const newToken = {
       id: `token-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      number: `GW-${String(nextNumber).padStart(3, "0")}`,
+      number: `AMH-${String(nextNumber).padStart(3, "0")}`,
       patientId: selectedPatient.id,
       doctorId: selectedDoctor.id,
       status: "Waiting",
@@ -586,7 +587,9 @@ export default function TokenDesk({ currentPath, navigateTo }) {
               >
                 <div>
                   <span style={{ fontSize: 12, fontWeight: 600, color: "#64748b" }}>{kpi.label}</span>
-                  <div style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", marginTop: 4 }}>{kpi.value}</div>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", marginTop: 4 }}>
+                    <AnimatedCounter value={kpi.value} />
+                  </div>
                   <span style={{ fontSize: 11, color: "#94a3b8" }}>{kpi.sub}</span>
                 </div>
                 <div style={{ width: 42, height: 42, borderRadius: 12, background: kpi.bg, display: "flex", alignItems: "center", justifyContent: "center", color: kpi.color }}>
@@ -599,7 +602,7 @@ export default function TokenDesk({ currentPath, navigateTo }) {
 
         {/* VIEW 1: TOKEN GENERATOR & DISPENSER (/tokens) */}
         {selectedView === "generator" && (
-          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.65fr) minmax(360px, 1fr)", gap: 24, alignItems: "start" }}>
+          <div key="generator" className="animate-slide-up" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.65fr) minmax(360px, 1fr)", gap: 24, alignItems: "start" }}>
             {/* LEFT: 3-STEP WIZARD */}
             <div style={{ background: "#ffffff", borderRadius: 20, border: "1px solid #e2e8f0", boxShadow: "0 4px 20px rgba(0,0,0,0.03)", overflow: "hidden" }}>
               {/* Stepper Header */}
@@ -1254,7 +1257,7 @@ export default function TokenDesk({ currentPath, navigateTo }) {
 
         {/* VIEW 2: OPD WAITING POOL (/waiting-pool) */}
         {selectedView === "pool" && (
-          <div>
+          <div key="pool" className="animate-slide-up">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
               <div>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: "#0f172a", margin: 0 }}>
@@ -1522,7 +1525,7 @@ export default function TokenDesk({ currentPath, navigateTo }) {
 
         {/* VIEW 3: SMART TV CALL BOARD (/announcer) */}
         {selectedView === "tv" && (
-          <div ref={announcerBoardRef} style={{ background: "#ffffff", borderRadius: 20, border: "1px solid #cbd5e1", overflow: "hidden", boxShadow: "0 10px 40px rgba(0,0,0,0.06)" }}>
+          <div key="tv" className="animate-slide-up" ref={announcerBoardRef} style={{ background: "#ffffff", borderRadius: 20, border: "1px solid #cbd5e1", overflow: "hidden", boxShadow: "0 10px 40px rgba(0,0,0,0.06)" }}>
             {/* TV Header */}
             <div style={{ padding: "20px 28px", borderBottom: "1px solid #e2e8f0", background: "linear-gradient(90deg, #0f172a 0%, #1e293b 100%)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 14 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>

@@ -13,8 +13,8 @@ import {
   Calendar,
   Lock,
   Settings,
+  Video,
 } from "lucide-react";
-import MandatoryProgressChecklist from "./MandatoryProgressChecklist.jsx";
 import AdminConfigModal from "../queue/AdminConfigModal.jsx";
 import { useHospitalData } from "../../hooks/useHospitalData.js";
 
@@ -42,8 +42,14 @@ export default function ConsultationPatientHeader({
   patient,
   rxForm = {},
   prescriptionStatus = "draft",
+  leftPanelStep = "prescription",
+  setLeftPanelStep = () => {},
   onBackToQueue = () => {},
   onSaveDraft = () => {},
+  onFinalize,
+  isMandatoryComplete = false,
+  showVideoDock = false,
+  onToggleVideoDock = () => {},
   onJumpToSection = () => {},
   isSaving = false,
 }) {
@@ -118,15 +124,22 @@ export default function ConsultationPatientHeader({
           <button
             onClick={onBackToQueue}
             aria-label="Back to Queue"
-            className="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 text-slate-700 transition-all shadow-2xs cursor-pointer text-xs font-bold"
+            className="w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-700 transition-all shadow-2xs cursor-pointer shrink-0"
             title="Return to OPD Queue"
           >
-            <ArrowLeft size={16} />
-            <span>Back to Queue</span>
+            <ArrowLeft size={18} />
           </button>
 
           {/* Token & Patient Name */}
           <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.14em", color: "#0284c7" }}>
+                Apple Multispecialty Hospital
+              </span>
+              <span style={{ fontSize: 10, background: "#e0f2fe", color: "#0369a1", padding: "1px 7px", borderRadius: 999, fontWeight: 700 }}>
+                OPD Consultation & AI Rx Desk
+              </span>
+            </div>
             <div className="flex items-center gap-2 flex-wrap">
               <span className="px-2.5 py-0.5 rounded-lg font-mono font-bold text-xs bg-slate-900 text-white shadow-2xs">
                 {tokenNumber}
@@ -141,14 +154,26 @@ export default function ConsultationPatientHeader({
                 UHID: {uhid}
               </span>
 
-              {/* Consultation Type Badge */}
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-sky-50 text-sky-800 border border-sky-200 uppercase tracking-wider">
-                {consultationType === "tele_consultation"
-                  ? "Tele-Consult"
-                  : consultationType === "online_booking"
-                  ? "Online Booking"
-                  : "Walk-in"}
-              </span>
+              {/* Consultation Type Badge / Video Dock Toggle */}
+              {consultationType === "tele_consultation" || tokenNumber?.startsWith("TC") ? (
+                <button
+                  type="button"
+                  onClick={() => onToggleVideoDock(!showVideoDock)}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-bold border transition-colors cursor-pointer shadow-2xs ${
+                    showVideoDock
+                      ? "bg-teal-900 text-teal-100 border-teal-700"
+                      : "bg-teal-50 hover:bg-teal-100 text-teal-800 border-teal-300"
+                  }`}
+                  title="Toggle Draggable Video Window"
+                >
+                  <Video size={12} className={showVideoDock ? "text-teal-400 animate-pulse" : "text-teal-600"} />
+                  <span>{showVideoDock ? "● Video Live" : "Open Video"}</span>
+                </button>
+              ) : (
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-sky-50 text-sky-800 border border-sky-200 uppercase tracking-wider">
+                  {consultationType === "online_booking" ? "Online Booking" : "Walk-in"}
+                </span>
+              )}
 
               {/* Rx Status */}
               <span
@@ -196,67 +221,85 @@ export default function ConsultationPatientHeader({
           </div>
         </div>
 
-        {/* Center / Right: Vitals Strip & Timer */}
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Vitals Summary Pill */}
-          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs text-slate-700 flex-wrap">
-            <HeartPulse size={14} className="text-rose-500 shrink-0" />
-            <span className="text-[11px]">
-              BP:{" "}
-              <strong className={isHighBp ? "text-amber-800 font-bold" : "text-slate-900"}>
-                {vitals.bp || "--"}
-              </strong>
-            </span>
-            <span className="text-slate-300">|</span>
-            <span className="text-[11px]">
-              Pulse: <strong className="text-slate-900">{vitals.pulse || "--"} bpm</strong>
-            </span>
-            <span className="text-slate-300">|</span>
-            <span className="text-[11px]">
-              SpO2: <strong className="text-slate-900">{vitals.spo2 || "--"}%</strong>
-            </span>
-            {vitals.weight && (
-              <>
-                <span className="text-slate-300">|</span>
-                <span className="text-[11px]">
-                  Wt: <strong className="text-slate-900">{vitals.weight} kg</strong>
-                </span>
-              </>
-            )}
-            {vitals.bmi && (
-              <>
-                <span className="text-slate-300">|</span>
-                <span className="text-[11px]">
-                  BMI: <strong className="text-slate-900">{vitals.bmi}</strong>
-                </span>
-              </>
-            )}
-          </div>
+        {/* Center: Clean 3-Step Consultation Switcher matching user mockup design */}
+        <div className="inline-flex items-center p-1 bg-slate-100/90 rounded-2xl border border-slate-200/80 text-xs shadow-2xs self-center gap-1">
+          <button
+            type="button"
+            onClick={() => setLeftPanelStep("prescription")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer select-none ${
+              leftPanelStep === "prescription"
+                ? "bg-white text-slate-800 shadow-xs border border-slate-200/70"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+            }`}
+          >
+            <span
+              className={`w-2 h-2 rounded-full shrink-0 ${
+                leftPanelStep === "prescription" ? "bg-teal-600" : "bg-slate-300"
+              }`}
+            />
+            <span>1 Prescription</span>
+          </button>
 
-          {/* Consultation Elapsed Timer */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-bold font-mono shadow-2xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <Clock size={13} className="text-emerald-700" />
-            <span>⏱️ {formatTimer(elapsedSeconds)}</span>
-          </div>
+          <button
+            type="button"
+            onClick={() => setLeftPanelStep("copilot")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer select-none ${
+              leftPanelStep === "copilot"
+                ? "bg-white text-slate-800 shadow-xs border border-slate-200/70"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+            }`}
+          >
+            <span
+              className={`w-2 h-2 rounded-full shrink-0 ${
+                leftPanelStep === "copilot" ? "bg-teal-600" : "bg-slate-300"
+              }`}
+            />
+            <span>2 AI Copilot</span>
+          </button>
 
-          {/* NABH Mandatory Progress Bar & Dropdown Checklist */}
-          <MandatoryProgressChecklist
-            patient={patient}
-            rxForm={rxForm}
-            onJumpToSection={onJumpToSection}
-          />
+          <button
+            type="button"
+            onClick={() => setLeftPanelStep("preview")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer select-none ${
+              leftPanelStep === "preview"
+                ? "bg-white text-slate-800 shadow-xs border border-slate-200/70"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+            }`}
+          >
+            <span
+              className={`w-2 h-2 rounded-full shrink-0 ${
+                leftPanelStep === "preview" ? "bg-teal-600" : "bg-slate-300"
+              }`}
+            />
+            <span>3 Print Preview</span>
+          </button>
+        </div>
 
+        {/* Right: Save Draft & Finalize Rx (Timer removed per user request) */}
+        <div className="flex items-center gap-2.5 flex-wrap">
           {/* Save Draft Action Button */}
           <button
             onClick={onSaveDraft}
             disabled={isSaving}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-2xs transition-all cursor-pointer disabled:opacity-50"
-            title="Save draft changes to database (Ctrl+S)"
+            title="Save draft changes across all sections to database (Ctrl+S)"
           >
             <Save size={13} className={isSaving ? "animate-spin text-teal-600" : "text-slate-500"} />
             <span>{isSaving ? "Autosaving..." : "Save Draft"}</span>
           </button>
+
+          {/* Finalize Full Prescription Button - Only shown after required fields entered */}
+          {onFinalize && isMandatoryComplete && (
+            <button
+              onClick={onFinalize}
+              disabled={isSaving}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-teal-700 hover:bg-teal-600 text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer disabled:opacity-50 animate-fade-in"
+              title="Finalize, digitally sign & complete full OPD prescription"
+            >
+              <CheckCircle2 size={13} />
+              <span>Finalize Rx</span>
+            </button>
+          )}
 
           {/* Admin Template Configurator Trigger */}
           <button

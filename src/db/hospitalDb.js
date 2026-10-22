@@ -30,6 +30,23 @@ hospitalDb.version(1).stores({
   customDictionary: "id, shortcut, category",
 });
 
+hospitalDb.version(2).stores({
+  patients: "id, uhid, tokenNumber, name, queueStatus, consultationType, priority",
+  prescriptions: "id, patientId, status, updatedAt, isFinalized",
+  adminConfig: "sectionKey, isMandatory, isEnabled",
+  customDictionary: "id, shortcut, category",
+  hospitalStats: "timeframe",
+});
+
+hospitalDb.version(3).stores({
+  patients: "id, uhid, tokenNumber, name, queueStatus, consultationType, priority",
+  prescriptions: "id, patientId, status, updatedAt, isFinalized",
+  adminConfig: "sectionKey, isMandatory, isEnabled",
+  customDictionary: "id, shortcut, category",
+  hospitalStats: "timeframe",
+  dailyStats: "date",
+});
+
 // Seed data on database creation
 hospitalDb.on("populate", async () => {
   await seedInitialDataIfEmpty(hospitalDb);

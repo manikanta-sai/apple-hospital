@@ -30,6 +30,33 @@
     border-radius: 999px;
   }
 
+  /* Hover-only sleek scrollbar for OPD Kanban lanes */
+  .kanban-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.2s ease-in-out;
+  }
+  .kanban-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .kanban-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .kanban-scrollbar::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 9999px;
+    transition: background-color 0.2s ease-in-out;
+  }
+  .kanban-lane:hover .kanban-scrollbar,
+  .kanban-scrollbar:hover {
+    scrollbar-color: rgba(148, 163, 184, 0.65) transparent;
+  }
+  .kanban-lane:hover .kanban-scrollbar::-webkit-scrollbar-thumb,
+  .kanban-scrollbar:hover::-webkit-scrollbar-thumb,
+  .kanban-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(148, 163, 184, 0.65);
+  }
+
   /* Snap points so the doctor card rail settles neatly on a card
      when the user flicks/swipes it on mobile */
   .snap-x-mandatory {
@@ -63,6 +90,15 @@
     margin: 0.5rem 0 0.75rem;
     padding-left: 1.2rem;
     color: #26403d;
+  }
+
+  /* Human Handwriting styling for Doctor's handwritten prescription mode */
+  .font-handwriting {
+    font-family: 'Caveat', 'Kalam', cursive, sans-serif;
+  }
+  .bg-ruled-paper {
+    background-color: #ffffff;
+    background-image: repeating-linear-gradient(transparent, transparent 29px, rgba(226, 232, 240, 0.75) 30px);
   }
   .chat-markdown-list li {
     margin: 0.25rem 0;
@@ -158,21 +194,18 @@
   }
 }
 
+/* Hide body-level print portal completely in screen mode */
+#prescription-print-portal {
+  display: none !important;
+}
+
 /* ==========================================================================
    Pixel-Perfect NABH Official Prescription Print Styles
    ========================================================================== */
 @media print {
-  /* Suppress all interactive controls, sidebars, buttons, video, and body maps */
-  nav,
-  header,
-  aside,
-  button,
-  input,
-  select,
-  textarea,
-  .print\:hidden,
-  [class*="print:hidden"] {
-    display: none !important;
+  @page {
+    size: A4 portrait;
+    margin: 8mm 10mm;
   }
 
   /* Reset document background & margins for crisp A4 paper printing */
@@ -187,24 +220,190 @@
     overflow: visible !important;
   }
 
-  /* Ensure the prescription sheet fills the printable page without cutting off */
-  #digital-prescription-sheet {
+  /* Completely eliminate all on-screen application UI (#root, modals, tables, queues) */
+  #root,
+  body > :not(#prescription-print-portal) {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Display ONLY the dedicated body-level prescription print portal */
+  #prescription-print-portal {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
     width: 100% !important;
     max-width: 100% !important;
-    min-height: 0 !important;
     margin: 0 !important;
-    padding: 10mm 12mm !important;
-    border: none !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  #prescription-print-portal * {
+    visibility: visible !important;
+  }
+
+  #prescription-print-portal #digital-prescription-sheet {
+    position: static !important;
     box-shadow: none !important;
+    border: none !important;
     border-radius: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
     display: block !important;
   }
 
-  /* Prevent awkward page breaks inside prescription medication rows and cards */
+  /* Ensure continuous layout on Page 1: do NOT force a page break after the letterhead */
+  #prescription-print-portal #digital-prescription-sheet,
+  #prescription-print-portal #digital-prescription-sheet > div {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  /* Suppress all interactive controls, buttons, toolbars in print */
+  nav,
+  header,
+  aside,
+  button,
+  input,
+  select,
+  textarea,
+  .print\:hidden,
+  [class*="print:hidden"] {
+    display: none !important;
+  }
+
+  /* Prevent awkward page breaks inside individual medication rows only */
   tr,
-  .avoid-page-break,
-  #digital-prescription-sheet > div {
+  .avoid-page-break {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
 }
+
+/* ==========================================================================
+   Smooth Slide-In-Up & Scroll-Reveal Transitions
+   ========================================================================== */
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideInUp 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-slide-up-fast {
+  animation: slideInUp 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-scale {
+  animation: fadeInScale 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Stagger utilities */
+.delay-75 {
+  animation-delay: 75ms;
+}
+.delay-150 {
+  animation-delay: 150ms;
+}
+.delay-225 {
+  animation-delay: 225ms;
+}
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+/* IntersectionObserver Scroll-Reveal animations */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   Chart & Graph Bar Growth Animations on Scroll-Reveal
+   ========================================================================== */
+.chart-bar-v {
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 950ms cubic-bezier(0.33, 1, 0.68, 1);
+  will-change: transform;
+}
+
+.scroll-reveal.is-revealed .chart-bar-v,
+.is-revealed .chart-bar-v,
+.animate-bar-active .chart-bar-v {
+  transform: scaleY(1);
+}
+
+.chart-bar-h {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 900ms cubic-bezier(0.33, 1, 0.68, 1);
+  will-change: transform;
+}
+
+.scroll-reveal.is-revealed .chart-bar-h,
+.is-revealed .chart-bar-h,
+.animate-bar-active .chart-bar-h {
+  transform: scaleX(1);
+}
+
+/* Stagger transition delays */
+.bar-delay-0 { transition-delay: 50ms; }
+.bar-delay-1 { transition-delay: 110ms; }
+.bar-delay-2 { transition-delay: 170ms; }
+.bar-delay-3 { transition-delay: 230ms; }
+.bar-delay-4 { transition-delay: 290ms; }
+.bar-delay-5 { transition-delay: 350ms; }
+.bar-delay-6 { transition-delay: 410ms; }
+.bar-delay-7 { transition-delay: 470ms; }
+
+/* Heatmap cells staggered reveal */
+.heatmap-cell-anim {
+  opacity: 0.2;
+  transform: scale(0.85);
+  transition: opacity 600ms ease-out, transform 650ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.scroll-reveal.is-revealed .heatmap-cell-anim,
+.is-revealed .heatmap-cell-anim,
+.animate-bar-active .heatmap-cell-anim {
+  opacity: 1;
+  transform: scale(1);
+}
+
+

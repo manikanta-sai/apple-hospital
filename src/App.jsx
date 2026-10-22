@@ -1,14 +1,42 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { ArrowRight, BarChart3, Bot, FileText, Headphones, Link2, Megaphone, Mic, Search, Ticket, Video, Stethoscope } from "lucide-react";
 import ErrorBoundary from "./components/ErrorBoundary";
-import InsightsDashboard from "./components/InsightsDashboard";
-import TokenDesk from "./components/TokenDesk";
-import SpeechToText from "./components/SpeechToText";
-import HealthcareUrlGenerator from "./components/url-generator/HealthcareUrlGenerator";
-import OpdQueueScreen from "./components/queue/OpdQueueScreen";
-import OpdConsultationWorkspace from "./components/consultation/OpdConsultationWorkspace";
+import { initDailyStats } from "./services/hospitalStatsService.js";
+import {
+  InsightsSkeleton,
+  HospitalStatsSkeleton,
+  OpdPortalSkeleton,
+  OpdConsultationSkeleton,
+  TokenDeskSkeleton,
+  SpeechToTextSkeleton,
+  UrlGeneratorSkeleton,
+  PortfolioHomeSkeleton,
+} from "./components/common/PageSkeletons.jsx";
+import ScrollToTopButton from "./components/common/ScrollToTopButton.jsx";
 
+// Route-level code splitting with React.lazy for high performance & instant FCP
+const InsightsDashboard = lazy(() => import("./components/InsightsDashboard"));
+const TokenDesk = lazy(() => import("./components/TokenDesk"));
+const SpeechToText = lazy(() => import("./components/SpeechToText"));
+const HealthcareUrlGenerator = lazy(() => import("./components/url-generator/HealthcareUrlGenerator"));
+const OpdConsultationWorkspace = lazy(() => import("./components/consultation/OpdConsultationWorkspace"));
+const OpdPortalLayout = lazy(() => import("./components/opd-portal/OpdPortalLayout"));
+const HospitalStatsDashboard = lazy(() => import("./components/hospital-stats/HospitalStatsDashboard"));
+const DeveloperPortfolioHome = lazy(() => import("./components/portfolio/DeveloperPortfolioHome"));
 const ChatWidget = lazy(() => import("./components/ChatWidget"));
+
+function PageLoadingSpinner() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50/80">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-9 h-9 border-3 border-teal-600 border-t-transparent rounded-full animate-spin" />
+        <span className="text-xs font-semibold text-slate-500 tracking-wide font-sans">
+          Loading hospital workspace...
+        </span>
+      </div>
+    </div>
+  );
+}
 
 const DEPARTMENTS_WITH_TRIGGERS = ["cardiology", "orthopedics", "pediatrics"];
 
@@ -100,19 +128,19 @@ const PRODUCTS = [
     tags: ["Queue Mgmt", "Display Board"],
   },
   {
-    name: "Token Number Announcer",
-    description: "Announce token numbers via audio and display to keep waiting rooms informed.",
-    icon: Megaphone,
+    name: "Hospital Stats",
+    description: "Live operational metrics, floor occupancy, staffing ratios, and clinical throughput dashboard.",
+    icon: BarChart3,
     available: true,
-    href: "/announcer",
-    glow: "rgba(234,88,12,0.07)",
-    iconBg: "rgba(234,88,12,0.10)",
-    iconBorder: "rgba(234,88,12,0.20)",
-    iconColor: "#ea580c",
-    tagColor: "rgba(234,88,12,0.08)",
-    tagText: "#c2410c",
-    linkColor: "#ea580c",
-    tags: ["Audio TTS", "Live Display"],
+    href: "/hospital-stats",
+    glow: "rgba(16,185,129,0.07)",
+    iconBg: "rgba(16,185,129,0.10)",
+    iconBorder: "rgba(16,185,129,0.20)",
+    iconColor: "#10b981",
+    tagColor: "rgba(16,185,129,0.08)",
+    tagText: "#047857",
+    linkColor: "#10b981",
+    tags: ["Operations", "Floor Census", "Staffing"],
   },
   {
     name: "URL Generator",
@@ -199,7 +227,27 @@ export default function App() {
 
   useEffect(() => {
     const syncRoute = () => {
-      const validPaths = ["/", "/chatbot", "/insights", "/speech-to-text", "/tokens", "/waiting-pool", "/announcer", "/url-generator", "/url-shortener", "/opd", "/opd-queue", "/opd-consultation"];
+      const validPaths = [
+        "/",
+        "/chatbot",
+        "/insights",
+        "/speech-to-text",
+        "/tokens",
+        "/waiting-pool",
+        "/announcer",
+        "/url-generator",
+        "/url-shortener",
+        "/opd",
+        "/opd-queue",
+        "/opd/queue",
+        "/opd/dashboard",
+        "/opd/appointments",
+        "/opd/profile",
+        "/opd-consultation",
+        "/hospital-stats",
+        "/products",
+        "/suite",
+      ];
       const isDynamic =
         window.location.pathname.startsWith("/opd-consultation") ||
         window.location.pathname.startsWith("/s/") ||
@@ -213,32 +261,46 @@ export default function App() {
       if (path !== window.location.pathname) {
         window.history.replaceState({}, "", path);
       }
-      setCurrentPath(path);
+      setCurrentPath(path + window.location.search);
     };
 
     window.addEventListener("popstate", syncRoute);
     syncRoute();
+
+    // Verify / initialize today's daily record in IndexedDB on application start
+    initDailyStats().catch((err) => {
+      console.warn("IndexedDB daily stats initialization check:", err);
+    });
+
     return () => window.removeEventListener("popstate", syncRoute);
   }, []);
 
   const navigateTo = (path) => {
-    if (window.location.pathname !== path) {
+    if (window.location.pathname + window.location.search !== path) {
       window.history.pushState({}, "", path);
     }
     setCurrentPath(path);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const showChatbot = currentPath === "/chatbot";
-  const showInsights = currentPath === "/insights";
-  const showSpeechToText = currentPath === "/speech-to-text";
-  const showOpd = currentPath === "/opd" || currentPath === "/opd-queue";
-  const showOpdConsultation = currentPath.startsWith("/opd-consultation");
-  const showTokenDesk = ["/tokens", "/waiting-pool", "/announcer"].includes(currentPath);
+  const pathname = currentPath.split("?")[0];
+  const showChatbot = pathname === "/chatbot";
+  const showInsights = pathname === "/insights";
+  const showSpeechToText = pathname === "/speech-to-text";
+  const showHospitalStats = pathname === "/hospital-stats";
+  const showOpd = pathname === "/opd" || pathname.startsWith("/opd/") || pathname === "/opd-queue";
+  const showOpdConsultation = pathname.startsWith("/opd-consultation");
+  const showTokenDesk = ["/tokens", "/waiting-pool", "/announcer"].includes(pathname);
   const showUrlGenerator =
-    currentPath.startsWith("/url-generator") ||
-    currentPath === "/url-shortener" ||
-    currentPath.startsWith("/s/") ||
-    currentPath.startsWith("/reports/") ||
+    pathname.startsWith("/url-generator") ||
+    pathname === "/url-shortener" ||
+    pathname.startsWith("/s/") ||
+    pathname.startsWith("/reports/") ||
+    pathname.startsWith("/meetings/") ||
+    pathname.startsWith("/feedback") ||
+    pathname.startsWith("/lab-reports/") ||
+    pathname.startsWith("/telehealth/") ||
+    pathname.startsWith("/survey/");
     currentPath.startsWith("/meetings/") ||
     currentPath.startsWith("/feedback") ||
     currentPath.startsWith("/lab-reports/") ||
@@ -263,37 +325,78 @@ export default function App() {
   };
 
   if (showTokenDesk) {
-    return <TokenDesk currentPath={currentPath} navigateTo={navigateTo} />;
+    return (
+      <Suspense fallback={<TokenDeskSkeleton />}>
+        <div key="tokens" className="animate-slide-up">
+          <TokenDesk currentPath={currentPath} navigateTo={navigateTo} />
+        </div>
+      </Suspense>
+    );
   }
 
   if (showOpdConsultation) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const patientId = urlParams.get("patientId") || "";
+    const queryStr = currentPath.includes("?")
+      ? currentPath.split("?")[1]
+      : (window.location.search ? window.location.search.replace(/^\?/, "") : "");
+    const urlParams = new URLSearchParams(queryStr);
+    const patientId = urlParams.get("patientId") || "pat_10482";
     return (
-      <OpdConsultationWorkspace
-        patientId={patientId}
-        onBackToQueue={() => navigateTo("/opd")}
-      />
+      <Suspense fallback={<OpdConsultationSkeleton />}>
+        <div key={`opd-consult-${patientId}`} className="animate-slide-up">
+          <OpdConsultationWorkspace
+            patientId={patientId}
+            onBackToQueue={() => navigateTo("/opd-queue")}
+          />
+        </div>
+      </Suspense>
     );
   }
 
   if (showOpd) {
     return (
-      <OpdQueueScreen
-        onSelectPatient={(patientId) => {
-          navigateTo(`/opd-consultation?patientId=${patientId}`);
-        }}
-        onNavigateHome={() => navigateTo("/")}
-      />
+      <Suspense fallback={<OpdPortalSkeleton />}>
+        <div key="opd-portal" className="animate-slide-up">
+          <OpdPortalLayout
+            currentPath={currentPath}
+            navigateTo={navigateTo}
+            onSelectPatient={(patientId) => {
+              navigateTo(`/opd-consultation?patientId=${patientId}`);
+            }}
+            onNavigateHome={() => navigateTo("/")}
+          />
+        </div>
+      </Suspense>
+    );
+  }
+
+  if (showHospitalStats) {
+    return (
+      <Suspense fallback={<HospitalStatsSkeleton />}>
+        <div key="hospital-stats" className="animate-slide-up">
+          <HospitalStatsDashboard navigateTo={navigateTo} />
+        </div>
+      </Suspense>
     );
   }
 
   if (showSpeechToText) {
-    return <SpeechToText navigateTo={navigateTo} />;
+    return (
+      <Suspense fallback={<SpeechToTextSkeleton />}>
+        <div key="speech-to-text" className="animate-slide-up">
+          <SpeechToText navigateTo={navigateTo} />
+        </div>
+      </Suspense>
+    );
   }
 
   if (showInsights) {
-    return <InsightsDashboard navigateTo={navigateTo} />;
+    return (
+      <Suspense fallback={<InsightsSkeleton />}>
+        <div key="insights" className="animate-slide-up">
+          <InsightsDashboard navigateTo={navigateTo} />
+        </div>
+      </Suspense>
+    );
   }
 
   if (showUrlGenerator) {
@@ -302,7 +405,25 @@ export default function App() {
       : currentPath === "/url-shortener"
       ? "/"
       : currentPath;
-    return <HealthcareUrlGenerator navigateTo={navigateTo} initialPath={generatorSubPath} />;
+    return (
+      <Suspense fallback={<UrlGeneratorSkeleton />}>
+        <div key="url-generator" className="animate-slide-up">
+          <HealthcareUrlGenerator navigateTo={navigateTo} initialPath={generatorSubPath} />
+        </div>
+      </Suspense>
+    );
+  }
+
+  // ── Developer Portfolio & Projects Home (Default "/") ──
+  if (pathname === "/" || pathname === "" || pathname === "/home" || pathname === "/portfolio") {
+    return (
+      <Suspense fallback={<PortfolioHomeSkeleton />}>
+        <div key="portfolio-home" className="animate-slide-up">
+          <DeveloperPortfolioHome navigateTo={navigateTo} />
+          <ScrollToTopButton />
+        </div>
+      </Suspense>
+    );
   }
 
   // ── Filtered products ──
@@ -374,7 +495,7 @@ export default function App() {
               </div>
               <div>
                 <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 15, fontWeight: 700, color: "#0f172a", lineHeight: 1.2 }}>
-                  Apple Hospital
+                  Apple Multispecialty Hospital
                 </p>
                 <p style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1 }}>Digital Health Suite</p>
               </div>
@@ -628,6 +749,9 @@ export default function App() {
           <ChatWidget tenantId="sunrise-hospital-main" />
         </Suspense>
       </ErrorBoundary>
+
+      {/* Floating Scroll to Top button for landing page */}
+      <ScrollToTopButton />
     </div>
   );
 }

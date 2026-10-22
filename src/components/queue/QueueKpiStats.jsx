@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   Users,
+  Video,
   Clock,
   Stethoscope,
   FlaskConical,
@@ -116,14 +117,24 @@ export default function QueueKpiStats({
       border: "border-sky-200/80",
     },
     {
-      id: "waiting",
-      label: "In Waiting",
-      value: counts.waiting,
-      subtext: "Queued for doctor",
-      icon: Clock,
+      id: "waiting_walkin",
+      label: "Walk-in Waiting",
+      value: counts.waitingWalkIn ?? counts.waiting ?? 0,
+      subtext: "Lobby arrivals",
+      icon: Users,
       color: "#d97706",
       bg: "#fef3c7",
       border: "border-amber-200/80",
+    },
+    {
+      id: "waiting_tele",
+      label: "Tele-Consult Waiting",
+      value: counts.waitingTele ?? 0,
+      subtext: "Virtual room queue",
+      icon: Video,
+      color: "#7e22ce",
+      bg: "#f3e8ff",
+      border: "border-purple-200/80",
     },
     {
       id: "in_consultation",
@@ -173,37 +184,43 @@ export default function QueueKpiStats({
         className="w-full"
       >
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between flex-wrap gap-3.5">
-          {/* Left: Back button & Hospital Title */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onNavigateHome}
-              aria-label="Back to dashboard"
-              style={{
-                width: 38,
-                height: 38,
-                borderRadius: 10,
-                border: "1px solid #e2e8f0",
-                background: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#475569",
-                cursor: "pointer",
-                transition: "all 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#f8fafc";
-                e.currentTarget.style.borderColor = "#cbd5e1";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "#ffffff";
-                e.currentTarget.style.borderColor = "#e2e8f0";
-              }}
-              title="Return to Dashboard"
-            >
-              <ArrowLeft size={18} />
-            </button>
-
+          {/* Left: Hospital Title & OPD Header */}
+          <div className="flex items-center gap-3.5">
+            {onNavigateHome && (
+              <button
+                type="button"
+                onClick={onNavigateHome}
+                aria-label="Back to home"
+                title="Back to home"
+                style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: 10,
+                  border: "1px solid #e2e8f0",
+                  background: "#ffffff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#475569",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+                  flexShrink: 0,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#f8fafc";
+                  e.currentTarget.style.borderColor = "#cbd5e1";
+                  e.currentTarget.style.color = "#0f172a";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#ffffff";
+                  e.currentTarget.style.borderColor = "#e2e8f0";
+                  e.currentTarget.style.color = "#475569";
+                }}
+              >
+                <ArrowLeft size={18} strokeWidth={2.2} />
+              </button>
+            )}
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span
@@ -249,38 +266,8 @@ export default function QueueKpiStats({
             </div>
           </div>
 
-          {/* Right Controls: Live status, Duty Switcher, + Quick Walk-in, Utilities */}
+          {/* Right Controls: Duty Switcher, + Quick Walk-in, Utilities */}
           <div className="flex items-center gap-2.5 flex-wrap">
-            {/* Live Queue Active Pill */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                background: "#f0fdf4",
-                border: "1px solid #bbf7d0",
-                padding: "6px 12px",
-                borderRadius: 999,
-              }}
-            >
-              <span
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  background: "#22c55e",
-                  display: "inline-block",
-                  boxShadow: "0 0 0 3px rgba(34, 197, 94, 0.2)",
-                }}
-              />
-              <span style={{ fontSize: 12, fontWeight: 700, color: "#166534" }}>
-                Live Queue Active
-              </span>
-              <span style={{ fontSize: 12, color: "#15803d", fontWeight: 500 }}>
-                · {counts.waiting} queued on floor
-              </span>
-            </div>
-
             {/* Doctor Duty Status Dropdown (ON DUTY, round, surgery, out, stand by) */}
             <div className="relative" ref={dutyMenuRef}>
               <button
@@ -458,61 +445,6 @@ export default function QueueKpiStats({
           </div>
         </div>
       </header>
-
-      {/* 2. Top 5 KPI Metric Cards (Non-clickable clean informational cards) */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-          {kpis.map((kpi) => {
-            const Icon = kpi.icon;
-
-            return (
-              <div
-                key={kpi.id}
-                style={{
-                  background: "rgba(255, 255, 255, 0.90)",
-                  backdropFilter: "blur(16px)",
-                  WebkitBackdropFilter: "blur(16px)",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.02)",
-                  cursor: "default",
-                }}
-                className={`p-4 rounded-2xl border text-left flex flex-col justify-between ${kpi.border} text-slate-900 select-none`}
-              >
-                <div className="flex items-center justify-between w-full mb-1.5">
-                  <span className="text-xs font-semibold text-slate-600">
-                    {kpi.label}
-                  </span>
-                  <div
-                    style={{
-                      backgroundColor: kpi.bg,
-                      color: kpi.color,
-                    }}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
-                  >
-                    <Icon className="w-4 h-4" />
-                  </div>
-                </div>
-
-                <div className="flex items-baseline justify-between mt-1">
-                  <span className="text-2xl font-black tracking-tight text-slate-900">
-                    {kpi.value}
-                  </span>
-
-                  {kpi.isLive && (
-                    <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      LIVE
-                    </span>
-                  )}
-                </div>
-
-                <div className="text-[11px] mt-1 truncate text-slate-500">
-                  {kpi.subtext}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }

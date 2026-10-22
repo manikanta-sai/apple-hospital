@@ -119,7 +119,7 @@ export default function SuccessScreen({
       ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
     : "Never expires";
 
-  const smsText = `Dear Patient, your Get Well Hospital ${title} is ready. Access securely: ${shareableProductionUrl}. Inquiries: 080-492000.`;
+  const smsText = `Dear Patient, your Apple Multispecialty Hospital ${title} is ready. Access securely: ${shareableProductionUrl}. Inquiries: 080-492000.`;
 
   return (
     <div className="mx-auto max-w-2xl animate-fade-in-up space-y-6">
@@ -129,7 +129,7 @@ export default function SuccessScreen({
           <CheckCircle2 size={32} />
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-100/80 px-3 py-1 text-xs font-semibold text-teal-900 mb-2">
-          <Sparkles size={13} /> Link Generated & Stored in IndexedDB
+          <Sparkles size={13} /> Link Generated Successfully
         </span>
         <h2 className="font-display text-xl sm:text-2xl font-bold text-clinical-950">
           {title}
@@ -208,7 +208,7 @@ export default function SuccessScreen({
               </button>
             </div>
             <p className="mt-1 text-[10px] text-ink-600">
-              Opens the destination page directly in this browser session via IndexedDB.
+              Opens the destination page directly in this browser session.
             </p>
           </div>
 

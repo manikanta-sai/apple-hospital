@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Background Gradient Base -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="25%" stop-color="#1e1b4b" />
+      <stop offset="50%" stop-color="#2e1065" />
+      <stop offset="75%" stop-color="#0f2b46" />
+      <stop offset="100%" stop-color="#064e3b" />
+    </linearGradient>
+
+    <!-- Radial Glowing Orbs -->
+    <radialGradient id="orbTeal" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.55" />
+      <stop offset="40%" stop-color="#0d9488" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0" />
+    </radialGradient>
+
+    <radialGradient id="orbPurple" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#a855f7" stop-opacity="0.6" />
+      <stop offset="50%" stop-color="#7c3aed" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#2e1065" stop-opacity="0" />
+    </radialGradient>
+
+    <radialGradient id="orbPink" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ec4899" stop-opacity="0.5" />
+      <stop offset="60%" stop-color="#be185d" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#1e1b4b" stop-opacity="0" />
+    </radialGradient>
+
+    <radialGradient id="orbAmber" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.45" />
+      <stop offset="50%" stop-color="#d97706" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0" />
+    </radialGradient>
+
+    <radialGradient id="orbEmerald" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.5" />
+      <stop offset="50%" stop-color="#059669" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#064e3b" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Mesh Dot Grid Pattern -->
+    <pattern id="dotGrid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <circle cx="18" cy="18" r="1.5" fill="#ffffff" fill-opacity="0.12" />
+    </pattern>
+
+    <!-- Linear Pulse Gradient -->
+    <linearGradient id="ecgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0" />
+      <stop offset="20%" stop-color="#38bdf8" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#a855f7" stop-opacity="1" />
+      <stop offset="80%" stop-color="#ec4899" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Filter for Glow -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- 1. Rich Deep Colorful Canvas Base -->
+  <rect width="1600" height="900" fill="url(#bgGrad)" />
+
+  <!-- 2. Colorful Glowing Ambient Spheres -->
+  <circle cx="150" cy="180" r="380" fill="url(#orbPurple)" />
+  <circle cx="1450" cy="220" r="420" fill="url(#orbTeal)" />
+  <circle cx="850" cy="120" r="340" fill="url(#orbPink)" />
+  <circle cx="400" cy="750" r="450" fill="url(#orbAmber)" />
+  <circle cx="1200" cy="800" r="480" fill="url(#orbEmerald)" />
+
+  <!-- 3. Tech Dot Grid Overlay -->
+  <rect width="1600" height="900" fill="url(#dotGrid)" />
+
+  <!-- 4. Futuristic Medical Curved Waves -->
+  <g opacity="0.35">
+    <path d="M-100,300 C300,100 500,500 900,350 C1300,200 1500,450 1700,250" fill="none" stroke="url(#ecgGrad)" stroke-width="3" filter="url(#glow)" />
+    <path d="M-100,340 C300,140 500,540 900,390 C1300,240 1500,490 1700,290" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6,6" opacity="0.6" />
+    <path d="M-50,650 C350,450 650,850 1050,600 C1350,400 1550,750 1750,550" fill="none" stroke="url(#ecgGrad)" stroke-width="2.5" filter="url(#glow)" />
+  </g>
+
+  <!-- 5. Neon Medical Heartbeat Pulse / ECG Line Trace -->
+  <g opacity="0.5" filter="url(#glow)">
+    <path d="M0,450 L350,450 L380,450 L400,410 L420,500 L440,360 L465,530 L485,430 L505,465 L525,450 L850,450 L870,415 L890,495 L910,380 L935,520 L955,430 L975,450 L1600,450" 
+          fill="none" stroke="url(#ecgGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- 6. Floating Healthcare Cross Elements & Modern Hexagons -->
+  <g opacity="0.25" fill="#ffffff">
+    <!-- Cross 1 -->
+    <path d="M 180 320 h 20 v -20 h 12 v 20 h 20 v 12 h -20 v 20 h -12 v -20 h -20 z" opacity="0.5" />
+    <!-- Cross 2 -->
+    <path d="M 1380 480 h 24 v -24 h 14 v 24 h 24 v 14 h -24 v 24 h -14 v -24 h -24 z" opacity="0.6" />
+    <!-- Cross 3 -->
+    <path d="M 720 180 h 16 v -16 h 10 v 16 h 16 v 10 h -16 v 16 h -10 v -16 h -16 z" opacity="0.4" />
+    <!-- Cross 4 -->
+    <path d="M 1120 220 h 18 v -18 h 10 v 18 h 18 v 10 h -18 v 18 h -10 v -18 h -18 z" opacity="0.45" />
+    <!-- Cross 5 -->
+    <path d="M 320 680 h 18 v -18 h 10 v 18 h 18 v 10 h -18 v 18 h -10 v -18 h -18 z" opacity="0.4" />
+  </g>
+
+  <!-- 7. Geometric Tech Polygons -->
+  <g opacity="0.2" stroke="#ffffff" stroke-width="1.5" fill="none">
+    <polygon points="120,520 160,495 200,520 200,570 160,595 120,570" />
+    <polygon points="1440,650 1480,625 1520,650 1520,700 1480,725 1440,700" />
+    <polygon points="820,740 850,720 880,740 880,780 850,800 820,780" />
+  </g>
+
+  <!-- 8. Soft Vignette / Lighting Rim -->
+  <rect width="1600" height="900" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.1" />
+</svg>

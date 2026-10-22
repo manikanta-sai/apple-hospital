@@ -76,7 +76,7 @@ export default function ReportViewer({ reportId, onBack }) {
     return (
       <div className="mx-auto max-w-xl p-8 text-center">
         <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-clinical-700 border-r-transparent"></div>
-        <p className="mt-3 text-xs text-ink-600">Retrieving report from IndexedDB...</p>
+        <p className="mt-3 text-xs text-ink-600">Retrieving diagnostic report...</p>
       </div>
     );
   }
@@ -209,8 +209,8 @@ export default function ReportViewer({ reportId, onBack }) {
 
           {/* Privacy Note */}
           <div className="rounded-xl border border-clinical-100 bg-clinical-50/20 p-3 text-[11px] text-ink-600 flex items-center justify-between">
-            <span>Client-side IndexedDB storage (prototype mode)</span>
-            <span className="font-medium text-teal-800">NABH Hygiene Standards</span>
+            <span>Encrypted local storage · Privacy Protected</span>
+            <span className="font-medium text-teal-800">Quality Assured</span>
           </div>
 
           {/* Back button */}

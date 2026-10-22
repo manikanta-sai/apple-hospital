@@ -158,7 +158,7 @@ export default function AudioPlayer({
     }
 
     const audio = new Audio();
-    audio.preload = "metadata";
+    audio.preload = "none";
     audio.volume = volumeRef.current;
     audio.muted = mutedRef.current;
     audio.playbackRate = playbackSpeed;
@@ -218,6 +218,13 @@ export default function AudioPlayer({
     if (!audioUrl) {
       setIsWaveformLoading(false);
       setWaveformError("Waveform is unavailable for this call.");
+      return () => controller.abort();
+    }
+
+    // For third-party cross-origin URLs that lack permissive CORS headers,
+    // immediately use the precomputed procedural waveform to prevent CORS errors and network stalls.
+    if (isCrossOriginUrl(audioUrl)) {
+      setIsWaveformLoading(false);
       return () => controller.abort();
     }
 

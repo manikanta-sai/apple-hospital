@@ -64,7 +64,7 @@ const AUDIO_URLS = [
   "https://cdn.truefilesize.com/mp3/sample-64kbps.mp3",
   "https://cdn.truefilesize.com/mp3/sample-500kb.mp3",
   "https://cdn.truefilesize.com/mp3/sample-1mb.mp3",
-  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+  "https://cdn.truefilesize.com/mp3/sample-64kbps.mp3",
 ];
 
 // Healthcare-only Multilingual Transcripts
@@ -115,14 +115,14 @@ export const MULTILINGUAL_TRANSCRIPTS = {
   },
   pediatrics: {
     original: [
-      { speaker: "Agent", time: "0:03", text: "Apple Hospital Pediatric Center, good afternoon. How may we care for your child today?" },
+      { speaker: "Agent", time: "0:03", text: "Apple Multispecialty Hospital Pediatric Center, good afternoon. How may we care for your child today?" },
       { speaker: "Patient", time: "0:10", text: "Hello sister, actually ma 18-month baby girl ki DTaP and MMR booster vaccine due undi. Walk-in allowed ah leka appointment theeskovala?" },
       { speaker: "Agent", time: "0:22", text: "Hello ma'am, waiting time avoid cheyadaniki appointment is recommended. Dr. Anita immunization slots today 3:15 PM open ga unnayi." },
       { speaker: "Patient", time: "0:34", text: "3:15 PM is perfect andi. Along with vaccine, baby height and weight milestone growth check bhi kar sakte hain kya?" },
       { speaker: "Agent", time: "0:44", text: "Haanji bilkul, pediatric milestone tracking routine checkup me include hota hai. Please vaccination card carry karna mat bhooliyega." },
     ],
     eng: [
-      { speaker: "Agent", time: "0:03", text: "Apple Hospital Pediatric Center. How may we care for your child today?" },
+      { speaker: "Agent", time: "0:03", text: "Apple Multispecialty Hospital Pediatric Center. How may we care for your child today?" },
       { speaker: "Patient", time: "0:10", text: "Hi, my 18-month-old daughter is due for her DTaP and MMR booster doses. Are walk-ins accepted or do I need an appointment?" },
       { speaker: "Agent", time: "0:22", text: "We recommend reserving an appointment to avoid waiting room exposure. Dr. Anita has vaccination slots available today at 3:15 PM." },
       { speaker: "Patient", time: "0:34", text: "3:15 PM works nicely. Can we also have her height and weight milestone growth check done?" },
@@ -159,14 +159,14 @@ export const MULTILINGUAL_TRANSCRIPTS = {
   },
   orthopedics: {
     original: [
-      { speaker: "Agent", time: "0:04", text: "Good morning, Apple Hospital Orthopedic Care. How may I direct your inquiry?" },
+      { speaker: "Agent", time: "0:04", text: "Good morning, Apple Multispecialty Hospital Orthopedic Care. How may I direct your inquiry?" },
       { speaker: "Patient", time: "0:12", text: "Hello, actually morning tennis aaduthu kindha paddanu. Right knee severely swollen and bending restriction undi. Dr. Jenkins 1.5T MRI review check cheyali." },
       { speaker: "Agent", time: "0:24", text: "Haanji sir, samajh gaya. Today evening 4:30 PM Dr. Jenkins OPD slot undi, and 3:30 PM radiology lo knee MRI scan scheduled. Slot confirm cheyamantara?" },
       { speaker: "Patient", time: "0:36", text: "Yes please confirm kardo. Hamara cashless health insurance same-day diagnostic imaging cover karta hai kya?" },
       { speaker: "Agent", time: "0:46", text: "Yes sir, hamara insurance desk spot pre-authorization process kar dega. Please carry health policy card and government ID." },
     ],
     eng: [
-      { speaker: "Agent", time: "0:04", text: "Apple Hospital Orthopedic Care. How may I direct your inquiry?" },
+      { speaker: "Agent", time: "0:04", text: "Apple Multispecialty Hospital Orthopedic Care. How may I direct your inquiry?" },
       { speaker: "Patient", time: "0:12", text: "Hello, I fell while playing tennis and my right knee is swollen with restricted bending. Dr. Jenkins requested a 1.5T MRI review." },
       { speaker: "Agent", time: "0:24", text: "We have an emergency orthopedic slot with Dr. Jenkins today at 4:30 PM. Our radiology department can perform the knee MRI at 3:30 PM." },
       { speaker: "Patient", time: "0:36", text: "That is wonderful. Does my cashless health insurance cover the same-day diagnostic imaging?" },
@@ -222,7 +222,7 @@ const CLINICAL_COACHING = [
   ],
   [
     "Reiterate pediatric vaccination booklet checklist and emphasize post-vaccine fever management instructions.",
-    "Ensure parent is registered on the Apple Hospital Patient Portal for automatic milestone growth chart sync.",
+    "Ensure parent is registered on the Apple Multispecialty Hospital Patient Portal for automatic milestone growth chart sync.",
   ],
   [
     "Clarify cashless insurance pre-authorization documentation requirements early in the intake workflow.",
@@ -254,228 +254,250 @@ const REPEAT_MISSED_CLUSTERS = [
  * Varied scores across ranges (0-20, 21-40, 41-60, 61-80, 81-100),
  * Multilingual Healthcare Transcripts.
  */
-export function generateOneMonthCalls() {
+/**
+ * Standard local calendar date helper in YYYY-MM-DD format
+ * Guarantees consistent date handling across all timezones
+ */
+export function getLocalDateString(dateInput = new Date()) {
+  const d = new Date(dateInput);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * Generate 1 day of realistic hospital call center data
+ * @param {number} dayOffset - Days ago (0 = today, 1 = yesterday, etc.)
+ * @param {Date} baseDate - Base date to offset from (defaults to new Date())
+ */
+export function generateCallsForDay(dayOffset = 0, baseDate = new Date()) {
   const calls = [];
-  const now = new Date();
+  const dayDate = new Date(baseDate);
+  dayDate.setDate(baseDate.getDate() - dayOffset);
 
-  // 30 days back from today (Day 0 = Today, Day 1 = Yesterday, etc.)
-  for (let dayOffset = 29; dayOffset >= 0; dayOffset--) {
-    const dayDate = new Date(now);
-    dayDate.setDate(now.getDate() - dayOffset);
+  const isoDate = getLocalDateString(dayDate);
+  const displayDate = dayDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 
-    const year = dayDate.getFullYear();
-    const monthStr = String(dayDate.getMonth() + 1).padStart(2, "0");
-    const dayStr = String(dayDate.getDate()).padStart(2, "0");
-    const isoDate = `${year}-${monthStr}-${dayStr}`;
-    const displayDate = dayDate.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+  // Min 100 calls per day (between 102 and 112 calls/day)
+  const callsForToday = 102 + ((dayOffset * 7) % 11);
 
-    // Min 100 calls per day (between 102 and 112 calls/day)
-    const callsForToday = 102 + ((dayOffset * 7) % 11);
+  for (let c = 1; c <= callsForToday; c++) {
+    const callNum = String(c).padStart(3, "0");
+    const id = `call-${isoDate}-${callNum}`;
 
-    for (let c = 1; c <= callsForToday; c++) {
-      const callNum = String(c).padStart(3, "0");
-      const id = `call-${isoDate}-${callNum}`;
+    const fName = FIRST_NAMES[(dayOffset * 17 + c * 13) % FIRST_NAMES.length];
+    const lName = LAST_NAMES[(dayOffset * 23 + c * 19) % LAST_NAMES.length];
+    let name = `${fName} ${lName}`;
 
-      const fName = FIRST_NAMES[(dayOffset * 17 + c * 13) % FIRST_NAMES.length];
-      const lName = LAST_NAMES[(dayOffset * 23 + c * 19) % LAST_NAMES.length];
-      let name = `${fName} ${lName}`;
+    let phone = `+1 (${200 + ((dayOffset * 31 + c * 7) % 700)}) ${200 + ((dayOffset * 19 + c * 29) % 700)}-${1000 + ((dayOffset * 43 + c * 37) % 9000)}`;
 
-      let phone = `+1 (${200 + ((dayOffset * 31 + c * 7) % 700)}) ${200 + ((dayOffset * 19 + c * 29) % 700)}-${1000 + ((dayOffset * 43 + c * 37) % 9000)}`;
+    const agent = AGENTS[(dayOffset + c) % AGENTS.length];
+    let department = CLINICAL_DEPARTMENTS[(c * 3 + dayOffset) % CLINICAL_DEPARTMENTS.length];
 
-      const agent = AGENTS[(dayOffset + c) % AGENTS.length];
-      let department = CLINICAL_DEPARTMENTS[(c * 3 + dayOffset) % CLINICAL_DEPARTMENTS.length];
+    // Unknown caller distributed across entire month (approx 10-12% of calls)
+    const isUnknownCaller = (c % 9 === 0) || (c % 23 === 0);
+    if (isUnknownCaller) {
+      name = "Unknown Caller";
+    }
 
-      // Unknown caller distributed across entire month (approx 10-12% of calls)
-      const isUnknownCaller = (c % 9 === 0) || (c % 23 === 0);
-      if (isUnknownCaller) {
-        name = "Unknown Caller";
+    // ~18% missed calls, ~82% answered calls
+    const isMissed = (c % 5 === 0) || (c % 17 === 0);
+    const status = isMissed ? "missed" : "answered";
+
+    // Repeating phone numbers for multi-missed call counts (5 missed, 4 missed, 3 missed, 2 missed)
+    if (isMissed && (c % 3 === 0)) {
+      const cluster = REPEAT_MISSED_CLUSTERS[(c + dayOffset) % REPEAT_MISSED_CLUSTERS.length];
+      phone = cluster.phone;
+      department = cluster.tag;
+      if (cluster.name !== "Unknown Caller" && !isUnknownCaller) {
+        name = cluster.name;
       }
+    }
 
-      // ~18% missed calls, ~82% answered calls
-      const isMissed = (c % 5 === 0) || (c % 17 === 0);
-      const status = isMissed ? "missed" : "answered";
+    // Time of call between 8:00 AM and 7:59 PM
+    const hour24 = 8 + Math.floor((c * 12) / callsForToday);
+    const minute = ((c * 7) % 60);
+    const hour12 = hour24 > 12 ? hour24 - 12 : hour24;
+    const ampm = hour24 >= 12 ? "PM" : "AM";
+    const timeStr = `${hour12}:${String(minute).padStart(2, "0")} ${ampm}`;
 
-      // Repeating phone numbers for multi-missed call counts (5 missed, 4 missed, 3 missed, 2 missed)
-      if (isMissed && (c % 3 === 0)) {
-        const cluster = REPEAT_MISSED_CLUSTERS[(c + dayOffset) % REPEAT_MISSED_CLUSTERS.length];
-        phone = cluster.phone;
-        department = cluster.tag;
-        if (cluster.name !== "Unknown Caller" && !isUnknownCaller) {
-          name = cluster.name;
-        }
-      }
+    const deptKey = department === "Pediatrics" ? "pediatrics" : department === "Orthopedics" ? "orthopedics" : "cardiology";
+    const multilingualTranscript = MULTILINGUAL_TRANSCRIPTS[deptKey] || MULTILINGUAL_TRANSCRIPTS.cardiology;
+    const summary = CLINICAL_SUMMARIES[(c + dayOffset) % CLINICAL_SUMMARIES.length];
+    const coaching = CLINICAL_COACHING[(c + dayOffset) % CLINICAL_COACHING.length];
 
-      // Time of call between 8:00 AM and 7:59 PM
-      const hour24 = 8 + Math.floor((c * 12) / callsForToday);
-      const minute = ((c * 7) % 60);
-      const hour12 = hour24 > 12 ? hour24 - 12 : hour24;
-      const ampm = hour24 >= 12 ? "PM" : "AM";
-      const timeStr = `${hour12}:${String(minute).padStart(2, "0")} ${ampm}`;
-
-      const deptKey = department === "Pediatrics" ? "pediatrics" : department === "Orthopedics" ? "orthopedics" : "cardiology";
-      const multilingualTranscript = MULTILINGUAL_TRANSCRIPTS[deptKey] || MULTILINGUAL_TRANSCRIPTS.cardiology;
-      const summary = CLINICAL_SUMMARIES[(c + dayOffset) % CLINICAL_SUMMARIES.length];
-      const coaching = CLINICAL_COACHING[(c + dayOffset) % CLINICAL_COACHING.length];
-
-      // Patient age and gender
-      let age = "";
-      let ageYears = "";
-      let ageMonths = "";
-      let ageDays = "";
-      let gender = (c % 2 === 0) ? "Female" : "Male";
-      if (!isUnknownCaller) {
-        if (department === "Pediatrics") {
-          age = 2 + (c % 14);
-        } else if (department === "Cardiology") {
-          age = 42 + (c % 35);
-        } else if (department === "Orthopedics") {
-          age = 26 + (c % 45);
-        } else {
-          age = 24 + (c % 50);
-        }
-        ageYears = age;
-        if (c % 4 === 0 && age < 10) {
-          ageMonths = (c % 11) + 1;
-        }
-        if (c % 6 === 0 && age < 3) {
-          ageDays = (c % 20) + 5;
-        }
+    // Patient age and gender
+    let age = "";
+    let ageYears = "";
+    let ageMonths = "";
+    let ageDays = "";
+    let gender = (c % 2 === 0) ? "Female" : "Male";
+    if (!isUnknownCaller) {
+      if (department === "Pediatrics") {
+        age = 2 + (c % 14);
+      } else if (department === "Cardiology") {
+        age = 42 + (c % 35);
+      } else if (department === "Orthopedics") {
+        age = 26 + (c % 45);
       } else {
-        gender = "";
+        age = 24 + (c % 50);
       }
+      ageYears = age;
+      if (c % 4 === 0 && age < 10) {
+        ageMonths = (c % 11) + 1;
+      }
+      if (c % 6 === 0 && age < 3) {
+        ageDays = (c % 20) + 5;
+      }
+    } else {
+      gender = "";
+    }
 
-      if (isMissed) {
-        calls.push({
-          id,
-          name,
-          phone,
-          age,
-          ageYears,
-          ageMonths,
-          ageDays,
-          gender,
-          agent,
-          status: "missed",
-          date: isoDate,
-          displayDate,
-          time: timeStr,
-          duration: "00:00:00",
-          durationSeconds: 0,
-          score: (c % 7 === 0) ? 12 : 0, // Score in 0-20 bracket for missed calls
-          outcome: "Missed Call",
-          sentiment: "Neutral",
-          tag: `${department} (Missed)`,
-          audioUrl: "",
-          transcripts: multilingualTranscript,
-          summary: name === "Unknown Caller"
-            ? `Inbound triage call from unidentified caller at ${phone}. No caller ID profile registered in hospital EMR. Requires front-desk callback to register patient.`
-            : `Inbound triage call from patient ${name} was unanswered after 6 rings during peak OPD queue. High-priority callback scheduled.`,
-          highlights: [
-            `Patient called seeking ${department.toLowerCase()} appointment assistance.`,
-            "Automated voicemail registered caller ID and hospital route.",
-            "Requires immediate front-desk callback within 2 hours.",
-          ],
-          improvements: [
-            "Route overflow triage lines to backup reception during rush hours.",
-            "Ensure missed call SMS auto-responder sends instant token booking link.",
-          ],
-        });
+    if (isMissed) {
+      calls.push({
+        id,
+        name,
+        phone,
+        age,
+        ageYears,
+        ageMonths,
+        ageDays,
+        gender,
+        agent,
+        status: "missed",
+        date: isoDate,
+        displayDate,
+        time: timeStr,
+        duration: "00:00:00",
+        durationSeconds: 0,
+        score: (c % 7 === 0) ? 12 : 0, // Score in 0-20 bracket for missed calls
+        outcome: "Missed Call",
+        sentiment: "Neutral",
+        tag: `${department} (Missed)`,
+        audioUrl: "",
+        transcripts: multilingualTranscript,
+        summary: name === "Unknown Caller"
+          ? `Inbound triage call from unidentified caller at ${phone}. No caller ID profile registered in hospital EMR. Requires front-desk callback to register patient.`
+          : `Inbound triage call from patient ${name} was unanswered after 6 rings during peak OPD queue. High-priority callback scheduled.`,
+        highlights: [
+          `Patient called seeking ${department.toLowerCase()} appointment assistance.`,
+          "Automated voicemail registered caller ID and hospital route.",
+          "Requires immediate front-desk callback within 2 hours.",
+        ],
+        improvements: [
+          "Route overflow triage lines to backup reception during rush hours.",
+          "Ensure missed call SMS auto-responder sends instant token booking link.",
+        ],
+      });
+    } else {
+      const durationSec = 50 + ((c * 19 + dayOffset * 7) % 190);
+      const mins = Math.floor(durationSec / 60);
+      const secs = durationSec % 60;
+      const duration = `00:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+
+      // Distribute scores across all ranges: 21-40, 41-60, 61-80, 81-100
+      let score = 85;
+      if (c % 11 === 0) {
+        score = 34 + (c % 7); // 21-40 range (Low)
+      } else if (c % 7 === 0) {
+        score = 52 + (c % 9); // 41-60 range (Fair)
+      } else if (c % 4 === 0) {
+        score = 72 + (c % 8); // 61-80 range (Good)
       } else {
-        const durationSec = 50 + ((c * 19 + dayOffset * 7) % 190);
-        const mins = Math.floor(durationSec / 60);
-        const secs = durationSec % 60;
-        const duration = `00:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-
-        // Distribute scores across all ranges: 21-40, 41-60, 61-80, 81-100
-        let score = 85;
-        if (c % 11 === 0) {
-          score = 34 + (c % 7); // 21-40 range (Low)
-        } else if (c % 7 === 0) {
-          score = 52 + (c % 9); // 41-60 range (Fair)
-        } else if (c % 4 === 0) {
-          score = 72 + (c % 8); // 61-80 range (Good)
-        } else {
-          score = 86 + (c % 12); // 81-100 range (Excellent)
-        }
-
-        let outcome = "Follow up";
-        let sentiment = "Neutral";
-        if (score >= 82) {
-          outcome = "Interested";
-          sentiment = "Positive";
-        } else if (score < 55) {
-          outcome = "Not interested";
-          sentiment = "Negative";
-        }
-
-        let appt = null;
-        let finalSummary = summary;
-        if (outcome === "Interested") {
-          const doc = department === "Pediatrics" ? "Dr. Anita - Senior Pediatrician"
-            : department === "Orthopedics" ? "Dr. Jenkins - Orthopedic Specialist"
-            : department === "Neurology" ? "Dr. Rajeshwar - Neurology Head"
-            : department === "Cardiology" ? "Dr. Sharma - Chief Cardiologist"
-            : "Dr. Priya - General Physician";
-          const slot = ["09:30 AM", "10:30 AM", "11:45 AM", "02:30 PM", "04:15 PM"][c % 5];
-          const mode = c % 3 === 0 ? "Video Tele-Consultation" : "In-Person Hospital OPD";
-          const refNum = `APH-${600000 + ((c * 17) % 399999)}`;
-          const remarks = `Scheduled clinical evaluation in ${department.toLowerCase()}. Fasting lab test preparation instructions issued.`;
-          appt = {
-            refNumber: refNum,
-            doctor: doc,
-            date: displayDate,
-            time: slot,
-            mode,
-            remarks,
-            status: "confirmed",
-            bookedAt: timeStr,
-            smsSent: true,
-            whatsappSent: true,
-          };
-          finalSummary = `${summary} [Appointment Booked: Ref #${refNum} with ${doc.split(" - ")[0]} on ${displayDate} at ${slot} (${mode}) - Remarks: ${remarks}].`;
-        }
-
-        const audioUrl = AUDIO_URLS[(c + dayOffset) % AUDIO_URLS.length];
-
-        calls.push({
-          id,
-          name,
-          phone,
-          age,
-          ageYears,
-          ageMonths,
-          ageDays,
-          gender,
-          agent,
-          status: "answered",
-          date: isoDate,
-          displayDate,
-          time: timeStr,
-          duration,
-          durationSeconds: durationSec,
-          score,
-          outcome,
-          sentiment,
-          tag: department,
-          audioUrl,
-          transcripts: multilingualTranscript,
-          summary: finalSummary,
-          appointment: appt,
-          highlights: [
-            `Confirmed ${department.toLowerCase()} consultation protocol and specialist doctor timings.`,
-            "Addressed insurance cashless pre-authorization and patient onboarding questions.",
-            "Clear clinical action plan outlined and verified with the patient.",
-          ],
-          improvements: coaching,
-        });
+        score = 86 + (c % 12); // 81-100 range (Excellent)
       }
+
+      let outcome = "Follow up";
+      let sentiment = "Neutral";
+      if (score >= 82) {
+        outcome = "Interested";
+        sentiment = "Positive";
+      } else if (score < 55) {
+        outcome = "Not interested";
+        sentiment = "Negative";
+      }
+
+      let appt = null;
+      let finalSummary = summary;
+      if (outcome === "Interested") {
+        const doc = department === "Pediatrics" ? "Dr. Anita - Senior Pediatrician"
+          : department === "Orthopedics" ? "Dr. Jenkins - Orthopedic Specialist"
+          : department === "Neurology" ? "Dr. Rajeshwar - Neurology Head"
+          : department === "Cardiology" ? "Dr. Sharma - Chief Cardiologist"
+          : "Dr. Priya - General Physician";
+        const slot = ["09:30 AM", "10:30 AM", "11:45 AM", "02:30 PM", "04:15 PM"][c % 5];
+        const mode = c % 3 === 0 ? "Video Tele-Consultation" : "In-Person Hospital OPD";
+        const refNum = `APH-${600000 + ((c * 17) % 399999)}`;
+        const remarks = `Scheduled clinical evaluation in ${department.toLowerCase()}. Fasting lab test preparation instructions issued.`;
+        appt = {
+          refNumber: refNum,
+          doctor: doc,
+          date: displayDate,
+          time: slot,
+          mode,
+          remarks,
+          status: "confirmed",
+          bookedAt: timeStr,
+          smsSent: true,
+          whatsappSent: true,
+        };
+        finalSummary = `${summary} [Appointment Booked: Ref #${refNum} with ${doc.split(" - ")[0]} on ${displayDate} at ${slot} (${mode}) - Remarks: ${remarks}].`;
+      }
+
+      const audioUrl = AUDIO_URLS[(c + dayOffset) % AUDIO_URLS.length];
+
+      calls.push({
+        id,
+        name,
+        phone,
+        age,
+        ageYears,
+        ageMonths,
+        ageDays,
+        gender,
+        agent,
+        status: "answered",
+        date: isoDate,
+        displayDate,
+        time: timeStr,
+        duration,
+        durationSeconds: durationSec,
+        score,
+        outcome,
+        sentiment,
+        tag: department,
+        audioUrl,
+        transcripts: multilingualTranscript,
+        summary: finalSummary,
+        appointment: appt,
+        highlights: [
+          `Confirmed ${department.toLowerCase()} consultation protocol and specialist doctor timings.`,
+          "Addressed insurance cashless pre-authorization and patient onboarding questions.",
+          "Clear clinical action plan outlined and verified with the patient.",
+        ],
+        improvements: coaching,
+      });
     }
   }
 
+  return calls;
+}
+
+/**
+ * Generate 30 days of realistic hospital call center data
+ * Minimum 100 calls per day (total 3,150+ calls)
+ */
+export function generateOneMonthCalls(baseDate = new Date()) {
+  const calls = [];
+  // 30 days back from baseDate (Day 0 = Today, Day 1 = Yesterday, etc.)
+  for (let dayOffset = 29; dayOffset >= 0; dayOffset--) {
+    calls.push(...generateCallsForDay(dayOffset, baseDate));
+  }
   return calls;
 }
 
@@ -518,14 +540,69 @@ export function openCallCenterDB() {
 }
 
 /**
- * Seed database with full 1-month 100+ calls/day dataset if empty or outdated
+ * Insert an array of call records into IndexedDB within a readwrite transaction
+ */
+export async function insertCallsToDB(db, callsToInsert) {
+  if (!callsToInsert || callsToInsert.length === 0) return;
+  return new Promise((resolve, reject) => {
+    try {
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      const store = tx.objectStore(STORE_NAME);
+      for (const call of callsToInsert) {
+        store.put(call);
+      }
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => reject(tx.error);
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+/**
+ * Get call count in store
+ */
+function getCallCount(db) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, "readonly");
+    const store = tx.objectStore(STORE_NAME);
+    const countReq = store.count();
+    countReq.onsuccess = () => resolve(countReq.result);
+    countReq.onerror = () => reject(countReq.error);
+  });
+}
+
+/**
+ * Get call count for a specific local date (YYYY-MM-DD)
+ */
+export function getCallCountForDate(db, isoDate) {
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(STORE_NAME, "readonly");
+      const store = tx.objectStore(STORE_NAME);
+      const idx = store.index("date");
+      const countReq = idx.count(IDBKeyRange.only(isoDate));
+      countReq.onsuccess = () => resolve(countReq.result || 0);
+      countReq.onerror = () => resolve(0);
+    } catch {
+      resolve(0);
+    }
+  });
+}
+
+/**
+ * Seed database with full 1-month 100+ calls/day dataset if empty or outdated.
+ * Always verifies that today's date exists in IndexedDB; if missing or empty,
+ * automatically generates and inserts today's demo batch so metric counts remain
+ * complete and never drop on initial load.
  */
 export async function seedCallCenterDBIfEmpty() {
   try {
     const db = await openCallCenterDB();
     const count = await getCallCount(db);
-    let needsReseed = count < 2000;
-    if (!needsReseed) {
+    let needsFullReseed = count < 2500;
+
+    if (!needsFullReseed) {
       // Check if seeded calls have appointment data
       const sample = await new Promise((resolve) => {
         const tx = db.transaction(STORE_NAME, "readonly");
@@ -546,11 +623,11 @@ export async function seedCallCenterDBIfEmpty() {
         req.onerror = () => resolve(null);
       });
       if (!sample) {
-        needsReseed = true;
+        needsFullReseed = true;
       }
     }
 
-    if (needsReseed) {
+    if (needsFullReseed) {
       const tx = db.transaction(STORE_NAME, "readwrite");
       const store = tx.objectStore(STORE_NAME);
       store.clear();
@@ -561,23 +638,34 @@ export async function seedCallCenterDBIfEmpty() {
         tx.oncomplete = resolve;
         tx.onerror = () => reject(tx.error);
       });
+      return;
+    }
+
+    // Existing database with full history:
+    // Check whether today's local date exists in IndexedDB
+    const todayIso = getLocalDateString(new Date());
+    const todayCount = await getCallCountForDate(db, todayIso);
+
+    if (todayCount < 50) {
+      // Today's demo data does not exist yet (e.g. new calendar day or previous incomplete seed)
+      const todayCalls = generateCallsForDay(0, new Date());
+      await insertCallsToDB(db, todayCalls);
+    }
+
+    // Also check and ensure the past 7 days have continuous records
+    for (let offset = 1; offset <= 7; offset++) {
+      const pastDate = new Date();
+      pastDate.setDate(pastDate.getDate() - offset);
+      const pastIso = getLocalDateString(pastDate);
+      const pastCount = await getCallCountForDate(db, pastIso);
+      if (pastCount < 50) {
+        const pastCalls = generateCallsForDay(offset, new Date());
+        await insertCallsToDB(db, pastCalls);
+      }
     }
   } catch (err) {
     console.warn("IndexedDB seed error:", err);
   }
-}
-
-/**
- * Get call count in store
- */
-function getCallCount(db) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readonly");
-    const store = tx.objectStore(STORE_NAME);
-    const countReq = store.count();
-    countReq.onsuccess = () => resolve(countReq.result);
-    countReq.onerror = () => reject(countReq.error);
-  });
 }
 
 /**

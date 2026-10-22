@@ -35,6 +35,9 @@ import {
   X,
 } from "lucide-react";
 import AudioPlayer from "./AudioPlayer.jsx";
+import RouteTopBar from "./common/RouteTopBar.jsx";
+import AnimatedCounter from "./common/AnimatedCounter.jsx";
+import { AnimatedKpiCard } from "./common/ChartAnimations.jsx";
 import {
   getAllCallsFromDB,
   calculateCallMetrics,
@@ -43,6 +46,7 @@ import {
   addCallToDB,
   SEED_CALLS,
   MULTILINGUAL_TRANSCRIPTS,
+  getLocalDateString,
 } from "../services/callCenterDb.js";
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
@@ -213,6 +217,7 @@ function formatPatientTableAge(call) {
 
 export default function InsightsDashboard({ navigateTo }) {
   const [calls, setCalls] = useState(SEED_CALLS);
+  const [isDbLoaded, setIsDbLoaded] = useState(false);
   const [selectedCallId, setSelectedCallId] = useState(SEED_CALLS[0].id);
   const [activeCallTab, setActiveCallTab] = useState("summary");
   const [searchFilter, setSearchFilter] = useState("");
@@ -336,9 +341,11 @@ export default function InsightsDashboard({ navigateTo }) {
             setSelectedCallId(loadedCalls[0].id);
           }
         }
+        if (isMounted) setIsDbLoaded(true);
       })
       .catch((err) => {
         console.warn("IndexedDB load error:", err);
+        if (isMounted) setIsDbLoaded(true);
       });
 
     return () => {
@@ -371,14 +378,14 @@ export default function InsightsDashboard({ navigateTo }) {
     return map;
   }, [calls]);
 
-  // Date boundaries for dynamic filtering
+  // Date boundaries for dynamic filtering using local calendar date (YYYY-MM-DD)
   const dateThresholds = useMemo(() => {
     const now = new Date();
-    const todayIso = now.toISOString().slice(0, 10);
+    const todayIso = getLocalDateString(now);
 
     const dYesterday = new Date(now);
     dYesterday.setDate(now.getDate() - 1);
-    const yesterdayIso = dYesterday.toISOString().slice(0, 10);
+    const yesterdayIso = getLocalDateString(dYesterday);
 
     const d7 = new Date(now);
     d7.setDate(now.getDate() - 7);
@@ -391,10 +398,10 @@ export default function InsightsDashboard({ navigateTo }) {
     return {
       today: todayIso,
       yesterday: yesterdayIso,
-      "7d": d7.toISOString().slice(0, 10),
-      "30d": d30.toISOString().slice(0, 10),
-      "90d": d90.toISOString().slice(0, 10),
-      year: dYear.toISOString().slice(0, 10),
+      "7d": getLocalDateString(d7),
+      "30d": getLocalDateString(d30),
+      "90d": getLocalDateString(d90),
+      year: getLocalDateString(dYear),
     };
   }, []);
 
@@ -692,7 +699,7 @@ export default function InsightsDashboard({ navigateTo }) {
   const handleOpenBooking = () => {
     setAppointmentForm({
       doctor: "Dr. Sharma - Chief Cardiologist",
-      date: new Date(Date.now() + 86400000).toISOString().split("T")[0],
+      date: getLocalDateString(new Date(Date.now() + 86400000)),
       time: "10:30 AM",
       mode: "In-Person OPD",
       remarks: "Patient requested clinical consultation.",
@@ -704,7 +711,7 @@ export default function InsightsDashboard({ navigateTo }) {
     const existing = selectedCall?.appointment;
     setAppointmentForm({
       doctor: existing?.doctor || "Dr. Sharma - Chief Cardiologist",
-      date: existing?.date || new Date(Date.now() + 86400000).toISOString().split("T")[0],
+      date: existing?.date || getLocalDateString(new Date(Date.now() + 86400000)),
       time: existing?.time || "10:30 AM",
       mode: existing?.mode || "In-Person OPD",
       remarks: "Patient requested appointment time adjustment.",
@@ -890,7 +897,7 @@ export default function InsightsDashboard({ navigateTo }) {
   const handleAnswerIncoming = () => {
     if (!simulatedIncomingCall) return;
     const now = new Date();
-    const isoDate = now.toISOString().split("T")[0];
+    const isoDate = getLocalDateString(now);
     const displayDate = now.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     const timeStr = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
     const id = `call-${isoDate}-${Date.now().toString().slice(-4)}`;
@@ -915,7 +922,7 @@ export default function InsightsDashboard({ navigateTo }) {
       outcome: "Interested",
       sentiment: "Positive",
       tag: simulatedIncomingCall.department,
-      audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      audioUrl: "https://cdn.truefilesize.com/mp3/sample-64kbps.mp3",
       transcripts: MULTILINGUAL_TRANSCRIPTS.cardiology,
       summary: `Live answered triage call from Unknown Caller (${simulatedIncomingCall.phone}). Chief triage routing: ${simulatedIncomingCall.department}. Patient identity intake pending.`,
       highlights: [
@@ -942,7 +949,7 @@ export default function InsightsDashboard({ navigateTo }) {
   const handleDeclineIncoming = () => {
     if (!simulatedIncomingCall) return;
     const now = new Date();
-    const isoDate = now.toISOString().split("T")[0];
+    const isoDate = getLocalDateString(now);
     const displayDate = now.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     const timeStr = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
     const id = `call-${isoDate}-${Date.now().toString().slice(-4)}`;
@@ -1057,6 +1064,7 @@ export default function InsightsDashboard({ navigateTo }) {
 
   return (
     <div
+      className="animate-slide-up"
       style={{
         minHeight: "100vh",
         background: "linear-gradient(145deg,#f0f4ff 0%,#faf5ff 45%,#f0fdf9 100%)",
@@ -1072,48 +1080,24 @@ export default function InsightsDashboard({ navigateTo }) {
         <div style={{ position: "absolute", width: 500, height: 500, bottom: -150, right: -100, borderRadius: "50%", background: "radial-gradient(circle,rgba(139,92,246,0.07) 0%,transparent 65%)", filter: "blur(60px)" }} />
       </div>
 
-      {/* ── Header: Back button on LEFT SIDE ── */}
-      <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(255,255,255,0.85)", borderBottom: "1px solid rgba(0,0,0,0.07)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}>
-        <div style={{ padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-          
-          {/* Left Side: Back to Dashboard nav button + Brand */}
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <button
-              type="button"
-              onClick={() => navigateTo("/")}
-              style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 16px", borderRadius: 10, fontSize: 13, fontWeight: 600, background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.08)", color: "#475569", cursor: "pointer", transition: "background 0.18s", fontFamily: "'Inter',sans-serif" }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.07)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.04)")}
-            >
-              <ArrowLeft size={15} aria-hidden="true" />
-              Dashboard
-            </button>
-
-            <div style={{ width: 1, height: 22, background: "rgba(0,0,0,0.08)" }} />
-
-            {/* Brand */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#6366f1,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 4px 12px rgba(99,102,241,0.28)" }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                </svg>
-              </div>
-              <div>
-                <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 15, fontWeight: 700, color: "#0f172a", lineHeight: 1.2 }}>Apple Hospital</p>
-                <p style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1 }}>Digital Health Suite</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Side: Browser IndexedDB badge with active record count */}
+      {/* ── Universal Header matching reference design ── */}
+      <RouteTopBar
+        onBack={() => navigateTo("/")}
+        backLabel="Back to Home"
+        hospitalName="APPLE MULTISPECIALTY HOSPITAL"
+        badge="CALL CENTER TELEPHONY & QA"
+        badgeBg="#ede9fe"
+        badgeColor="#6d28d9"
+        title="Call Center Telephony & Agent Performance"
+        rightControls={
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 99, background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.22)", color: "#047857", fontSize: 12, fontWeight: 600 }}>
               <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#10b981", boxShadow: "0 0 6px rgba(16,185,129,0.6)" }} />
               IndexedDB ({calls.length.toLocaleString()} calls)
             </span>
           </div>
-        </div>
-      </header>
+        }
+      />
 
       {/* ── Main ── */}
       <main style={{ padding: "32px 24px 80px", position: "relative", zIndex: 1 }}>
@@ -1444,35 +1428,36 @@ export default function InsightsDashboard({ navigateTo }) {
             width: "100%",
           }}
         >
-          {statCards.map((card) => {
+          {statCards.map((card, idx) => {
             const Icon = card.icon;
             return (
-              <div
-                key={card.label}
-                style={{ ...GLASS, borderRadius: 16, padding: "16px 18px", position: "relative", overflow: "hidden", transition: "transform 0.2s,box-shadow 0.2s" }}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.10)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = GLASS.boxShadow; }}
-              >
-                {/* Glow orb */}
-                <div style={{ position: "absolute", top: -30, right: -30, width: 90, height: 90, borderRadius: "50%", background: `radial-gradient(circle,${card.glow},transparent 70%)`, pointerEvents: "none" }} />
+              <AnimatedKpiCard key={card.label} index={idx} staggerMs={55}>
+                <div
+                  style={{ ...GLASS, borderRadius: 16, padding: "16px 18px", position: "relative", overflow: "hidden", transition: "transform 0.2s,box-shadow 0.2s", height: "100%" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.10)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = GLASS.boxShadow; }}
+                >
+                  {/* Glow orb */}
+                  <div style={{ position: "absolute", top: -30, right: -30, width: 90, height: 90, borderRadius: "50%", background: `radial-gradient(circle,${card.glow},transparent 70%)`, pointerEvents: "none" }} />
 
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                  <span style={{ fontSize: 12, fontWeight: 500, color: "#64748b" }}>{card.label}</span>
-                  <span style={{ width: 32, height: 32, borderRadius: 9, background: card.iconBg, border: `1px solid ${card.iconBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <Icon size={15} color={card.iconColor} aria-hidden="true" />
-                  </span>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: "#64748b" }}>{card.label}</span>
+                    <span style={{ width: 32, height: 32, borderRadius: 9, background: card.iconBg, border: `1px solid ${card.iconBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Icon size={15} color={card.iconColor} aria-hidden="true" />
+                    </span>
+                  </div>
+
+                  <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 24, fontWeight: 800, color: "#0f172a", lineHeight: 1 }}>
+                    <AnimatedCounter value={card.value} />
+                    {card.valueSuffix && <span style={{ fontSize: 13, fontWeight: 500, color: "#94a3b8" }}>{card.valueSuffix}</span>}
+                  </p>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: card.deltaColor, background: card.deltaBg, padding: "2px 7px", borderRadius: 99 }}>{card.delta}</span>
+                    {card.deltaLabel && <span style={{ fontSize: 11, color: "#94a3b8" }}>{card.deltaLabel}</span>}
+                  </div>
                 </div>
-
-                <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 24, fontWeight: 800, color: "#0f172a", lineHeight: 1 }}>
-                  {card.value}
-                  {card.valueSuffix && <span style={{ fontSize: 13, fontWeight: 500, color: "#94a3b8" }}>{card.valueSuffix}</span>}
-                </p>
-
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: card.deltaColor, background: card.deltaBg, padding: "2px 7px", borderRadius: 99 }}>{card.delta}</span>
-                  {card.deltaLabel && <span style={{ fontSize: 11, color: "#94a3b8" }}>{card.deltaLabel}</span>}
-                </div>
-              </div>
+              </AnimatedKpiCard>
             );
           })}
         </div>
@@ -2821,14 +2806,23 @@ export default function InsightsDashboard({ navigateTo }) {
                       { label: "Clinical Terminology Clarity", val: selectedCall.status === "missed" ? "N/A" : "94% (High Clinical Precision)", fill: selectedCall.status === "missed" ? 0 : 94 },
                       { label: "Patient Sentiment", val: selectedCall.sentiment, fill: selectedCall.sentiment === "Positive" ? 85 : selectedCall.sentiment === "Negative" ? 30 : 60 },
                       { label: "Triage Empathy & Protocol Adherence", val: selectedCall.status === "missed" ? "0%" : "91% (Compassionate)", fill: selectedCall.status === "missed" ? 0 : 91 },
-                    ].map((row) => (
+                    ].map((row, rIdx) => (
                       <div key={row.label} style={{ border: "1px solid rgba(0,0,0,0.06)", borderRadius: 10, padding: "10px 12px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 5 }}>
                           <span style={{ color: "#64748b" }}>{row.label}</span>
                           <span style={{ fontWeight: 600, color: "#0f172a" }}>{row.val}</span>
                         </div>
-                        <div style={{ width: "100%", height: 5, background: "rgba(0,0,0,0.06)", borderRadius: 99, overflow: "hidden" }}>
-                          <div style={{ width: `${row.fill}%`, height: "100%", background: "linear-gradient(90deg,#6366f1,#8b5cf6)", borderRadius: 99 }} />
+                        <div style={{ width: "100%", height: 6, background: "rgba(0,0,0,0.06)", borderRadius: 99, overflow: "hidden" }}>
+                          <div
+                            style={{
+                              width: `${row.fill}%`,
+                              height: "100%",
+                              background: "linear-gradient(90deg,#6366f1,#8b5cf6)",
+                              borderRadius: 99,
+                              transitionDelay: `${rIdx * 90}ms`,
+                            }}
+                            className="chart-bar-h"
+                          />
                         </div>
                       </div>
                     ))}

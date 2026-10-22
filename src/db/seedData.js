@@ -599,6 +599,199 @@ export const INITIAL_PRESCRIPTIONS = [
 ];
 
 /**
+ * Generate 25+ realistic patient records across the past 30 days
+ */
+export function generatePastMonthData() {
+  const sampleData = [
+    { name: "Kavita Reddy", gender: "Female", age: 34, complaint: "Chronic migraine with visual aura", diag: "Migraine without aura" },
+    { name: "Suresh Kumar", gender: "Male", age: 58, complaint: "Routine Type-2 diabetes and hypertension review", diag: "Type 2 Diabetes Mellitus" },
+    { name: "Mohammed Al-Sayed", gender: "Male", age: 41, complaint: "Severe lower back ache radiating to left thigh", diag: "Lumbar Disc Herniation (L4-L5)" },
+    { name: "Deepa Nair", gender: "Female", age: 29, complaint: "Persistent dry cough post viral infection x 2 weeks", diag: "Post-Viral Bronchial Hyperresponsiveness" },
+    { name: "Arjun Kapoor", gender: "Male", age: 37, complaint: "Epigastric burning and waterbrash after meals", diag: "Gastroesophageal Reflux Disease (GERD)" },
+    { name: "Meenakshi Sundaram", gender: "Female", age: 66, complaint: "Bilateral knee joint crepitus and morning stiffness", diag: "Primary Osteoarthritis of Bilateral Knees" },
+    { name: "Rohan Mehta", gender: "Male", age: 22, complaint: "High grade fever with retro-orbital pain and myalgia", diag: "Acute Viral Syndrome / Dengue Evaluation" },
+    { name: "Ananya Joshi", gender: "Female", age: 31, complaint: "Generalized fatigue, cold intolerance and weight gain", diag: "Primary Hypothyroidism" },
+    { name: "Karthik Swamy", gender: "Male", age: 49, complaint: "Intermittent chest tightness on heavy exertion", diag: "Atypical Chest Pain / Angina Evaluation" },
+    { name: "Bhavna Shah", gender: "Female", age: 52, complaint: "Hot flashes, insomnia and mood fluctuations", diag: "Perimenopausal Vasomotor Symptoms" },
+    { name: "Tanmay Ghosh", gender: "Male", age: 39, complaint: "Right hypochondriac pain with dyspepsia", diag: "Fatty Liver Disease (Grade 2)" },
+    { name: "Sunil Hegde", gender: "Male", age: 61, complaint: "Nocturia and hesitant weak urinary stream", diag: "Benign Prostatic Hyperplasia (BPH)" },
+    { name: "Pooja Chawla", gender: "Female", age: 27, complaint: "Painful urination and lower suprapubic ache", diag: "Acute Uncomplicated Cystitis (UTI)" },
+    { name: "Dinesh Pillai", gender: "Male", age: 44, complaint: "Mild exertional breathlessness, chronic smoker", diag: "Chronic Bronchitis / Early COPD" },
+    { name: "Shreya Mukherjee", gender: "Female", age: 35, complaint: "Severe hair fall and brittle nails with fatigue", diag: "Iron Deficiency Anemia" },
+    { name: "Harish Varma", gender: "Male", age: 50, complaint: "Bilateral pedal edema by evening", diag: "Bilateral Venous Insufficiency" },
+    { name: "Fatima Khan", gender: "Female", age: 24, complaint: "Acute sore throat with difficulty swallowing", diag: "Acute Streptococcal Pharyngotonsillitis" },
+    { name: "Girish Rao", gender: "Male", age: 63, complaint: "Tremors in right hand and stooped gait", diag: "Essential Tremors vs Early Parkinsonism" },
+    { name: "Nandini Iyer", gender: "Female", age: 48, complaint: "Severe cervical spine stiffness and shoulder pain", diag: "Cervical Spondylosis with Radiculopathy" },
+    { name: "Vikas Bansal", gender: "Male", age: 33, complaint: "Allergic rhinitis and frequent morning sneezing", diag: "Perennial Allergic Rhinitis" },
+    { name: "Swati Deshmukh", gender: "Female", age: 42, complaint: "Right upper quadrant colicky pain after fatty meal", diag: "Biliary Colic / Cholelithiasis" },
+    { name: "Amitabh Sen", gender: "Male", age: 71, complaint: "Gradual memory lapses and daytime drowsiness", diag: "Mild Cognitive Impairment / Age-related" },
+    { name: "Lavanya Balan", gender: "Female", age: 26, complaint: "Irregular menstrual cycles and facial acne", diag: "Polycystic Ovarian Syndrome (PCOS)" },
+    { name: "Rameshwar Prasad", gender: "Male", age: 55, complaint: "Acute gouty pain and swelling in right great toe", diag: "Acute Gouty Arthritis" },
+    { name: "Geeta Kulkarni", gender: "Female", age: 60, complaint: "Routine hypertension and dyslipidemia checkup", diag: "Essential Hypertension with Mixed Dyslipidemia" },
+  ];
+
+  const pastPatients = [];
+  const pastPrescriptions = [];
+
+  sampleData.forEach((item, index) => {
+    // Scheduled appointments spread across today (Live Queue)
+    const minutesAgo = (25 - index) * 12; // 12m to 300m ago today
+    const daysAgo = Math.floor(index / 5);
+    const recordTime = new Date(Date.now() - minutesAgo * 60 * 1000);
+    const patId = `pat_live_${String(index + 1).padStart(2, "0")}`;
+    const rxId = `rx_live_${String(index + 1).padStart(2, "0")}`;
+    const uhidNum = 10500 + index + 1;
+
+    // Distribute queue statuses across Kanban lanes so all 31 patients populate the live triage board:
+    // index 0..6 (7 patients): waiting (walk_in)
+    // index 7..10 (4 patients): waiting (tele_consultation)
+    // index 11..13 (3 patients): draft_labs (walk_in)
+    // index 14..22 (9 patients): completed
+    // index 23..24 (2 patients): no_show / cancelled
+    let queueStatus = "waiting";
+    let consultationType = "walk_in";
+    let isFinalized = false;
+    let tokenNumber = "";
+
+    if (index < 7) {
+      queueStatus = "waiting";
+      consultationType = "walk_in";
+      tokenNumber = `#W-${String(7 + index).padStart(2, "0")}`;
+    } else if (index < 11) {
+      queueStatus = "waiting";
+      consultationType = "tele_consultation";
+      tokenNumber = `#TC-${String(3 + (index - 7)).padStart(2, "0")}`;
+    } else if (index < 14) {
+      queueStatus = "draft_labs";
+      consultationType = "walk_in";
+      tokenNumber = `#W-${String(14 + (index - 11)).padStart(2, "0")}`;
+    } else if (index < 23) {
+      queueStatus = "completed";
+      consultationType = index % 3 === 0 ? "tele_consultation" : "walk_in";
+      tokenNumber = consultationType === "tele_consultation"
+        ? `#TC-${String(7 + (index - 14)).padStart(2, "0")}`
+        : `#W-${String(17 + (index - 14)).padStart(2, "0")}`;
+      isFinalized = true;
+    } else {
+      queueStatus = "no_show";
+      consultationType = "walk_in";
+      tokenNumber = `#W-${String(26 + (index - 23)).padStart(2, "0")}`;
+    }
+
+    const patient = {
+      id: patId,
+      uhid: `UHID-${uhidNum}`,
+      tokenNumber,
+      name: item.name,
+      age: item.age,
+      gender: item.gender,
+      bloodGroup: ["A+", "B+", "O+", "AB+", "O-"][index % 5],
+      phone: `+91 98${index}10 ${2000 + index}`,
+      isPregnant: item.gender === "Female" && index % 6 === 0,
+      pregnancyDetails:
+        item.gender === "Female" && index % 6 === 0
+          ? { trimester: "2nd", gestationalWeeks: 24, edd: "2027-02-15" }
+          : null,
+      isHandicapped: index % 7 === 0,
+      allergies: index % 5 === 0 ? ["Penicillin (Mild)"] : index % 8 === 0 ? ["Sulfa"] : ["NKDA"],
+      vitals: {
+        bp: `${110 + (index % 6) * 6}/${70 + (index % 4) * 5}`,
+        pulse: 72 + (index % 5) * 4,
+        temp: 98.4 + (index % 3) * 0.4,
+        spo2: 98 - (index % 2),
+        weight: 55 + (index % 8) * 4,
+        bmi: +(21 + (index % 7) * 1.2).toFixed(1),
+      },
+      queueStatus,
+      consultationType,
+      visitType: index % 2 === 0 ? "follow_up" : "new",
+      priority: index % 4 === 0 ? "urgent" : "normal",
+      chiefComplaintSummary: item.complaint,
+      scheduledTime: `${8 + Math.floor(index / 3)}:${(index % 3) * 20 || "00"} AM`,
+      consultationStartTime: recordTime.toISOString(),
+      createdAt: recordTime.toISOString(),
+      updatedAt: recordTime.toISOString(),
+    };
+
+    const prescription = {
+      id: rxId,
+      patientId: patId,
+      status:
+        queueStatus === "completed"
+          ? "finalized"
+          : queueStatus === "draft_labs"
+          ? "awaiting_labs"
+          : "draft",
+      isFinalized,
+      chiefComplaints: [
+        {
+          id: `cc_hist_${index}`,
+          complaint: item.complaint,
+          duration: `${daysAgo + 2}`,
+          durationUnit: "Days",
+          severity: index % 3 === 0 ? "Severe" : index % 2 === 0 ? "Moderate" : "Mild",
+          bodyPartId: "General",
+        },
+      ],
+      clinicalObservations: `Systemic examination conducted on ${recordTime.toLocaleDateString(
+        "en-IN"
+      )}. Cardiovascular: S1/S2 heard, no murmur. Respiratory: Vesicular breath sounds clear. Abdomen: Soft.`,
+      diagnosis: {
+        provisional: item.diag,
+        final: queueStatus === "completed" ? item.diag : "",
+        icd10Code: `M${10 + index}.0`,
+      },
+      medications: [
+        {
+          id: `med_hist_${index}_1`,
+          drugName: "Tab. Paracetamol 650mg",
+          genericName: "Paracetamol 650mg",
+          form: "Tablet",
+          dosage: "1 Tab",
+          frequency: "1-0-1",
+          timing: "After Food",
+          durationDays: 5,
+          totalQuantity: 10,
+          instructions: "Take SOS or as prescribed",
+        },
+        {
+          id: `med_hist_${index}_2`,
+          drugName: "Cap. Pantoprazole 40mg",
+          genericName: "Pantoprazole 40mg",
+          form: "Capsule",
+          dosage: "1 Cap",
+          frequency: "1-0-0",
+          timing: "Empty Stomach",
+          durationDays: 7,
+          totalQuantity: 7,
+          instructions: "Take 30 mins before breakfast",
+        },
+      ],
+      investigationsOrdered: [
+        { testName: "Complete Blood Count (CBC)", category: "Blood", status: "completed" },
+        { testName: "Random Blood Sugar", category: "Blood", status: "completed" },
+      ],
+      dietaryAdvice: "Drink adequate water. Avoid excessively oily or spicy foods. Follow light walking exercise daily.",
+      referrals: { department: "", doctorName: "", reason: "" },
+      isAdmitRecommended: false,
+      followUp: {
+        timeline: "2 Weeks",
+        date: new Date(recordTime.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+        notes: "Routine follow-up review.",
+      },
+      doctorDetails: DEFAULT_DOCTOR_DETAILS,
+      createdAt: recordTime.toISOString(),
+      updatedAt: recordTime.toISOString(),
+    };
+
+    pastPatients.push(patient);
+    pastPrescriptions.push(prescription);
+  });
+
+  return { pastPatients, pastPrescriptions };
+}
+
+/**
  * Seed all tables in HospitalOPD_DB
  * @param {import('dexie').Dexie} [db]
  */
@@ -610,22 +803,29 @@ export async function seedHospitalData(db = hospitalDb) {
     await db.adminConfig.clear();
     await db.customDictionary.clear();
 
-    await db.patients.bulkAdd(INITIAL_PATIENTS);
-    await db.prescriptions.bulkAdd(INITIAL_PRESCRIPTIONS);
+    const { pastPatients, pastPrescriptions } = generatePastMonthData();
+
+    await db.patients.bulkAdd([...INITIAL_PATIENTS, ...pastPatients]);
+    await db.prescriptions.bulkAdd([...INITIAL_PRESCRIPTIONS, ...pastPrescriptions]);
     await db.adminConfig.bulkAdd(INITIAL_ADMIN_CONFIG);
     await db.customDictionary.bulkAdd(INITIAL_CUSTOM_DICTIONARY);
   });
 }
 
 /**
- * Seed initial data if the database is currently empty.
+ * Seed initial data if the database is currently empty or needs version upgrade for all 31 live patients.
  * @param {import('dexie').Dexie} [db]
  */
 export async function seedInitialDataIfEmpty(db = hospitalDb) {
   try {
     const patientCount = await db.patients.count();
-    if (patientCount === 0) {
+    const hasLatestSeed = typeof localStorage !== "undefined" && localStorage.getItem("opd_seed_v7");
+    // If empty or older dataset without full 31 live patients, re-seed!
+    if (patientCount < 30 || !hasLatestSeed) {
       await seedHospitalData(db);
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem("opd_seed_v7", "true");
+      }
     }
   } catch (err) {
     console.error("seedInitialDataIfEmpty error:", err);

@@ -24,6 +24,7 @@ const QUICK_FINDINGS = [
 export default function ClinicalObservationsModule({
   observations = "",
   onChange = () => {},
+  hideHeader = false,
 }) {
   const handleInsertNormal = () => {
     if (observations.trim()) {
@@ -42,38 +43,43 @@ export default function ClinicalObservationsModule({
   };
 
   return (
-    <div
-      style={{
-        background: "rgba(255, 255, 255, 0.90)",
-        backdropFilter: "blur(14px)",
-        border: "1px solid #e2e8f0",
-        borderRadius: 18,
-        boxShadow: "0 2px 12px rgba(0,0,0,0.02)",
-      }}
-      className="p-4 sm:p-5 space-y-3.5"
-    >
+    <div className={hideHeader ? "space-y-3.5" : "p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-3.5"}>
       {/* Section Header */}
-      <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 flex-wrap gap-2">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center justify-center font-bold text-xs">
-            2
+      {!hideHeader ? (
+        <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center justify-center font-bold text-xs">
+              2
+            </div>
+            <div>
+              <h3 className="font-bold text-sm text-slate-900">Clinical Observations</h3>
+              <p className="text-[11px] text-slate-500">Systemic physical examination findings</p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-bold text-sm text-slate-900">Clinical Observations</h3>
-            <p className="text-[11px] text-slate-500">Systemic physical examination findings</p>
-          </div>
-        </div>
 
-        {/* Quick Normal Template Button */}
-        <button
-          type="button"
-          onClick={handleInsertNormal}
-          className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
-        >
-          <Sparkles size={12} className="text-emerald-600" />
-          <span>Insert Normal Template</span>
-        </button>
-      </div>
+          {/* Quick Normal Template Button */}
+          <button
+            type="button"
+            onClick={handleInsertNormal}
+            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+          >
+            <Sparkles size={12} className="text-emerald-600" />
+            <span>Insert Normal Template</span>
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between pb-1">
+          <span className="text-xs text-slate-500">Document physical, systemic, and general examination findings</span>
+          <button
+            type="button"
+            onClick={handleInsertNormal}
+            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+          >
+            <Sparkles size={12} className="text-sky-600" />
+            <span>Insert Normal Template</span>
+          </button>
+        </div>
+      )}
 
       {/* Quick Common Findings Chips */}
       <div>

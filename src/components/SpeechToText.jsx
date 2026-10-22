@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, Check, Copy, Download, Info, Mic, RotateCcw, Square } from "lucide-react";
+import { Check, Copy, Download, Info, Mic, RotateCcw, Square } from "lucide-react";
+import RouteTopBar from "./common/RouteTopBar.jsx";
 import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
 
 const LANGUAGES = [
@@ -143,6 +144,7 @@ export default function SpeechToText({ navigateTo }) {
 
   return (
     <div
+      className="animate-slide-up"
       style={{
         minHeight: "100vh",
         background: "linear-gradient(145deg,#f0f4ff 0%,#faf5ff 45%,#f0fdf9 100%)",
@@ -158,54 +160,24 @@ export default function SpeechToText({ navigateTo }) {
         <div style={{ position: "absolute", width: 500, height: 500, bottom: -120, right: -100, borderRadius: "50%", background: "radial-gradient(circle,rgba(14,165,233,0.08) 0%,transparent 65%)", filter: "blur(60px)" }} />
       </div>
 
-      {/* ── Header ── */}
-      <header
-        style={{
-          position: "sticky", top: 0, zIndex: 50,
-          background: "rgba(255,255,255,0.80)",
-          borderBottom: "1px solid rgba(0,0,0,0.07)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-        }}
-      >
-        <div style={{ padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-          {/* Left: Back button + Brand */}
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <button
-              type="button"
-              onClick={() => navigateTo("/")}
-              style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 16px", borderRadius: 10, fontSize: 13, fontWeight: 600, background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.08)", color: "#475569", cursor: "pointer", transition: "background 0.18s" }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.07)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.04)")}
-            >
-              <ArrowLeft size={15} aria-hidden="true" />
-              Dashboard
-            </button>
-
-            <div style={{ width: 1, height: 22, background: "rgba(0,0,0,0.08)" }} />
-
-            {/* Brand */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ width: 34, height: 34, borderRadius: 10, background: "linear-gradient(135deg,#0284c7,#38bdf8)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 4px 12px rgba(2,132,199,0.25)" }}>
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                </svg>
-              </div>
-              <div>
-                <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 15, fontWeight: 700, color: "#0f172a", lineHeight: 1.2 }}>Apple Hospital</p>
-                <p style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1 }}>Digital Health Suite</p>
-              </div>
-            </div>
-          </div>
-
+      {/* ── Universal Header matching reference design ── */}
+      <RouteTopBar
+        onBack={() => navigateTo("/")}
+        backLabel="Back to Home"
+        hospitalName="APPLE MULTISPECIALTY HOSPITAL"
+        badge="SPEECH RECOGNITION"
+        badgeBg="#e0f2fe"
+        badgeColor="#0284c7"
+        title="Multilingual Medical Speech-to-Text"
+        rightControls={
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 99, background: "rgba(2,132,199,0.08)", border: "1px solid rgba(2,132,199,0.20)", color: "#0369a1", fontSize: 12, fontWeight: 600 }}>
               <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#0284c7" }} />
               Live Speech Engine
             </span>
           </div>
-        </div>
-      </header>
+        }
+      />
 
       {/* ── Main ── */}
       <main style={{ padding: "44px 24px 80px", position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto" }}>

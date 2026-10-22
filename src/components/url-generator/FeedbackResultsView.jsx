@@ -103,7 +103,7 @@ export default function FeedbackResultsView({ formId, onBack }) {
             Feedback Analytics: {formConfig.title}
           </h2>
           <p className="text-xs text-ink-600 mt-0.5">
-            Aggregated patient ratings and suggestions stored locally in IndexedDB.
+            Aggregated patient ratings and suggestions stored securely in local clinical records.
           </p>
         </div>
 

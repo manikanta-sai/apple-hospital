@@ -1,15 +1,41 @@
 import { useState } from "react";
 import {
   AlertCircle,
-  CheckCircle2,
+  ArrowLeft,
+  Check,
+  Clock,
   HeartHandshake,
   MessageSquare,
+  ShieldCheck,
   Sparkles,
   Star,
 } from "lucide-react";
 import { db } from "../../db/database";
 import { createLinkRecord } from "../../services/shortUrlService";
 import SuccessScreen from "./SuccessScreen";
+
+const FEEDBACK_PRESETS = [
+  {
+    title: "Inpatient Nursing & Medical Care Experience",
+    badge: "Inpatient / Wards",
+  },
+  {
+    title: "Outpatient Pharmacy, Labs & Billing Review",
+    badge: "OPD Services",
+  },
+  {
+    title: "Emergency Triage & Casualty Department",
+    badge: "Emergency Care",
+  },
+  {
+    title: "Post-Discharge 14-Day Recovery Feedback",
+    badge: "Post-Care Review",
+  },
+  {
+    title: "Maternity & Neonatal Care Assessment",
+    badge: "Specialty Wards",
+  },
+];
 
 export default function FeedbackFormBuilder({ onNavigate }) {
   const [title, setTitle] = useState("Patient Inpatient & Outpatient Care Experience");
@@ -80,153 +106,529 @@ export default function FeedbackFormBuilder({ onNavigate }) {
   }
 
   return (
-    <div className="mx-auto">
-      <div className="rounded-2xl border border-clinical-100 bg-white p-6 sm:p-8 shadow-sm">
-        <div className="border-b border-clinical-100 pb-4 mb-6">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-teal-700">
-            Module 3 · Quality & Patient Experience
-          </span>
-          <h2 className="font-display text-xl font-bold text-clinical-950 mt-1">
+    <div
+      style={{
+        width: "70%",
+        minWidth: 320,
+        margin: "0 auto",
+        boxSizing: "border-box",
+      }}
+    >
+      {/* Back button link */}
+      <div style={{ marginBottom: 14 }}>
+        <button
+          type="button"
+          onClick={() => onNavigate("/")}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            background: "none",
+            border: "none",
+            color: "#64748b",
+            fontSize: 12,
+            fontWeight: 700,
+            cursor: "pointer",
+            padding: "4px 0",
+            transition: "color 0.15s",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "#0d9488")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "#64748b")}
+        >
+          <ArrowLeft size={14} /> Back to Links Dashboard
+        </button>
+      </div>
+
+      {/* Main Glassmorphic Form Card */}
+      <div
+        style={{
+          background: "#ffffff",
+          borderRadius: 20,
+          border: "1px solid #e2e8f0",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.03)",
+          overflow: "hidden",
+        }}
+      >
+        {/* Card Header */}
+        <div
+          style={{
+            padding: "24px 28px",
+            borderBottom: "1px solid #e2e8f0",
+            background: "linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)",
+          }}
+        >
+          <h2
+            style={{
+              fontSize: 20,
+              fontWeight: 800,
+              color: "#0f172a",
+              margin: 0,
+              letterSpacing: "-0.02em",
+            }}
+          >
             Create Patient Feedback Form Link
           </h2>
-          <p className="text-xs text-ink-600 mt-1">
-            Generate mobile-ready 1–5 star rating survey links sent to discharged patients. Responses are aggregated in the Feedback Results view.
+          <p
+            style={{
+              fontSize: 13,
+              color: "#64748b",
+              margin: "6px 0 0 0",
+              lineHeight: 1.5,
+            }}
+          >
+            Generate mobile-optimized 1–5 star patient satisfaction survey links. Discharged patients can submit feedback instantly without app downloads.
           </p>
         </div>
 
-        {errorMessage && (
-          <div className="mb-6 flex items-center gap-2 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-800">
-            <AlertCircle size={16} className="shrink-0 text-rose-600" />
-            <span>{errorMessage}</span>
-          </div>
-        )}
+        {/* Form Body */}
+        <form onSubmit={handleSubmit} style={{ padding: "24px 28px" }}>
+          {errorMessage && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                padding: "12px 14px",
+                borderRadius: 12,
+                background: "#fff1f2",
+                border: "1px solid #fecdd3",
+                color: "#9f1239",
+                fontSize: 12,
+                fontWeight: 600,
+                marginBottom: 20,
+              }}
+            >
+              <AlertCircle size={16} style={{ shrink: 0 }} />
+              <span>{errorMessage}</span>
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Form Title */}
-          <div>
-            <label htmlFor="fbTitle" className="block text-xs font-semibold text-clinical-900 mb-1">
-              Feedback Form Title <span className="text-rose-500">*</span>
-            </label>
-            <input
-              id="fbTitle"
-              type="text"
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Cardiology Department Discharge Feedback"
-              className="w-full rounded-xl border border-clinical-100 bg-clinical-50/40 px-3.5 py-2.5 text-xs text-clinical-950 placeholder:text-ink-300 focus:border-clinical-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-clinical-500/20"
-            />
+          {/* Section 1: Feedback Form Title */}
+          <div
+            style={{
+              padding: "18px 20px",
+              borderRadius: 14,
+              border: "1px solid #e2e8f0",
+              background: "#f8fafc",
+              marginBottom: 20,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                marginBottom: 12,
+              }}
+            >
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 8,
+                  background: "#ede9fe",
+                  color: "#6d28d9",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <HeartHandshake size={15} />
+              </div>
+              <div>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>
+                  Feedback Form Title
+                </span>
+                <span style={{ fontSize: 11, color: "#64748b", marginLeft: 8 }}>
+                  Displayed at the top of the mobile questionnaire
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="fbTitle"
+                style={{
+                  display: "block",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: "#334155",
+                  marginBottom: 6,
+                }}
+              >
+                Form Header / Scope <span style={{ color: "#e11d48" }}>*</span>
+              </label>
+              <input
+                id="fbTitle"
+                type="text"
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Cardiology Department Discharge Feedback"
+                style={{
+                  width: "100%",
+                  boxSizing: "border-box",
+                  padding: "10px 14px",
+                  borderRadius: 10,
+                  border: "1px solid #cbd5e1",
+                  background: "#ffffff",
+                  fontSize: 13,
+                  color: "#0f172a",
+                  fontWeight: 600,
+                  outline: "none",
+                  transition: "border-color 0.15s, box-shadow 0.15s",
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#7c3aed";
+                  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.12)";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "#cbd5e1";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              />
+            </div>
           </div>
 
-          {/* Form Structure Preview Card */}
-          <div className="rounded-xl border border-clinical-100 bg-clinical-50/40 p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-display text-xs font-bold text-clinical-950 flex items-center gap-2">
-                <Sparkles size={14} className="text-teal-600" /> Standard Hospital Rating Questions
-              </h3>
-              <span className="text-[10px] text-ink-600 bg-white border border-clinical-100 px-2 py-0.5 rounded">
-                NABH Standards Compliant
+          {/* Section 2: Form Structure Preview Card */}
+          <div
+            style={{
+              padding: "18px 20px",
+              borderRadius: 14,
+              border: "1px solid #e2e8f0",
+              background: "#ffffff",
+              marginBottom: 20,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 12,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 8,
+                    background: "#fef3c7",
+                    color: "#b45309",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Sparkles size={15} />
+                </div>
+                <div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>
+                    Standard Patient Rating Questions Preview
+                  </span>
+                </div>
+              </div>
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  color: "#475569",
+                  background: "#f1f5f9",
+                  border: "1px solid #e2e8f0",
+                  padding: "3px 8px",
+                  borderRadius: 6,
+                }}
+              >
+                Pre-configured 1–5 Stars
               </span>
             </div>
 
-            <p className="text-xs text-ink-600">
-              Patients will be presented with these three interactive 1–5 star rating questions plus an open suggestion box:
+            <p style={{ fontSize: 12, color: "#64748b", margin: "0 0 12px 0" }}>
+              Discharged patients will respond to these 3 interactive rating questions plus an open improvement comment box:
             </p>
 
-            <div className="space-y-3 pt-1">
-              <div className="rounded-lg bg-white border border-clinical-100 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-clinical-950">
-                    1. Rate the hospital staff.
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {/* Question 1 */}
+              <div
+                style={{
+                  padding: "12px 14px",
+                  borderRadius: 10,
+                  border: "1px solid #f1f5f9",
+                  background: "#f8fafc",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#1e293b" }}>
+                    1. Rate the hospital nursing & attending staff
                   </span>
-                  <span className="text-[10px] font-semibold text-rose-600">Required</span>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: "#e11d48",
+                      background: "#fff1f2",
+                      padding: "2px 6px",
+                      borderRadius: 4,
+                    }}
+                  >
+                    Required
+                  </span>
                 </div>
-                <div className="flex items-center gap-1.5 mt-2 text-amber-400">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} size={16} fill="currentColor" />
+                <div style={{ display: "flex", alignItems: "center", gap: 3, marginTop: 6, color: "#f59e0b" }}>
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} size={15} fill="currentColor" />
                   ))}
-                  <span className="text-[11px] text-ink-600 ml-2">(1 = Very Poor · 5 = Excellent)</span>
+                  <span style={{ fontSize: 11, color: "#94a3b8", marginLeft: 8 }}>
+                    (1 = Very Poor · 5 = Outstanding)
+                  </span>
                 </div>
               </div>
 
-              <div className="rounded-lg bg-white border border-clinical-100 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-clinical-950">
-                    2. Rate the doctor's treatment.
+              {/* Question 2 */}
+              <div
+                style={{
+                  padding: "12px 14px",
+                  borderRadius: 10,
+                  border: "1px solid #f1f5f9",
+                  background: "#f8fafc",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#1e293b" }}>
+                    2. Rate the doctor's clinical consultation & care
                   </span>
-                  <span className="text-[10px] font-semibold text-rose-600">Required</span>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: "#e11d48",
+                      background: "#fff1f2",
+                      padding: "2px 6px",
+                      borderRadius: 4,
+                    }}
+                  >
+                    Required
+                  </span>
                 </div>
-                <div className="flex items-center gap-1.5 mt-2 text-amber-400">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} size={16} fill="currentColor" />
+                <div style={{ display: "flex", alignItems: "center", gap: 3, marginTop: 6, color: "#f59e0b" }}>
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} size={15} fill="currentColor" />
                   ))}
-                  <span className="text-[11px] text-ink-600 ml-2">(1 = Very Poor · 5 = Excellent)</span>
+                  <span style={{ fontSize: 11, color: "#94a3b8", marginLeft: 8 }}>
+                    (1 = Very Poor · 5 = Outstanding)
+                  </span>
                 </div>
               </div>
 
-              <div className="rounded-lg bg-white border border-clinical-100 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-clinical-950">
-                    3. Rate the overall hospital experience.
+              {/* Question 3 */}
+              <div
+                style={{
+                  padding: "12px 14px",
+                  borderRadius: 10,
+                  border: "1px solid #f1f5f9",
+                  background: "#f8fafc",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#1e293b" }}>
+                    3. Rate the overall hospital facility & cleanliness
                   </span>
-                  <span className="text-[10px] font-semibold text-rose-600">Required</span>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: "#e11d48",
+                      background: "#fff1f2",
+                      padding: "2px 6px",
+                      borderRadius: 4,
+                    }}
+                  >
+                    Required
+                  </span>
                 </div>
-                <div className="flex items-center gap-1.5 mt-2 text-amber-400">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} size={16} fill="currentColor" />
+                <div style={{ display: "flex", alignItems: "center", gap: 3, marginTop: 6, color: "#f59e0b" }}>
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} size={15} fill="currentColor" />
                   ))}
-                  <span className="text-[11px] text-ink-600 ml-2">(1 = Very Poor · 5 = Excellent)</span>
+                  <span style={{ fontSize: 11, color: "#94a3b8", marginLeft: 8 }}>
+                    (1 = Very Poor · 5 = Outstanding)
+                  </span>
                 </div>
               </div>
 
-              <div className="rounded-lg bg-white border border-clinical-100 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-clinical-950">
-                    4. Patient Suggestions & Comments
+              {/* Question 4 */}
+              <div
+                style={{
+                  padding: "12px 14px",
+                  borderRadius: 10,
+                  border: "1px solid #f1f5f9",
+                  background: "#f8fafc",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#1e293b" }}>
+                    4. Patient Suggestions & Constructive Comments
                   </span>
-                  <span className="text-[10px] text-ink-600">Optional text box</span>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      color: "#64748b",
+                      background: "#f1f5f9",
+                      padding: "2px 6px",
+                      borderRadius: 4,
+                    }}
+                  >
+                    Optional Textarea
+                  </span>
                 </div>
-                <p className="text-[11px] text-ink-600 mt-1 italic">
-                  "Tell us what we did well or how we can improve our services."
+                <p style={{ fontSize: 11, color: "#64748b", fontStyle: "italic", margin: "6px 0 0 0" }}>
+                  "Tell us what we did exceptionally well or how our hospital can improve your experience."
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Expiration Settings */}
-          <div>
-            <label htmlFor="fbExpiry" className="block text-xs font-semibold text-clinical-900 mb-1">
-              Feedback Link Expiration <span className="text-rose-500">*</span>
-            </label>
-            <select
-              id="fbExpiry"
-              value={expiration}
-              onChange={(e) => setExpiration(e.target.value)}
-              className="w-full rounded-xl border border-clinical-100 bg-clinical-50/40 px-3.5 py-2.5 text-xs text-clinical-950 focus:border-clinical-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-clinical-500/20"
+          {/* Section 3: Expiration Period */}
+          <div
+            style={{
+              padding: "16px 20px",
+              borderRadius: 14,
+              border: "1px solid #e2e8f0",
+              background: "#ffffff",
+              marginBottom: 24,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 16,
+              }}
             >
-              <option value="1 day">1 day (Immediate post-discharge)</option>
-              <option value="7 days">7 days (Standard follow-up survey)</option>
-              <option value="30 days">30 days (Monthly review)</option>
-              <option value="90 days">90 days (Quarterly feedback drive)</option>
-              <option value="Never expires">Never expires</option>
-            </select>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 8,
+                    background: "#f1f5f9",
+                    color: "#475569",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Clock size={16} />
+                </div>
+                <div>
+                  <label
+                    htmlFor="fbExpiry"
+                    style={{
+                      display: "block",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: "#0f172a",
+                    }}
+                  >
+                    Feedback Link Expiration
+                  </label>
+                  <span style={{ fontSize: 11, color: "#64748b" }}>
+                    Post-discharge feedback links typically remain valid for 14 to 30 days
+                  </span>
+                </div>
+              </div>
+
+              <select
+                id="fbExpiry"
+                value={expiration}
+                onChange={(e) => setExpiration(e.target.value)}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: "1px solid #cbd5e1",
+                  background: "#f8fafc",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: "#0f172a",
+                  outline: "none",
+                  cursor: "pointer",
+                }}
+              >
+                <option value="1 day">1 day (Immediate discharge survey)</option>
+                <option value="7 days">7 days (1-week follow-up)</option>
+                <option value="30 days">30 days (Standard monthly review)</option>
+                <option value="90 days">90 days (Quarterly feedback drive)</option>
+                <option value="Never expires">Never expires</option>
+              </select>
+            </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="pt-2 flex items-center justify-end gap-3">
+          {/* Form Actions Footer */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              gap: 10,
+              paddingTop: 12,
+              borderTop: "1px solid #f1f5f9",
+            }}
+          >
             <button
               type="button"
               onClick={handleReset}
-              className="rounded-xl border border-clinical-200 px-4 py-2.5 text-xs font-semibold text-clinical-800 hover:bg-clinical-50 transition"
+              style={{
+                padding: "10px 18px",
+                borderRadius: 10,
+                border: "1px solid #e2e8f0",
+                background: "#ffffff",
+                color: "#475569",
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#f8fafc")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#ffffff")}
             >
               Reset
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 rounded-xl bg-clinical-700 px-6 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-clinical-900 transition disabled:opacity-50"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "10px 24px",
+                borderRadius: 10,
+                border: "none",
+                background: isSubmitting
+                  ? "#94a3b8"
+                  : "linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)",
+                color: "#ffffff",
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+                boxShadow: "0 2px 8px rgba(124,58,237,0.25)",
+                transition: "transform 0.1s, box-shadow 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                if (!isSubmitting) {
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(124,58,237,0.35)";
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(124,58,237,0.25)";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
             >
-              {isSubmitting ? "Creating Form..." : "Generate Short URL"}
+              <HeartHandshake size={14} />
+              {isSubmitting ? "Generating Feedback Link..." : "Create Feedback Form Link"}
             </button>
           </div>
         </form>

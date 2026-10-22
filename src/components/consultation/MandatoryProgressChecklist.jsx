@@ -36,9 +36,12 @@ export default function MandatoryProgressChecklist({
       key: "vitals",
       label: "Vitals Monitoring",
       isMandatory: adminConfig.vitals?.isMandatory ?? true,
-      isCompleted: !!(patient.vitals?.bp && patient.vitals?.pulse),
-      detail: patient.vitals?.bp
-        ? `BP: ${patient.vitals.bp}, HR: ${patient.vitals.pulse || "--"}`
+      isCompleted: !!(
+        (rxForm.vitals?.bp || patient.vitals?.bp) &&
+        (rxForm.vitals?.pulse || patient.vitals?.pulse)
+      ),
+      detail: rxForm.vitals?.bp || patient.vitals?.bp
+        ? `BP: ${rxForm.vitals?.bp || patient.vitals?.bp}, HR: ${rxForm.vitals?.pulse || patient.vitals?.pulse || "--"}`
         : "Blood Pressure & Pulse required",
     },
     {
@@ -46,8 +49,13 @@ export default function MandatoryProgressChecklist({
       key: "allergies",
       label: "Allergy Status Verification",
       isMandatory: adminConfig.allergies?.isMandatory ?? true,
-      isCompleted: (patient.allergies || []).length > 0,
-      detail: (patient.allergies || []).length > 0
+      isCompleted:
+        (rxForm.allergies || []).length > 0 || (patient.allergies || []).length > 0,
+      detail: (rxForm.allergies || []).length > 0
+        ? (Array.isArray(rxForm.allergies)
+            ? rxForm.allergies.map((a) => (typeof a === "string" ? a : a.name)).join(", ")
+            : "Recorded")
+        : (patient.allergies || []).length > 0
         ? patient.allergies.join(", ")
         : "Record allergy or confirm NKDA",
     },
