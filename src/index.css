@@ -157,3 +157,54 @@
     }
   }
 }
+
+/* ==========================================================================
+   Pixel-Perfect NABH Official Prescription Print Styles
+   ========================================================================== */
+@media print {
+  /* Suppress all interactive controls, sidebars, buttons, video, and body maps */
+  nav,
+  header,
+  aside,
+  button,
+  input,
+  select,
+  textarea,
+  .print\:hidden,
+  [class*="print:hidden"] {
+    display: none !important;
+  }
+
+  /* Reset document background & margins for crisp A4 paper printing */
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Ensure the prescription sheet fills the printable page without cutting off */
+  #digital-prescription-sheet {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 10mm 12mm !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    display: block !important;
+  }
+
+  /* Prevent awkward page breaks inside prescription medication rows and cards */
+  tr,
+  .avoid-page-break,
+  #digital-prescription-sheet > div {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}

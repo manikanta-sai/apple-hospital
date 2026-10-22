@@ -9,13 +9,10 @@ export default defineConfig({
   reporter: [['list']],
   use: {
     baseURL: 'http://127.0.0.1:4173',
-    // trace: 'on-first-retry',
-    // screenshot: 'only-on-failure',
-    // video: 'retain-on-failure',
-    trace: 'on',
-    screenshot: 'on',
-    video: 'on',
-    headless: false,
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'off',
+    headless: process.env.PLAYWRIGHT_HEADED === 'true' ? false : true,
   },
   webServer: {
     command: 'npm run preview -- --host 127.0.0.1 --port 4173',
