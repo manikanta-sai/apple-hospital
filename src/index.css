@@ -406,4 +406,58 @@
   transform: scale(1);
 }
 
+/* ==========================================================================
+   Anti-Screenshot, Anti-Cloning & Security Styles
+   ========================================================================== */
+
+/* 1. Clinical Print Protection:
+   General application UI, chatbot, and CRM pages are suppressed in print mode,
+   while authorized clinical documents (#prescription-print-portal & thermal tickets)
+   print cleanly as designed. */
+@media print {
+  #forensic-security-watermark,
+  [role="alert"] {
+    display: none !important;
+  }
+}
+
+/* 2. Anti-selection & anti-drag for confidential UI */
+.secure-content-root {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+/* Allow text inputs and textareas to be typed into normally */
+.secure-content-root input,
+.secure-content-root textarea,
+.secure-content-root [contenteditable="true"] {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
+/* 3. Blackout animations */
+@keyframes secureFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes secureScaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fadeIn {
+  animation: secureFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scaleIn {
+  animation: secureScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+
 
