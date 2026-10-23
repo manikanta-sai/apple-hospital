@@ -65,7 +65,7 @@ export default function InterimLabSlipModal({
           <div className="border-b-2 border-indigo-600 pb-2.5 flex items-start justify-between">
             <div>
               <h2 className="text-base font-black text-slate-900">
-                APPLE MULTISPECIALTY HOSPITAL
+                ABCD Multispecialty Hospital
               </h2>
               <p className="text-[10px] text-indigo-700 font-bold uppercase tracking-wider">
                 Department of Laboratory Medicine & Radiodiagnostics

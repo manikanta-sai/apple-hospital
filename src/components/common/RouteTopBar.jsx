@@ -5,14 +5,14 @@ import { ArrowLeft } from "lucide-react";
  * RouteTopBar
  * Universal top bar header matching the design system in media_1792684589468_a556e91a.png:
  * - Square rounded back button (38x38, border, subtle hover state)
- * - Subtitle: Upper brand label (e.g. APPLE MULTISPECIALTY HOSPITAL) + department/feature badge
+ * - Subtitle: Upper brand label (e.g. ABCD Multispecialty Hospital) + department/feature badge
  * - Title: Bold primary route header
  * - Right Controls: status indicators, action buttons, filters
  */
 export default function RouteTopBar({
   onBack,
   backLabel = "Back to home",
-  hospitalName = "APPLE MULTISPECIALTY HOSPITAL",
+  hospitalName = "ABCD Multispecialty Hospital",
   badge,
   badgeBg = "#e0f2fe",
   badgeColor = "#0369a1",

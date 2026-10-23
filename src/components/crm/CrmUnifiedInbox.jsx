@@ -221,7 +221,7 @@ export default function CrmUnifiedInbox({
       } else if (selectedConversation.department?.includes("Obstetrics")) {
         draft = "Hello Anita ji, we have notified Dr. Sunita Rao. Please report to Triage Counter 2 on arrival; a wheelchair and nurse coordinator have been arranged to assist you immediately.";
       } else {
-        draft = "Thank you for contacting Apple Multispecialty Hospital. We have received your query and our clinical care coordinator is reviewing your details to provide immediate assistance.";
+        draft = "Thank you for contacting ABCD Multispecialty Hospital. We have received your query and our clinical care coordinator is reviewing your details to provide immediate assistance.";
       }
       setMessageText(draft);
       setIsAiGenerating(false);

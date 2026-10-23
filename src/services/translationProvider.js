@@ -36,9 +36,9 @@ const PHRASE_DICTIONARY = {
     es: "Claro, puedes preguntarme sobre médicos específicos, departamentos, seguros o informes de pruebas. ¿Qué te gustaría saber?",
     hi: "बिल्कुल — आप मुझसे विशेष डॉक्टरों, विभागों, बीमा या जांच रिपोर्ट के बारे में पूछ सकते हैं। आप क्या जानना चाहेंगे?",
   },
-  "Apple Multispecialty Hospital, 4th Cross Road, Anna Nagar, Chennai - 600040. Landmark: Opposite Anna Nagar Tower Park.": {
-    es: "Apple Multispecialty Hospital, 4th Cross Road, Anna Nagar, Chennai - 600040. Referencia: frente a Anna Nagar Tower Park.",
-    hi: "Apple Multispecialty Hospital, 4th क्रॉस रोड, अन्ना नगर, चेन्नई - 600040। लैंडमार्क: अन्ना नगर टॉवर पार्क के सामने।",
+  "ABCD Multispecialty Hospital, 4th Cross Road, Anna Nagar, Chennai - 600040. Landmark: Opposite Anna Nagar Tower Park.": {
+    es: "ABCD Multispecialty Hospital, 4th Cross Road, Anna Nagar, Chennai - 600040. Referencia: frente a Anna Nagar Tower Park.",
+    hi: "ABCD Multispecialty Hospital, 4th क्रॉस रोड, अन्ना नगर, चेन्नई - 600040। लैंडमार्क: अन्ना नगर टॉवर पार्क के सामने।",
   },
   "Connecting you to a live agent now — an executive will join this chat shortly. Average wait time is under 3 minutes.": {
     es: "Conectándote con un agente ahora — un ejecutivo se unirá a este chat en breve. El tiempo de espera promedio es menos de 3 minutos.",

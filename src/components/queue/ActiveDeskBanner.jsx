@@ -26,7 +26,7 @@ function formatElapsed(seconds) {
 /**
  * ActiveDeskBanner (Redesigned)
  * -----------------------------
- * Apple Multispecialty Hospital clinical glassmorphic spotlight banner
+ * ABCD Multispecialty Hospital clinical glassmorphic spotlight banner
  * for the live on-going consultation desk (Room 104).
  */
 export default function ActiveDeskBanner({

@@ -1084,7 +1084,7 @@ export default function InsightsDashboard({ navigateTo }) {
       <RouteTopBar
         onBack={() => navigateTo("/")}
         backLabel="Back to Home"
-        hospitalName="APPLE MULTISPECIALTY HOSPITAL"
+        hospitalName="ABCD Multispecialty Hospital"
         badge="CALL CENTER TELEPHONY & QA"
         badgeBg="#ede9fe"
         badgeColor="#6d28d9"

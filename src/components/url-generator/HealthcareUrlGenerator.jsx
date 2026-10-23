@@ -248,7 +248,7 @@ export default function HealthcareUrlGenerator({ navigateTo, initialPath = "/" }
                     color: "#059669",
                   }}
                 >
-                  Apple Multispecialty Hospital
+                  ABCD Multispecialty Hospital
                 </span>
                 <span
                   style={{
@@ -446,7 +446,7 @@ export default function HealthcareUrlGenerator({ navigateTo, initialPath = "/" }
         >
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <ShieldCheck size={15} color="#059669" />
-            <span>Apple Multispecialty Hospital · Patient Information & Smart Link Hub</span>
+            <span>ABCD Multispecialty Hospital · Patient Information & Smart Link Hub</span>
           </div>
           <span style={{ fontSize: 11, color: "#94a3b8" }}>
             Secure Clinical Storage · Cryptographic Collision-Free Short Codes

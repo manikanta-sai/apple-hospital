@@ -226,7 +226,7 @@ export async function seedInitialDataIfEmpty() {
     const surId = await db.surveys.add({
       title: s.title,
       originalUrl: s.url,
-      description: "Apple Multispecialty Hospital quality improvement and accreditation initiative.",
+      description: "ABCD Multispecialty Hospital quality improvement and accreditation initiative.",
       createdAt: now - (i * 86400000 + 40000),
     });
     surveyIds.push({ id: surId, url: s.url, title: s.title });

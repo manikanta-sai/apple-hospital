@@ -232,7 +232,7 @@ export default function QueueKpiStats({
                     color: "#0284c7",
                   }}
                 >
-                  Apple Multispecialty Hospital
+                  ABCD Multispecialty Hospital
                 </span>
                 <span
                   style={{

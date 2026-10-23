@@ -35,7 +35,7 @@ test.describe('OPD Dual-Pane Consultation & Digital Prescription Workspace (Phas
     await expect(page.getByRole('button', { name: 'Advice & Review' })).toBeVisible();
 
     // Verify Right Pane: Live A4 Prescription Sheet
-    await expect(page.getByText('APPLE MULTISPECIALTY HOSPITAL').first()).toBeVisible();
+    await expect(page.getByText('ABCD Multispecialty Hospital').first()).toBeVisible();
     await expect(page.getByText('Live A4 Prescription Preview')).toBeVisible();
     await expect(page.getByText('Dr. Rajesh Sharma, MD').first()).toBeVisible();
     await expect(page.getByText('NMC-48291').first()).toBeVisible();

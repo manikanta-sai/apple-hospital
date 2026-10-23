@@ -119,7 +119,7 @@ export default function SuccessScreen({
       ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
     : "Never expires";
 
-  const smsText = `Dear Patient, your Apple Multispecialty Hospital ${title} is ready. Access securely: ${shareableProductionUrl}. Inquiries: 080-492000.`;
+  const smsText = `Dear Patient, your ABCD Multispecialty Hospital ${title} is ready. Access securely: ${shareableProductionUrl}. Inquiries: 080-492000.`;
 
   return (
     <div className="mx-auto max-w-2xl animate-fade-in-up space-y-6">

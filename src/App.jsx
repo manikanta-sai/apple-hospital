@@ -522,7 +522,7 @@ export default function App() {
               </div>
               <div>
                 <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 15, fontWeight: 700, color: "#0f172a", lineHeight: 1.2 }}>
-                  Apple Multispecialty Hospital
+                  ABCD Multispecialty Hospital
                 </p>
                 <p style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1 }}>Digital Health Suite</p>
               </div>
@@ -699,7 +699,7 @@ export default function App() {
             <div className="h-5 w-px bg-clinical-100" />
             <div>
               <h1 className="font-display text-base font-bold text-clinical-900 leading-tight">
-                Apple Multispecialty Hospital
+                ABCD Multispecialty Hospital
               </h1>
               <p className="text-xs text-ink-600">Patient Portal</p>
             </div>

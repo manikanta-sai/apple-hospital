@@ -81,13 +81,13 @@ export default function ChatMessages({
           {!imageFailed ? (
             <img
               src={HOSPITAL_IMAGE}
-              alt="Apple Multispecialty Hospital building"
+              alt="ABCD Multispecialty Hospital building"
               className="h-32 w-full max-w-[280px] rounded-2xl object-cover shadow-sm"
               onError={() => setImageFailed(true)}
             />
           ) : (
             <div className="flex h-32 w-full max-w-[280px] items-center justify-center rounded-2xl bg-clinical-100 text-clinical-700">
-              <span className="font-display text-sm font-bold">Apple Multispecialty Hospital</span>
+              <span className="font-display text-sm font-bold">ABCD Multispecialty Hospital</span>
             </div>
           )}
 

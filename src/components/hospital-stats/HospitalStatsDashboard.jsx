@@ -181,7 +181,7 @@ export default function HospitalStatsDashboard({ navigateTo }) {
       <RouteTopBar
         onBack={() => navigateTo("/")}
         backLabel="Back to Home"
-        hospitalName="APPLE MULTISPECIALTY HOSPITAL"
+        hospitalName="ABCD Multispecialty Hospital"
         badge="TELEMETRY & OPERATIONS"
         badgeBg="#e0f2fe"
         badgeColor="#0369a1"

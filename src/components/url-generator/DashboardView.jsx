@@ -1475,7 +1475,7 @@ Integrity: Verified Cryptographic Collision-Free Hash
                           const url = getLinkUrls(activeSelectedLink.shortCode).shareableProductionUrl;
                           window.open(
                             `https://api.whatsapp.com/send?text=${encodeURIComponent(
-                              `Apple Multispecialty Hospital Link: ${url}`
+                              `ABCD Multispecialty Hospital Link: ${url}`
                             )}`,
                             "_blank"
                           );
@@ -1526,7 +1526,7 @@ Integrity: Verified Cryptographic Collision-Free Hash
                           const url = getLinkUrls(activeSelectedLink.shortCode).shareableProductionUrl;
                           window.open(
                             `sms:?&body=${encodeURIComponent(
-                              `Apple Multispecialty Hospital: Your secure link is ready: ${url}`
+                              `ABCD Multispecialty Hospital: Your secure link is ready: ${url}`
                             )}`,
                             "_blank"
                           );
@@ -1577,9 +1577,9 @@ Integrity: Verified Cryptographic Collision-Free Hash
                           const url = getLinkUrls(activeSelectedLink.shortCode).shareableProductionUrl;
                           window.open(
                             `mailto:?subject=${encodeURIComponent(
-                              `Apple Multispecialty Hospital - ${activeSelectedLink.title}`
+                              `ABCD Multispecialty Hospital - ${activeSelectedLink.title}`
                             )}&body=${encodeURIComponent(
-                              `Dear Patient,\n\nPlease find your secure hospital link below:\n${url}\n\nWarm regards,\nApple Multispecialty Hospital Team`
+                              `Dear Patient,\n\nPlease find your secure hospital link below:\n${url}\n\nWarm regards,\nABCD Multispecialty Hospital Team`
                             )}`,
                             "_blank"
                           );

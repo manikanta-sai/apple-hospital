@@ -36,7 +36,7 @@ const DEFAULT_PROFILE = {
   phone: "+91 98765 43210",
   email: "dr.sharma@applehospital.in",
   workingHours: "09:00 AM – 02:00 PM & 04:00 PM – 07:00 PM (Mon–Sat)",
-  location: "Apple Multispecialty Hospital, Healthcare Enclave, New Delhi",
+  location: "ABCD Multispecialty Hospital, Healthcare Enclave, New Delhi",
   avatarUrl: "",
   specializations: [
     "Hypertension Management",

@@ -46,7 +46,7 @@ This catches console errors and failed network requests, not just assertion fail
 | Launcher | `getByRole('button', { name: 'Open chat with AI Assist' })` |
 | Send | `getByRole('button', { name: 'Send message' })` |
 | Input | `locator('input[type="text"]').first()` |
-| Demo host | `getByRole('heading', { name: 'Apple Multispecialty Hospital' })` |
+| Demo host | `getByRole('heading', { name: 'ABCD Multispecialty Hospital' })` |
 
 Mock **Timings** reply assertion:
 

@@ -215,7 +215,7 @@ function HandwrittenPrescriptionSheet({
             </h2>
           </div>
           <p className="text-xs text-slate-700 font-semibold mt-0.5">
-            Senior Consultant Physician • Apple Multispecialty Hospital OPD Room 104
+            Senior Consultant Physician • ABCD Multispecialty Hospital OPD Room 104
           </p>
           <p className="text-[11px] text-slate-500 font-mono">
             Reg. No: {doctor.regNo} • Timings: 09:00 AM – 04:00 PM • Tel: +91 44 2839 0000
@@ -436,7 +436,7 @@ function StandardPrescriptionSheet({
                 </div>
                 <div>
                   <h2 className="text-xl font-black tracking-tight leading-none text-white">
-                    APPLE MULTISPECIALTY HOSPITAL
+                    ABCD Multispecialty Hospital
                   </h2>
                   <p className="text-[11px] text-teal-300 font-bold uppercase tracking-wider mt-1">
                     NABH Accredited Tertiary Healthcare & Research Center
@@ -487,7 +487,7 @@ function StandardPrescriptionSheet({
               </div>
               <div>
                 <h2 className="text-lg font-black tracking-tight text-slate-900 leading-none">
-                  APPLE MULTISPECIALTY HOSPITAL
+                  ABCD Multispecialty Hospital
                 </h2>
                 <p className="text-[11px] text-teal-800 font-bold uppercase tracking-wider mt-0.5">
                   Center of Excellence in Clinical Care

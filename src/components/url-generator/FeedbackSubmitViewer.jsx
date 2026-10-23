@@ -120,7 +120,7 @@ export default function FeedbackSubmitViewer({ formId, onBack }) {
             Thank You for Your Feedback!
           </h2>
           <p className="mt-2 text-xs text-ink-600 max-w-md mx-auto leading-relaxed">
-            Your valuable ratings and comments help Apple Multispecialty Hospital continuously improve our clinical care and patient experience.
+            Your valuable ratings and comments help ABCD Multispecialty Hospital continuously improve our clinical care and patient experience.
           </p>
 
           <div className="mt-6 pt-6 border-t border-clinical-100 flex justify-center">
@@ -147,7 +147,7 @@ export default function FeedbackSubmitViewer({ formId, onBack }) {
               <HeartHandshake size={14} /> Patient Experience Survey
             </span>
             <span className="text-[11px] text-ink-600">
-              Apple Multispecialty Hospital
+              ABCD Multispecialty Hospital
             </span>
           </div>
 

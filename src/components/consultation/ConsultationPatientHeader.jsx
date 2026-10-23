@@ -134,7 +134,7 @@ export default function ConsultationPatientHeader({
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.14em", color: "#0284c7" }}>
-                Apple Multispecialty Hospital
+                ABCD Multispecialty Hospital
               </span>
               <span style={{ fontSize: 10, background: "#e0f2fe", color: "#0369a1", padding: "1px 7px", borderRadius: 999, fontWeight: 700 }}>
                 OPD Consultation & AI Rx Desk

@@ -14,7 +14,7 @@ test.describe('OPD Queue & Triage Screen (Phase 2)', () => {
 
   test('displays hospital branding and real-time KPI counters', async ({ page }) => {
     // Branding & Single Hospital Eyebrow
-    await expect(page.getByText('Apple Multispecialty Hospital').first()).toBeVisible();
+    await expect(page.getByText('ABCD Multispecialty Hospital').first()).toBeVisible();
     await expect(page.getByRole('heading', { name: /OPD Queue & Triage Desk/i })).toBeVisible();
     await expect(page.getByText('Dept: General Medicine', { exact: false })).toBeVisible();
     await expect(page.getByText('Dr. Rajesh Sharma, MD', { exact: false }).first()).toBeVisible();
@@ -155,7 +155,7 @@ test.describe('OPD Queue & Triage Screen (Phase 2)', () => {
 
     // Prescription Modal
     await expect(page.getByText(/Finalized Clinical Prescription/i)).toBeVisible();
-    await expect(page.locator('h2', { hasText: 'APPLE MULTISPECIALTY HOSPITAL' })).toBeVisible();
+    await expect(page.locator('h2', { hasText: 'ABCD Multispecialty Hospital' })).toBeVisible();
     await expect(page.getByText(/Allergic Rhinitis/i)).toBeVisible();
     await expect(page.getByText('Tab. Bilastine 20mg', { exact: false })).toBeVisible();
     await expect(page.getByRole('button', { name: /Print Rx/i })).toBeVisible();

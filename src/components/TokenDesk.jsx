@@ -435,7 +435,7 @@ export default function TokenDesk({ currentPath, navigateTo }) {
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.14em", color: "#0284c7" }}>
-                  Apple Multispecialty Hospital
+                  ABCD Multispecialty Hospital
                 </span>
                 <span style={{ fontSize: 11, background: "#e0f2fe", color: "#0369a1", padding: "1px 8px", borderRadius: 999, fontWeight: 700 }}>
                   OPD Floor 1 & 2
@@ -1534,7 +1534,7 @@ export default function TokenDesk({ currentPath, navigateTo }) {
                 </div>
                 <div>
                   <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.14em", color: "#38bdf8" }}>
-                    Apple Multispecialty Hospital · Outpatient Department
+                    ABCD Multispecialty Hospital · Outpatient Department
                   </div>
                   <h2 style={{ fontSize: 24, fontWeight: 800, margin: "2px 0 0 0", letterSpacing: "-0.02em" }}>
                     Patient Calling & Room Display Board
@@ -1655,7 +1655,7 @@ export default function TokenDesk({ currentPath, navigateTo }) {
 
             {/* Board Footer */}
             <div style={{ padding: "14px 28px", background: "#f8fafc", borderTop: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 12, color: "#64748b" }}>
-              <span style={{ fontWeight: 600 }}>Apple Multispecialty Hospital · Patient Information Display System</span>
+              <span style={{ fontWeight: 600 }}>ABCD Multispecialty Hospital · Patient Information Display System</span>
               <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#0284c7", fontWeight: 700 }}>
                 <Clock3 size={14} /> Screen Refreshes Automatically in Real-Time
               </span>
@@ -1779,7 +1779,7 @@ export default function TokenDesk({ currentPath, navigateTo }) {
             {/* Thermal Ticket Design */}
             <div className="printable-thermal-ticket" style={{ border: "2px dashed #cbd5e1", borderRadius: 16, padding: "20px", background: "#fcfdfe", textAlign: "center" }}>
               <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "#0284c7" }}>
-                Apple Multispecialty Hospital
+                ABCD Multispecialty Hospital
               </div>
               <div style={{ fontSize: 13, fontWeight: 700, color: "#334155", marginTop: 2 }}>Outpatient Department Token</div>
               <div style={{ fontSize: 11, color: "#94a3b8" }}>Main OPD Wing · 1st & 2nd Floor</div>

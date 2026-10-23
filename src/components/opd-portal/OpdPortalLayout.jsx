@@ -95,7 +95,7 @@ export default function OpdPortalLayout({
             <RouteTopBar
               onBack={onNavigateHome}
               backLabel="Back to Home"
-              hospitalName="APPLE MULTISPECIALTY HOSPITAL"
+              hospitalName="ABCD Multispecialty Hospital"
               badge="OPD CLINICAL PORTAL • ROOM 104"
               badgeBg="#e0f2fe"
               badgeColor="#0369a1"
@@ -141,7 +141,7 @@ export default function OpdPortalLayout({
             <RouteTopBar
               onBack={onNavigateHome}
               backLabel="Back to Home"
-              hospitalName="APPLE MULTISPECIALTY HOSPITAL"
+              hospitalName="ABCD Multispecialty Hospital"
               badge="DOCTOR CREDENTIALS"
               badgeBg="#e0f2fe"
               badgeColor="#0369a1"

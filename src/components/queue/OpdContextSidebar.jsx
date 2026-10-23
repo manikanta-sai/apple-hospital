@@ -14,7 +14,7 @@ import { DOCTOR_STATUS_OPTIONS } from "./QueueKpiStats";
 /**
  * OpdContextSidebar (Clean Clinical Workspace)
  * --------------------------------------------
- * Right Contextual Sidebar (35-40% width) for Apple Multispecialty Hospital.
+ * Right Contextual Sidebar (35-40% width) for ABCD Multispecialty Hospital.
  * Displays:
  * 1. Doctor Desk Live Status (Room 104, Dr. Rajesh Sharma, MD)
  *    - Interactive duty status switcher (ON DUTY, ON ROUNDS, IN SURGERY, OUT OF OFFICE, STANDBY)

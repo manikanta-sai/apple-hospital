@@ -71,14 +71,14 @@ const AUDIO_URLS = [
 export const MULTILINGUAL_TRANSCRIPTS = {
   cardiology: {
     original: [
-      { speaker: "Agent", time: "0:04", text: "Hello, good morning! Apple Multispecialty Hospital Cardiology Desk, Jennifer speaking. How can I assist you today?" },
+      { speaker: "Agent", time: "0:04", text: "Hello, good morning! ABCD Multispecialty Hospital Cardiology Desk, Jennifer speaking. How can I assist you today?" },
       { speaker: "Patient", time: "0:12", text: "Namaste ma'am, actually stairs climb chesetappudu slight chest tightness and shortness of breath anipistondi. Dr. Sharma ECG and consultation teeskomannaru." },
       { speaker: "Agent", time: "0:25", text: "Haanji sir, bilkul note chesanu. Repu morning 10:30 AM ki Dr. Sharma priority consultation slot and immediate resting ECG available undi. Token reserve cheyamantara?" },
       { speaker: "Patient", time: "0:38", text: "Sure ma'am, that's fine. Fasting stomach tho raavala for ECG?" },
       { speaker: "Agent", time: "0:47", text: "No fasting required for ECG sir. Just previous cardiac lipid reports carry cheyandi. Token CD-104 generate ayyindi, confirmation SMS has been sent." },
     ],
     eng: [
-      { speaker: "Agent", time: "0:04", text: "Thank you for calling Apple Multispecialty Hospital Cardiology Desk. How may I assist you today?" },
+      { speaker: "Agent", time: "0:04", text: "Thank you for calling ABCD Multispecialty Hospital Cardiology Desk. How may I assist you today?" },
       { speaker: "Patient", time: "0:12", text: "Hello, I am experiencing mild chest tightness and shortness of breath when walking upstairs. Dr. Sharma asked me to schedule an ECG and consultation." },
       { speaker: "Agent", time: "0:25", text: "I understand your concern. We have priority consultation slots with Dr. Sharma tomorrow at 10:30 AM with an immediate resting ECG. Would you like me to reserve that token?" },
       { speaker: "Patient", time: "0:38", text: "Yes please, that time works well. Should I come on a fasting stomach for the ECG?" },
@@ -115,14 +115,14 @@ export const MULTILINGUAL_TRANSCRIPTS = {
   },
   pediatrics: {
     original: [
-      { speaker: "Agent", time: "0:03", text: "Apple Multispecialty Hospital Pediatric Center, good afternoon. How may we care for your child today?" },
+      { speaker: "Agent", time: "0:03", text: "ABCD Multispecialty Hospital Pediatric Center, good afternoon. How may we care for your child today?" },
       { speaker: "Patient", time: "0:10", text: "Hello sister, actually ma 18-month baby girl ki DTaP and MMR booster vaccine due undi. Walk-in allowed ah leka appointment theeskovala?" },
       { speaker: "Agent", time: "0:22", text: "Hello ma'am, waiting time avoid cheyadaniki appointment is recommended. Dr. Anita immunization slots today 3:15 PM open ga unnayi." },
       { speaker: "Patient", time: "0:34", text: "3:15 PM is perfect andi. Along with vaccine, baby height and weight milestone growth check bhi kar sakte hain kya?" },
       { speaker: "Agent", time: "0:44", text: "Haanji bilkul, pediatric milestone tracking routine checkup me include hota hai. Please vaccination card carry karna mat bhooliyega." },
     ],
     eng: [
-      { speaker: "Agent", time: "0:03", text: "Apple Multispecialty Hospital Pediatric Center. How may we care for your child today?" },
+      { speaker: "Agent", time: "0:03", text: "ABCD Multispecialty Hospital Pediatric Center. How may we care for your child today?" },
       { speaker: "Patient", time: "0:10", text: "Hi, my 18-month-old daughter is due for her DTaP and MMR booster doses. Are walk-ins accepted or do I need an appointment?" },
       { speaker: "Agent", time: "0:22", text: "We recommend reserving an appointment to avoid waiting room exposure. Dr. Anita has vaccination slots available today at 3:15 PM." },
       { speaker: "Patient", time: "0:34", text: "3:15 PM works nicely. Can we also have her height and weight milestone growth check done?" },
@@ -159,14 +159,14 @@ export const MULTILINGUAL_TRANSCRIPTS = {
   },
   orthopedics: {
     original: [
-      { speaker: "Agent", time: "0:04", text: "Good morning, Apple Multispecialty Hospital Orthopedic Care. How may I direct your inquiry?" },
+      { speaker: "Agent", time: "0:04", text: "Good morning, ABCD Multispecialty Hospital Orthopedic Care. How may I direct your inquiry?" },
       { speaker: "Patient", time: "0:12", text: "Hello, actually morning tennis aaduthu kindha paddanu. Right knee severely swollen and bending restriction undi. Dr. Jenkins 1.5T MRI review check cheyali." },
       { speaker: "Agent", time: "0:24", text: "Haanji sir, samajh gaya. Today evening 4:30 PM Dr. Jenkins OPD slot undi, and 3:30 PM radiology lo knee MRI scan scheduled. Slot confirm cheyamantara?" },
       { speaker: "Patient", time: "0:36", text: "Yes please confirm kardo. Hamara cashless health insurance same-day diagnostic imaging cover karta hai kya?" },
       { speaker: "Agent", time: "0:46", text: "Yes sir, hamara insurance desk spot pre-authorization process kar dega. Please carry health policy card and government ID." },
     ],
     eng: [
-      { speaker: "Agent", time: "0:04", text: "Apple Multispecialty Hospital Orthopedic Care. How may I direct your inquiry?" },
+      { speaker: "Agent", time: "0:04", text: "ABCD Multispecialty Hospital Orthopedic Care. How may I direct your inquiry?" },
       { speaker: "Patient", time: "0:12", text: "Hello, I fell while playing tennis and my right knee is swollen with restricted bending. Dr. Jenkins requested a 1.5T MRI review." },
       { speaker: "Agent", time: "0:24", text: "We have an emergency orthopedic slot with Dr. Jenkins today at 4:30 PM. Our radiology department can perform the knee MRI at 3:30 PM." },
       { speaker: "Patient", time: "0:36", text: "That is wonderful. Does my cashless health insurance cover the same-day diagnostic imaging?" },
@@ -222,7 +222,7 @@ const CLINICAL_COACHING = [
   ],
   [
     "Reiterate pediatric vaccination booklet checklist and emphasize post-vaccine fever management instructions.",
-    "Ensure parent is registered on the Apple Multispecialty Hospital Patient Portal for automatic milestone growth chart sync.",
+    "Ensure parent is registered on the ABCD Multispecialty Hospital Patient Portal for automatic milestone growth chart sync.",
   ],
   [
     "Clarify cashless insurance pre-authorization documentation requirements early in the intake workflow.",

@@ -34,7 +34,7 @@ export default function CrmAgentProfileModal({ agentProfile, onSave, onClose }) 
             </div>
             <div>
               <h2 className="text-base font-bold">Edit Agent Profile</h2>
-              <p className="text-xs text-slate-400">Apple Multispecialty Hospital CRM • {formData.agentId}</p>
+              <p className="text-xs text-slate-400">ABCD Multispecialty Hospital CRM • {formData.agentId}</p>
             </div>
           </div>
           <button

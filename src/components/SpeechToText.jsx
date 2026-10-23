@@ -164,7 +164,7 @@ export default function SpeechToText({ navigateTo }) {
       <RouteTopBar
         onBack={() => navigateTo("/")}
         backLabel="Back to Home"
-        hospitalName="APPLE MULTISPECIALTY HOSPITAL"
+        hospitalName="ABCD Multispecialty Hospital"
         badge="SPEECH RECOGNITION"
         badgeBg="#e0f2fe"
         badgeColor="#0284c7"
