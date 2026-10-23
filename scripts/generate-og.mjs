@@ -368,26 +368,36 @@ async function generateDeveloperOgImage() {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({
     viewport: { width: 1200, height: 630 },
-    deviceScaleFactor: 2
+    deviceScaleFactor: 1
   });
 
   await page.setContent(htmlContent);
   await page.waitForTimeout(300);
 
-  // Save to public/og-developer.png and public/og-image.png
   const publicDir = path.resolve('public');
   if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir, { recursive: true });
   }
 
-  const ogDevPath = path.join(publicDir, 'og-developer.png');
-  const ogImgPath = path.join(publicDir, 'og-image.png');
+  // 1. High-compatibility JPEG (< 100KB, perfect for WhatsApp 300KB hard limit)
+  const ogJpgPath = path.join(publicDir, 'og-developer.jpg');
+  await page.screenshot({ path: ogJpgPath, type: 'jpeg', quality: 85 });
 
+  // 2. High-res 1200x630 PNG (< 200KB)
+  const ogDevPath = path.join(publicDir, 'og-developer.png');
   await page.screenshot({ path: ogDevPath, type: 'png' });
-  await page.screenshot({ path: ogImgPath, type: 'png' });
+
+  // 3. Fallback og-image.jpg and og-image.png
+  const ogImgJpg = path.join(publicDir, 'og-image.jpg');
+  const ogImgPng = path.join(publicDir, 'og-image.png');
+  fs.copyFileSync(ogJpgPath, ogImgJpg);
+  fs.copyFileSync(ogDevPath, ogImgPng);
 
   await browser.close();
-  console.log('Successfully generated:', ogDevPath, 'and', ogImgPath);
+
+  const jpgSize = fs.statSync(ogJpgPath).size;
+  const pngSize = fs.statSync(ogDevPath).size;
+  console.log(`Successfully generated:\n- og-developer.jpg: ${Math.round(jpgSize / 1024)} KB\n- og-developer.png: ${Math.round(pngSize / 1024)} KB`);
 }
 
 generateDeveloperOgImage().catch(console.error);
