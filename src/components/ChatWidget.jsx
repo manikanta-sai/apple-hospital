@@ -28,9 +28,16 @@ const QUICK_LINK_MESSAGES = {
  * calls it, like useChatSession) lives inside here, below the
  * <LanguageProvider> boundary set up by the default export.
  */
-function ChatWidgetInner({ tenantId }) {
-  const [isOpen, setIsOpen] = useLocalStorage("hc_widget_open", false);
+function ChatWidgetInner({ tenantId, defaultOpen = false }) {
+  const [isOpen, setIsOpen] = useLocalStorage("hc_widget_open", defaultOpen);
   const [isMinimized, setIsMinimized] = useLocalStorage("hc_widget_minimized", false);
+
+  useEffect(() => {
+    if (defaultOpen) {
+      setIsOpen(true);
+      setIsMinimized(false);
+    }
+  }, [defaultOpen, setIsOpen, setIsMinimized]);
 
   const {
     sessionId,
@@ -327,10 +334,10 @@ function ChatWidgetInner({ tenantId }) {
  * self-contained i18n boundary - the host app doesn't need to know or
  * care about the language context.
  */
-export default function ChatWidget({ tenantId }) {
+export default function ChatWidget({ tenantId, defaultOpen = false }) {
   return (
     <LanguageProvider>
-      <ChatWidgetInner tenantId={tenantId} />
+      <ChatWidgetInner tenantId={tenantId} defaultOpen={defaultOpen} />
     </LanguageProvider>
   );
 }

@@ -773,7 +773,7 @@ export default function App() {
           backend routing. */}
       <ErrorBoundary>
         <Suspense fallback={null}>
-          <ChatWidget tenantId="sunrise-hospital-main" />
+          <ChatWidget tenantId="sunrise-hospital-main" defaultOpen={true} />
         </Suspense>
       </ErrorBoundary>
 
