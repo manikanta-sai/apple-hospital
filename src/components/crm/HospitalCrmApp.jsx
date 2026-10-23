@@ -166,7 +166,7 @@ export default function HospitalCrmApp() {
                 </div>
                 <div className="truncate">
                   <div className="text-xs font-bold text-white tracking-wide">
-                    APPLE CRM
+                    ABCD CRM
                   </div>
                   <div className="text-[10px] text-slate-400 truncate">Omnichannel Hospital Inbox</div>
                 </div>
@@ -292,7 +292,7 @@ export default function HospitalCrmApp() {
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                 <div className="font-bold text-white text-sm flex items-center gap-2">
-                  <span className="text-teal-400"></span> APPLE CRM
+                  <span className="text-teal-400"></span> ABCD CRM
                 </div>
                 <button onClick={() => setMobileMenuOpen(false)} className="text-slate-400 hover:text-white">✕</button>
               </div>
@@ -334,7 +334,7 @@ export default function HospitalCrmApp() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <span className="font-bold text-sm"> APPLE CRM</span>
+            <span className="font-bold text-sm"> ABCD CRM</span>
           </div>
           <button
             onClick={() => setShowEditProfileModal(true)}

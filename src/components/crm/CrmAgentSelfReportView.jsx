@@ -118,7 +118,7 @@ export default function CrmAgentSelfReportView({ agentProfile = null, onNavigate
     {
       title: "Set 'On Break' Status 5 Mins Before Leaving Desk",
       area: "Response Speed & SLA",
-      detail: "Avoid ticket queue buildup during shift transitions. Toggling 'On Break' allows Apple CRM router to instantly divert inbound DMs to available colleagues Megan Chen or Vikram Mehta.",
+      detail: "Avoid ticket queue buildup during shift transitions. Toggling 'On Break' allows ABCD CRM router to instantly divert inbound DMs to available colleagues Megan Chen or Vikram Mehta.",
       benefit: "Saves ~2.5 mins on queue dispatch time during lunch hours."
     },
     {

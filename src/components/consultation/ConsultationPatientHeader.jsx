@@ -240,7 +240,8 @@ export default function ConsultationPatientHeader({
             <span>1 Prescription</span>
           </button>
 
-          <button
+          {/* AI Copilot step hidden for now per user request */}
+          {/* <button
             type="button"
             onClick={() => setLeftPanelStep("copilot")}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer select-none ${
@@ -255,7 +256,7 @@ export default function ConsultationPatientHeader({
               }`}
             />
             <span>2 AI Copilot</span>
-          </button>
+          </button> */}
 
           <button
             type="button"
@@ -271,7 +272,7 @@ export default function ConsultationPatientHeader({
                 leftPanelStep === "preview" ? "bg-teal-600" : "bg-slate-300"
               }`}
             />
-            <span>3 Print Preview</span>
+            <span>2 Print Preview</span>
           </button>
         </div>
 

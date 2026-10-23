@@ -83,7 +83,7 @@ export default function OpdConsultationWorkspace({
 
   const [activeSection, setActiveSection] = useState("sec-complaints");
   const [leftPanelStep, setLeftPanelStep] = useState("prescription"); // 'prescription' | 'copilot' | 'preview'
-  const [isOverviewOpen, setIsOverviewOpen] = useState(true);
+  const [isOverviewOpen, setIsOverviewOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
@@ -1228,8 +1228,8 @@ export default function OpdConsultationWorkspace({
             </div>
           )}
 
-          {/* STEP 2: AI Copilot & Visuals */}
-          {leftPanelStep === "copilot" && (
+          {/* STEP 2: AI Copilot & Visuals (Hidden for now per user request) */}
+          {false && leftPanelStep === "copilot" && (
             <div className="space-y-4 max-w-4xl mx-auto w-full">
               <AiCdssAlertCard
                 patient={patient}
@@ -1260,12 +1260,12 @@ export default function OpdConsultationWorkspace({
           )}
         </main>
 
-      {/* 3. AI Medical Copilot (Positionable: Bottom-Corner by default, Sticky, Left, Right with Min/Max/Resize) */}
-      <AiCopilotPanel
+      {/* 3. AI Medical Copilot (Hidden for now per user request) */}
+      {/* <AiCopilotPanel
         patient={patient}
         rxForm={rxForm}
         onApplyTemplate={handleApplyTemplate}
-      />
+      /> */}
 
       {/* Toast Notification */}
       {toastMessage && (

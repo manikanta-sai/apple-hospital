@@ -336,7 +336,7 @@ async function generateDeveloperOgImage() {
           &nbsp;&nbsp;<span class="c-prop">experience:</span> <span class="c-str">"7+ Years"</span>,<br>
           &nbsp;&nbsp;<span class="c-prop">expertise:</span> [<span class="c-str">"Healthcare SaaS"</span>, <span class="c-str">"EHR"</span>, <span class="c-str">"CRM"</span>],<br>
           &nbsp;&nbsp;<span class="c-prop">architecture:</span> <span class="c-str">"Multi-Tenant / Micro-Frontend"</span>,<br>
-          &nbsp;&nbsp;<span class="c-prop">products:</span> [<span class="c-str">"Apple CRM"</span>, <span class="c-str">"OPD Queue"</span>, <span class="c-str">"Voice AI"</span>],<br>
+          &nbsp;&nbsp;<span class="c-prop">products:</span> [<span class="c-str">"ABCD CRM"</span>, <span class="c-str">"OPD Queue"</span>, <span class="c-str">"Voice AI"</span>],<br>
           &nbsp;&nbsp;<span class="c-prop">status:</span> <span class="c-str">"Available for Senior Roles"</span> 🚀<br>
           };<br>
           <span class="c-comment">// 10x care team productivity & 99.9% uptime</span>

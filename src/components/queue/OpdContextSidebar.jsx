@@ -83,7 +83,7 @@ export default function OpdContextSidebar({
                   NMC-48291
                 </span>
               </div>
-              <p className="text-xs text-slate-500">Apple Multispecialty • General Medicine (Room 104)</p>
+              <p className="text-xs text-slate-500">ABCD Multispecialty • General Medicine (Room 104)</p>
             </div>
           </div>
 

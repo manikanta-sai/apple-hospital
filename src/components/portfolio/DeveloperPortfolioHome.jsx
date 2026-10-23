@@ -153,7 +153,7 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
           <div className="z-10 flex items-end justify-between gap-2 mt-auto">
             <div className="space-y-0.5">
               <span className="text-xl font-black text-teal-200 block">
-                Apple CRM Pro
+                ABCD CRM Pro
               </span>
               <span className="text-[10px] text-slate-300 block">
                 WhatsApp • Meta • Email • Chat
