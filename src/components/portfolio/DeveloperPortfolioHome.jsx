@@ -52,8 +52,8 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
       badgeColor: "bg-teal-500 text-white",
       tags: ["Lobby Queue Desk", "NABH Rx", "Drug CDSS"],
       renderBanner: () => (
-        <div className="relative w-full h-40 bg-gradient-to-br from-teal-800 via-teal-900 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
-          <div className="flex items-center justify-between z-10">
+        <div className="relative w-full h-30 bg-gradient-to-br from-teal-800 via-teal-900 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
+          <div className="flex items-center justify-between z-10 hidden">
             <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30">
               Dr. Rajesh Sharma, MD
             </span>
@@ -62,7 +62,7 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
             </span>
           </div>
 
-          <div className="z-10 flex items-end justify-between gap-2 mt-auto">
+          <div className="z-10 flex items-end justify-between gap-2">
             <div className="space-y-0.5">
               <span className="text-2xl font-serif font-black italic text-teal-300 drop-shadow-sm leading-none block">
                 ℞ Digital Pad
@@ -131,6 +131,243 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
       ),
     },
     {
+      id: "chatbot",
+      title: "AI Patient Service & Clinical Chatbot",
+      tagline: "Conversational AI assistant with smart doctor booking & medical FAQs.",
+      path: "/chatbot",
+      badge: "Conversational AI",
+      badgeColor: "bg-fuchsia-600 text-white",
+      tags: ["Natural Language", "Smart Scheduling", "Doctor Matching"],
+      renderBanner: () => (
+        <div className="relative w-full h-30 bg-gradient-to-br from-fuchsia-800 via-purple-900 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
+          <div className="flex items-center justify-between z-10 hidden">
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30">
+              AI Copilot
+            </span>
+            <span className="text-[10px] font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full shadow-xs">
+              24/7 Available
+            </span>
+          </div>
+
+          <div className="z-10 flex items-end justify-between gap-2 mt-auto">
+            <div className="space-y-1">
+              <div className="bg-white/15 backdrop-blur-xs px-2.5 py-1 rounded-xl rounded-bl-xs text-[10px] text-fuchsia-100 max-w-[170px]">
+                "Book doctor Dr. Rajesh"
+              </div>
+              <div className="bg-purple-600/90 px-2.5 py-1 rounded-xl rounded-br-xs text-[10px] text-white font-medium max-w-[170px]">
+                ✓ Confirmed today at 10 AM
+              </div>
+            </div>
+
+            {/* Attractive 3D Product Objects: AI Medical Doctor Bot & Multi-Lingual Speech Bubbles */}
+            <div className="relative shrink-0">
+              <svg viewBox="0 0 130 90" className="w-28 h-20 drop-shadow-xl overflow-visible">
+                <defs>
+                  <linearGradient id="botGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#ffffff" />
+                    <stop offset="100%" stopColor="#e0e7ff" />
+                  </linearGradient>
+                  <linearGradient id="visorGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#06b6d4" />
+                    <stop offset="100%" stopColor="#0284c7" />
+                  </linearGradient>
+                </defs>
+                {/* 3D AI Medical Doctor Bot Head */}
+                <g transform="translate(14, 14)">
+                  <rect x="14" y="38" width="32" height="24" rx="8" fill="#4338ca" />
+                  <path d="M22 44 C22 56 38 56 38 44" fill="none" stroke="#22d3ee" strokeWidth="2" />
+                  <circle cx="30" cy="55" r="3" fill="#e0e7ff" stroke="#22d3ee" strokeWidth="1" />
+                  <rect x="10" y="8" width="40" height="30" rx="10" fill="url(#botGrad)" stroke="#c7d2fe" strokeWidth="1" />
+                  <rect x="15" y="14" width="30" height="15" rx="6" fill="url(#visorGrad)" />
+                  <circle cx="24" cy="21" r="2.5" fill="#ffffff" />
+                  <circle cx="36" cy="21" r="2.5" fill="#ffffff" />
+                  <line x1="30" y1="8" x2="30" y2="2" stroke="#a5b4fc" strokeWidth="2" strokeLinecap="round" />
+                  <circle cx="30" cy="2" r="2.5" fill="#ec4899" />
+                  <path d="M8 20 C6 20 6 26 8 26" fill="none" stroke="#ec4899" strokeWidth="2.5" strokeLinecap="round" />
+                </g>
+                {/* Multi-Lingual Speech Bubbles (Telugu & English) */}
+                <g transform="translate(68, 6)">
+                  <rect x="4" y="4" width="54" height="20" rx="6" fill="#ffffff" stroke="#c084fc" strokeWidth="1" />
+                  <text x="10" y="14" fill="#7e22ce" fontSize="6.5" fontWeight="bold">నమస్కారం! (Hello)</text>
+                  <text x="10" y="21" fill="#64748b" fontSize="5.5">AI Triage Active</text>
+                  <rect x="0" y="28" width="58" height="20" rx="6" fill="#7c3aed" />
+                  <text x="6" y="38" fill="#ffffff" fontSize="6.5" fontWeight="bold">✓ Dr. Rajesh Booked</text>
+                  <text x="6" y="45" fill="#e9d5ff" fontSize="5.5">10:00 AM Confirmed</text>
+                  {/* Typing Indicator */}
+                  <rect x="20" y="52" width="28" height="12" rx="6" fill="#f43f5e" />
+                  <circle cx="28" cy="58" r="1.5" fill="#ffffff" />
+                  <circle cx="34" cy="58" r="1.5" fill="#ffffff" />
+                  <circle cx="40" cy="58" r="1.5" fill="#ffffff" />
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-fuchsia-500/20 rounded-full blur-xl pointer-events-none" />
+        </div>
+      ),
+    },
+    {
+      id: "hospital-stats",
+      title: "Hospital Stats & Floor Telemetry",
+      tagline: "Interactive 3D isometric floors with real-time bed census & staffing ratios.",
+      path: "/hospital-stats",
+      badge: "Operations Analytics",
+      badgeColor: "bg-purple-600 text-white",
+      tags: ["3D Floors", "Bed Census", "Staffing"],
+      renderBanner: () => (
+        <div className="relative w-full h-30 bg-gradient-to-br from-purple-800 via-indigo-900 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
+          <div className="flex items-center justify-between z-10 hidden">
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30">
+              Floor Telemetry
+            </span>
+            <span className="text-[10px] font-bold bg-[#d8225e] text-white px-2 py-0.5 rounded-full shadow-xs">
+              2nd Floor CONGESTED
+            </span>
+          </div>
+
+          <div className="z-10 flex items-end justify-between gap-2 mt-auto">
+            <div className="space-y-0.5">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-2xl font-black text-purple-200 leading-none">253</span>
+                <span className="text-[10px] text-purple-300 font-medium">Admitted</span>
+              </div>
+              <span className="text-[10px] text-slate-300 block">
+                678 Total Beds • 154 Doctors
+              </span>
+              <span className="text-[9px] text-emerald-400 font-semibold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Live Floor Census
+              </span>
+            </div>
+
+            {/* Attractive 3D Product Objects: Isometric Hospital Floor Layers & Telemetry Hologram */}
+            <div className="relative shrink-0">
+              <svg viewBox="0 0 130 90" className="w-28 h-20 drop-shadow-xl overflow-visible">
+                <defs>
+                  <linearGradient id="floorGradSVG1" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#14b8a6" />
+                    <stop offset="100%" stopColor="#0f766e" />
+                  </linearGradient>
+                  <linearGradient id="floorGradSVG2" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#e11d48" />
+                    <stop offset="100%" stopColor="#9f1239" />
+                  </linearGradient>
+                  <linearGradient id="floorGradSVG3" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#38bdf8" />
+                    <stop offset="100%" stopColor="#0284c7" />
+                  </linearGradient>
+                </defs>
+                {/* Isometric Stacked Hospital Layers */}
+                <polygon points="55,68 90,54 65,44 30,58" fill="url(#floorGradSVG1)" stroke="#5eead4" strokeWidth="1" />
+                <polygon points="55,54 90,40 65,30 30,44" fill="url(#floorGradSVG2)" stroke="#fda4af" strokeWidth="1.2" />
+                <polygon points="55,40 90,26 65,16 30,30" fill="url(#floorGradSVG3)" stroke="#bae6fd" strokeWidth="1" />
+                <polygon points="55,26 90,12 65,2 30,16" fill="#a855f7" stroke="#e9d5ff" strokeWidth="1" />
+                {/* Glowing Hospital Cross Beacon on Top */}
+                <g transform="translate(60, -2)">
+                  <circle cx="5" cy="5" r="7" fill="#ffffff" stroke="#c084fc" strokeWidth="1.2" />
+                  <path d="M3 5 h4 M5 3 v4" stroke="#a855f7" strokeWidth="1.8" strokeLinecap="round" />
+                </g>
+                {/* Holographic Telemetry Data Bars */}
+                <g transform="translate(94, 26)">
+                  <rect x="0" y="24" width="5" height="24" rx="2" fill="#38bdf8" opacity="0.85" />
+                  <rect x="8" y="14" width="5" height="34" rx="2" fill="#818cf8" opacity="0.95" />
+                  <rect x="16" y="6" width="5" height="42" rx="2" fill="#c084fc" />
+                  <rect x="24" y="18" width="5" height="30" rx="2" fill="#34d399" opacity="0.9" />
+                  <path d="M2 24 L10 14 L18 6 L26 18" fill="none" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-purple-500/20 rounded-full blur-xl pointer-events-none" />
+        </div>
+      ),
+    },
+    {
+      id: "call-center",
+      title: "Call Center & AI Agent Coaching Analytics",
+      tagline: "Automated telephony call recording QA, quality scoring, and patient sentiment analytics.",
+      path: "/insights",
+      badge: "Telephony CRM",
+      badgeColor: "bg-violet-700 text-white",
+      tags: ["TATA / Exotel CRM", "Audio QA", "Sentiment AI"],
+      renderBanner: () => (
+        <div className="relative w-full h-30 bg-gradient-to-br from-violet-800 via-indigo-900 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
+          <div className="flex items-center justify-between z-10 hidden">
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30">
+              Telephony QA
+            </span>
+            <span className="text-[10px] font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full shadow-xs">
+              Live Monitoring
+            </span>
+          </div>
+
+          <div className="z-10 flex items-end justify-between gap-2 mt-auto">
+            <div className="space-y-0.5">
+              <span className="text-xl font-black text-violet-200 block">
+                94% QA Score
+              </span>
+              <span className="text-[10px] text-slate-300 block">
+                Agent Call Recording & Coaching
+              </span>
+              <span className="text-[9px] text-emerald-400 font-semibold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Live PBX Connected
+              </span>
+            </div>
+
+            {/* Attractive 3D Product Objects: Agent Headset, Telephony Audio Equalizer & QA Card */}
+            <div className="relative shrink-0">
+              <svg viewBox="0 0 130 90" className="w-28 h-20 drop-shadow-xl overflow-visible">
+                <defs>
+                  <linearGradient id="headsetGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#c084fc" />
+                    <stop offset="100%" stopColor="#7c3aed" />
+                  </linearGradient>
+                </defs>
+                {/* 3D Agent Headset */}
+                <g transform="translate(10, 10)">
+                  <path d="M12 36 A20 20 0 0 1 52 36" fill="none" stroke="url(#headsetGrad)" strokeWidth="4" strokeLinecap="round" />
+                  <rect x="8" y="30" width="8" height="18" rx="4" fill="#581c87" stroke="#e9d5ff" strokeWidth="1" />
+                  <rect x="48" y="30" width="8" height="18" rx="4" fill="#581c87" stroke="#e9d5ff" strokeWidth="1" />
+                  <path d="M12 44 Q20 54 34 52" fill="none" stroke="#e9d5ff" strokeWidth="2.5" strokeLinecap="round" />
+                  <circle cx="36" cy="52" r="3.5" fill="#ec4899" stroke="#ffffff" strokeWidth="1" />
+                </g>
+                {/* Telephony Sound Waveform & QA Card */}
+                <g transform="translate(64, 8)">
+                  <rect x="0" y="0" width="58" height="42" rx="6" fill="#1e1b4b" stroke="#8b5cf6" strokeWidth="1" />
+                  <text x="6" y="10" fill="#a78bfa" fontSize="5" fontWeight="bold">TELEPHONY QA</text>
+                  <text x="6" y="21" fill="#34d399" fontSize="10.5" fontWeight="900" fontFamily="monospace">94% POS</text>
+                  <text x="6" y="29" fill="#cbd5e1" fontSize="5">Sentiment: High Empathy</text>
+                  {/* Equalizer sound bars */}
+                  <g transform="translate(6, 32)">
+                    <line x1="2" y1="5" x2="2" y2="1" stroke="#38bdf8" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="7" y1="5" x2="7" y2="-2" stroke="#818cf8" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="12" y1="5" x2="12" y2="3" stroke="#c084fc" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="17" y1="5" x2="17" y2="-3" stroke="#f43f5e" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="22" y1="5" x2="22" y2="2" stroke="#34d399" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="27" y1="5" x2="27" y2="-1" stroke="#38bdf8" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="32" y1="5" x2="32" y2="3" stroke="#818cf8" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="37" y1="5" x2="37" y2="-2" stroke="#c084fc" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="42" y1="5" x2="42" y2="1" stroke="#34d399" strokeWidth="1.5" strokeLinecap="round" />
+                  </g>
+                </g>
+                {/* Call In Progress Badge */}
+                <g transform="translate(18, 62)">
+                  <rect x="0" y="0" width="84" height="15" rx="7.5" fill="#047857" stroke="#10b981" strokeWidth="0.8" />
+                  <circle cx="8" cy="7.5" r="2.5" fill="#ffffff" />
+                  <text x="14" y="10.5" fill="#ffffff" fontSize="6" fontWeight="bold">04:18 • Recording Monitored</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-purple-500/20 rounded-full blur-xl pointer-events-none" />
+        </div>
+      ),
+    },
+    {
       id: "omnichannel-crm",
       title: "Omnichannel CRM & Unified Inbox",
       tagline: "Intercom & WhatsApp Business inbox across 7 channels with patient 360° profile, internal notes & SLA desk.",
@@ -139,8 +376,8 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
       badgeColor: "bg-teal-600 text-white",
       tags: ["WhatsApp Business", "7-Channel Inbox", "Patient 360°", "SLA Desk"],
       renderBanner: () => (
-        <div className="relative w-full h-40 bg-gradient-to-br from-slate-900 via-teal-950 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
-          <div className="flex items-center justify-between z-10">
+        <div className="relative w-full h-30 bg-gradient-to-br from-slate-900 via-teal-950 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
+          <div className="flex items-center justify-between z-10 hidden">
             <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               7 Channels Live
@@ -219,321 +456,6 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
       ),
     },
     {
-      id: "hospital-stats",
-      title: "Hospital Stats & Floor Telemetry",
-      tagline: "Interactive 3D isometric floors with real-time bed census & staffing ratios.",
-      path: "/hospital-stats",
-      badge: "Operations Analytics",
-      badgeColor: "bg-purple-600 text-white",
-      tags: ["3D Floors", "Bed Census", "Staffing"],
-      renderBanner: () => (
-        <div className="relative w-full h-40 bg-gradient-to-br from-purple-800 via-indigo-900 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
-          <div className="flex items-center justify-between z-10">
-            <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30">
-              Floor Telemetry
-            </span>
-            <span className="text-[10px] font-bold bg-[#d8225e] text-white px-2 py-0.5 rounded-full shadow-xs">
-              2nd Floor CONGESTED
-            </span>
-          </div>
-
-          <div className="z-10 flex items-end justify-between gap-2 mt-auto">
-            <div className="space-y-0.5">
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl font-black text-purple-200 leading-none">253</span>
-                <span className="text-[10px] text-purple-300 font-medium">Admitted</span>
-              </div>
-              <span className="text-[10px] text-slate-300 block">
-                678 Total Beds • 154 Doctors
-              </span>
-              <span className="text-[9px] text-emerald-400 font-semibold flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Live Floor Census
-              </span>
-            </div>
-
-            {/* Attractive 3D Product Objects: Isometric Hospital Floor Layers & Telemetry Hologram */}
-            <div className="relative shrink-0">
-              <svg viewBox="0 0 130 90" className="w-28 h-20 drop-shadow-xl overflow-visible">
-                <defs>
-                  <linearGradient id="floorGradSVG1" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#14b8a6" />
-                    <stop offset="100%" stopColor="#0f766e" />
-                  </linearGradient>
-                  <linearGradient id="floorGradSVG2" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#e11d48" />
-                    <stop offset="100%" stopColor="#9f1239" />
-                  </linearGradient>
-                  <linearGradient id="floorGradSVG3" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#38bdf8" />
-                    <stop offset="100%" stopColor="#0284c7" />
-                  </linearGradient>
-                </defs>
-                {/* Isometric Stacked Hospital Layers */}
-                <polygon points="55,68 90,54 65,44 30,58" fill="url(#floorGradSVG1)" stroke="#5eead4" strokeWidth="1" />
-                <polygon points="55,54 90,40 65,30 30,44" fill="url(#floorGradSVG2)" stroke="#fda4af" strokeWidth="1.2" />
-                <polygon points="55,40 90,26 65,16 30,30" fill="url(#floorGradSVG3)" stroke="#bae6fd" strokeWidth="1" />
-                <polygon points="55,26 90,12 65,2 30,16" fill="#a855f7" stroke="#e9d5ff" strokeWidth="1" />
-                {/* Glowing Hospital Cross Beacon on Top */}
-                <g transform="translate(60, -2)">
-                  <circle cx="5" cy="5" r="7" fill="#ffffff" stroke="#c084fc" strokeWidth="1.2" />
-                  <path d="M3 5 h4 M5 3 v4" stroke="#a855f7" strokeWidth="1.8" strokeLinecap="round" />
-                </g>
-                {/* Holographic Telemetry Data Bars */}
-                <g transform="translate(94, 26)">
-                  <rect x="0" y="24" width="5" height="24" rx="2" fill="#38bdf8" opacity="0.85" />
-                  <rect x="8" y="14" width="5" height="34" rx="2" fill="#818cf8" opacity="0.95" />
-                  <rect x="16" y="6" width="5" height="42" rx="2" fill="#c084fc" />
-                  <rect x="24" y="18" width="5" height="30" rx="2" fill="#34d399" opacity="0.9" />
-                  <path d="M2 24 L10 14 L18 6 L26 18" fill="none" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
-                </g>
-              </svg>
-            </div>
-          </div>
-
-          <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-purple-500/20 rounded-full blur-xl pointer-events-none" />
-        </div>
-      ),
-    },
-    {
-      id: "call-center",
-      title: "Call Center & AI Agent Coaching Analytics",
-      tagline: "Automated telephony call recording QA, quality scoring, and patient sentiment analytics.",
-      path: "/insights",
-      badge: "Telephony CRM",
-      badgeColor: "bg-violet-700 text-white",
-      tags: ["TATA / Exotel CRM", "Audio QA", "Sentiment AI"],
-      renderBanner: () => (
-        <div className="relative w-full h-40 bg-gradient-to-br from-violet-800 via-indigo-900 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
-          <div className="flex items-center justify-between z-10">
-            <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30">
-              Telephony QA
-            </span>
-            <span className="text-[10px] font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full shadow-xs">
-              Live Monitoring
-            </span>
-          </div>
-
-          <div className="z-10 flex items-end justify-between gap-2 mt-auto">
-            <div className="space-y-0.5">
-              <span className="text-xl font-black text-violet-200 block">
-                94% QA Score
-              </span>
-              <span className="text-[10px] text-slate-300 block">
-                Agent Call Recording & Coaching
-              </span>
-              <span className="text-[9px] text-emerald-400 font-semibold flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Live PBX Connected
-              </span>
-            </div>
-
-            {/* Attractive 3D Product Objects: Agent Headset, Telephony Audio Equalizer & QA Card */}
-            <div className="relative shrink-0">
-              <svg viewBox="0 0 130 90" className="w-28 h-20 drop-shadow-xl overflow-visible">
-                <defs>
-                  <linearGradient id="headsetGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#c084fc" />
-                    <stop offset="100%" stopColor="#7c3aed" />
-                  </linearGradient>
-                </defs>
-                {/* 3D Agent Headset */}
-                <g transform="translate(10, 10)">
-                  <path d="M12 36 A20 20 0 0 1 52 36" fill="none" stroke="url(#headsetGrad)" strokeWidth="4" strokeLinecap="round" />
-                  <rect x="8" y="30" width="8" height="18" rx="4" fill="#581c87" stroke="#e9d5ff" strokeWidth="1" />
-                  <rect x="48" y="30" width="8" height="18" rx="4" fill="#581c87" stroke="#e9d5ff" strokeWidth="1" />
-                  <path d="M12 44 Q20 54 34 52" fill="none" stroke="#e9d5ff" strokeWidth="2.5" strokeLinecap="round" />
-                  <circle cx="36" cy="52" r="3.5" fill="#ec4899" stroke="#ffffff" strokeWidth="1" />
-                </g>
-                {/* Telephony Sound Waveform & QA Card */}
-                <g transform="translate(64, 8)">
-                  <rect x="0" y="0" width="58" height="42" rx="6" fill="#1e1b4b" stroke="#8b5cf6" strokeWidth="1" />
-                  <text x="6" y="10" fill="#a78bfa" fontSize="5" fontWeight="bold">TELEPHONY QA</text>
-                  <text x="6" y="21" fill="#34d399" fontSize="10.5" fontWeight="900" fontFamily="monospace">94% POS</text>
-                  <text x="6" y="29" fill="#cbd5e1" fontSize="5">Sentiment: High Empathy</text>
-                  {/* Equalizer sound bars */}
-                  <g transform="translate(6, 32)">
-                    <line x1="2" y1="5" x2="2" y2="1" stroke="#38bdf8" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="7" y1="5" x2="7" y2="-2" stroke="#818cf8" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="12" y1="5" x2="12" y2="3" stroke="#c084fc" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="17" y1="5" x2="17" y2="-3" stroke="#f43f5e" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="22" y1="5" x2="22" y2="2" stroke="#34d399" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="27" y1="5" x2="27" y2="-1" stroke="#38bdf8" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="32" y1="5" x2="32" y2="3" stroke="#818cf8" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="37" y1="5" x2="37" y2="-2" stroke="#c084fc" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="42" y1="5" x2="42" y2="1" stroke="#34d399" strokeWidth="1.5" strokeLinecap="round" />
-                  </g>
-                </g>
-                {/* Call In Progress Badge */}
-                <g transform="translate(18, 62)">
-                  <rect x="0" y="0" width="84" height="15" rx="7.5" fill="#047857" stroke="#10b981" strokeWidth="0.8" />
-                  <circle cx="8" cy="7.5" r="2.5" fill="#ffffff" />
-                  <text x="14" y="10.5" fill="#ffffff" fontSize="6" fontWeight="bold">04:18 • Recording Monitored</text>
-                </g>
-              </svg>
-            </div>
-          </div>
-
-          <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-purple-500/20 rounded-full blur-xl pointer-events-none" />
-        </div>
-      ),
-    },
-    {
-      id: "speech-to-text",
-      title: "Speech to Text & Clinical Voice Dictation",
-      tagline: "Real-time doctor voice dictation for prescriptions with Telugu/Hindi/English recognition.",
-      path: "/speech-to-text",
-      badge: "Voice AI",
-      badgeColor: "bg-sky-600 text-white",
-      tags: ["Real-Time Mic", "Telugu/Hindi/Eng", "EHR Dictation"],
-      renderBanner: () => (
-        <div className="relative w-full h-40 bg-gradient-to-br from-sky-800 via-blue-900 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
-          <div className="flex items-center justify-between z-10">
-            <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30">
-              Voice Dictation
-            </span>
-            <span className="text-[10px] font-bold bg-sky-500 text-white px-2 py-0.5 rounded-full shadow-xs">
-              Live Mic Active
-            </span>
-          </div>
-
-          <div className="z-10 flex items-end justify-between gap-2 mt-auto">
-            <div className="space-y-0.5">
-              <span className="text-xl font-black text-sky-200 block">
-                AI Voice to EHR
-              </span>
-              <span className="text-[10px] text-slate-300 block">
-                Telugu • English • Hindi
-              </span>
-              <span className="text-[9px] text-sky-300 font-semibold flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                Clinical Speech Model
-              </span>
-            </div>
-
-            {/* Attractive 3D Product Objects: Clinical Studio Mic, Sound Waves & Transcription Pad */}
-            <div className="relative shrink-0">
-              <svg viewBox="0 0 130 90" className="w-28 h-20 drop-shadow-xl overflow-visible">
-                <defs>
-                  <linearGradient id="micGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#38bdf8" />
-                    <stop offset="100%" stopColor="#0284c7" />
-                  </linearGradient>
-                </defs>
-                {/* 3D Clinical Studio Mic */}
-                <g transform="translate(14, 8)">
-                  <path d="M4 22 C0 28 0 34 4 40" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
-                  <path d="M40 22 C44 28 44 34 40 40" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
-                  <rect x="14" y="12" width="16" height="28" rx="8" fill="url(#micGrad)" stroke="#ffffff" strokeWidth="1.2" />
-                  <line x1="14" y1="20" x2="30" y2="20" stroke="#0369a1" strokeWidth="1" />
-                  <line x1="14" y1="26" x2="30" y2="26" stroke="#0369a1" strokeWidth="1" />
-                  <line x1="14" y1="32" x2="30" y2="32" stroke="#0369a1" strokeWidth="1" />
-                  <path d="M8 28 C8 42 36 42 36 28" fill="none" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" />
-                  <line x1="22" y1="42" x2="22" y2="54" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" />
-                  <ellipse cx="22" cy="54" rx="10" ry="3" fill="#64748b" />
-                </g>
-                {/* Live Speech-to-Text Document */}
-                <g transform="translate(68, 6)">
-                  <rect x="0" y="0" width="54" height="60" rx="6" fill="#ffffff" stroke="#38bdf8" strokeWidth="1.2" />
-                  <rect x="6" y="8" width="22" height="4" rx="2" fill="#0284c7" />
-                  <line x1="6" y1="18" x2="48" y2="18" stroke="#64748b" strokeWidth="1.5" strokeLinecap="round" />
-                  <line x1="6" y1="24" x2="42" y2="24" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
-                  <line x1="6" y1="30" x2="46" y2="30" stroke="#64748b" strokeWidth="1.5" strokeLinecap="round" />
-                  <line x1="6" y1="36" x2="38" y2="36" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
-                  <path d="M6 46 Q14 42 22 46 T38 46 T48 46" fill="none" stroke="#ef4444" strokeWidth="1.5" />
-                  <circle cx="48" cy="46" r="2" fill="#ef4444" className="animate-ping" />
-                </g>
-                {/* Language Pill */}
-                <g transform="translate(48, 64)">
-                  <rect x="0" y="0" width="60" height="14" rx="7" fill="#0369a1" stroke="#38bdf8" strokeWidth="0.8" />
-                  <text x="6" y="10" fill="#ffffff" fontSize="6" fontWeight="bold">తెలుగు • Eng • हिन्दी</text>
-                </g>
-              </svg>
-            </div>
-          </div>
-
-          <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-sky-500/20 rounded-full blur-xl pointer-events-none" />
-        </div>
-      ),
-    },
-    {
-      id: "chatbot",
-      title: "AI Patient Service & Clinical Chatbot",
-      tagline: "Conversational AI assistant with smart doctor booking & medical FAQs.",
-      path: "/chatbot",
-      badge: "Conversational AI",
-      badgeColor: "bg-fuchsia-600 text-white",
-      tags: ["Natural Language", "Smart Scheduling", "Doctor Matching"],
-      renderBanner: () => (
-        <div className="relative w-full h-40 bg-gradient-to-br from-fuchsia-800 via-purple-900 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
-          <div className="flex items-center justify-between z-10">
-            <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30">
-              AI Copilot
-            </span>
-            <span className="text-[10px] font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full shadow-xs">
-              24/7 Available
-            </span>
-          </div>
-
-          <div className="z-10 flex items-end justify-between gap-2 mt-auto">
-            <div className="space-y-1">
-              <div className="bg-white/15 backdrop-blur-xs px-2.5 py-1 rounded-xl rounded-bl-xs text-[10px] text-fuchsia-100 max-w-[170px]">
-                "Book doctor Dr. Rajesh"
-              </div>
-              <div className="bg-purple-600/90 px-2.5 py-1 rounded-xl rounded-br-xs text-[10px] text-white font-medium max-w-[170px]">
-                ✓ Confirmed today at 10 AM
-              </div>
-            </div>
-
-            {/* Attractive 3D Product Objects: AI Medical Doctor Bot & Multi-Lingual Speech Bubbles */}
-            <div className="relative shrink-0">
-              <svg viewBox="0 0 130 90" className="w-28 h-20 drop-shadow-xl overflow-visible">
-                <defs>
-                  <linearGradient id="botGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#ffffff" />
-                    <stop offset="100%" stopColor="#e0e7ff" />
-                  </linearGradient>
-                  <linearGradient id="visorGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#06b6d4" />
-                    <stop offset="100%" stopColor="#0284c7" />
-                  </linearGradient>
-                </defs>
-                {/* 3D AI Medical Doctor Bot Head */}
-                <g transform="translate(14, 14)">
-                  <rect x="14" y="38" width="32" height="24" rx="8" fill="#4338ca" />
-                  <path d="M22 44 C22 56 38 56 38 44" fill="none" stroke="#22d3ee" strokeWidth="2" />
-                  <circle cx="30" cy="55" r="3" fill="#e0e7ff" stroke="#22d3ee" strokeWidth="1" />
-                  <rect x="10" y="8" width="40" height="30" rx="10" fill="url(#botGrad)" stroke="#c7d2fe" strokeWidth="1" />
-                  <rect x="15" y="14" width="30" height="15" rx="6" fill="url(#visorGrad)" />
-                  <circle cx="24" cy="21" r="2.5" fill="#ffffff" />
-                  <circle cx="36" cy="21" r="2.5" fill="#ffffff" />
-                  <line x1="30" y1="8" x2="30" y2="2" stroke="#a5b4fc" strokeWidth="2" strokeLinecap="round" />
-                  <circle cx="30" cy="2" r="2.5" fill="#ec4899" />
-                  <path d="M8 20 C6 20 6 26 8 26" fill="none" stroke="#ec4899" strokeWidth="2.5" strokeLinecap="round" />
-                </g>
-                {/* Multi-Lingual Speech Bubbles (Telugu & English) */}
-                <g transform="translate(68, 6)">
-                  <rect x="4" y="4" width="54" height="20" rx="6" fill="#ffffff" stroke="#c084fc" strokeWidth="1" />
-                  <text x="10" y="14" fill="#7e22ce" fontSize="6.5" fontWeight="bold">నమస్కారం! (Hello)</text>
-                  <text x="10" y="21" fill="#64748b" fontSize="5.5">AI Triage Active</text>
-                  <rect x="0" y="28" width="58" height="20" rx="6" fill="#7c3aed" />
-                  <text x="6" y="38" fill="#ffffff" fontSize="6.5" fontWeight="bold">✓ Dr. Rajesh Booked</text>
-                  <text x="6" y="45" fill="#e9d5ff" fontSize="5.5">10:00 AM Confirmed</text>
-                  {/* Typing Indicator */}
-                  <rect x="20" y="52" width="28" height="12" rx="6" fill="#f43f5e" />
-                  <circle cx="28" cy="58" r="1.5" fill="#ffffff" />
-                  <circle cx="34" cy="58" r="1.5" fill="#ffffff" />
-                  <circle cx="40" cy="58" r="1.5" fill="#ffffff" />
-                </g>
-              </svg>
-            </div>
-          </div>
-
-          <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-fuchsia-500/20 rounded-full blur-xl pointer-events-none" />
-        </div>
-      ),
-    },
-    {
       id: "url-generator",
       title: "Healthcare Smart URL & QR Generator",
       tagline: "Encrypted short links & dynamic QR codes for lab reports & patient portals.",
@@ -542,8 +464,8 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
       badgeColor: "bg-emerald-600 text-white",
       tags: ["Dynamic QR", "Secure Short URLs", "Lab Reports"],
       renderBanner: () => (
-        <div className="relative w-full h-40 bg-gradient-to-br from-emerald-800 via-teal-900 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
-          <div className="flex items-center justify-between z-10">
+        <div className="relative w-full h-30 bg-gradient-to-br from-emerald-800 via-teal-900 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
+          <div className="flex items-center justify-between z-10 hidden">
             <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30">
               HIPAA Compliant
             </span>
@@ -555,7 +477,7 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
           <div className="z-10 flex items-end justify-between gap-2 mt-auto">
             <div className="space-y-0.5">
               <span className="text-xs font-mono font-bold text-emerald-300 block">
-                apple.health/s/rx-104
+                abcd.health/s/rx-104
               </span>
               <span className="text-[10px] text-slate-300 block">
                 Digital Lab Report & WhatsApp
@@ -630,8 +552,8 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
       badgeColor: "bg-amber-600 text-white",
       tags: ["Audio Chimes", "Queue Pools", "Display Board"],
       renderBanner: () => (
-        <div className="relative w-full h-40 bg-gradient-to-br from-amber-700 via-orange-800 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
-          <div className="flex items-center justify-between z-10">
+        <div className="relative w-full h-30 bg-gradient-to-br from-amber-700 via-orange-800 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
+          <div className="flex items-center justify-between z-10 hidden">
             <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30">
               Lobby Display
             </span>
@@ -711,6 +633,84 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
         </div>
       ),
     },
+    {
+      id: "speech-to-text",
+      title: "Speech to Text & Clinical Voice Dictation",
+      tagline: "Real-time doctor voice dictation for prescriptions with Telugu/Hindi/English recognition.",
+      path: "/speech-to-text",
+      badge: "Voice AI",
+      badgeColor: "bg-sky-600 text-white",
+      tags: ["Real-Time Mic", "Telugu/Hindi/Eng", "EHR Dictation"],
+      renderBanner: () => (
+        <div className="relative w-full h-30 bg-gradient-to-br from-sky-800 via-blue-900 to-slate-950 p-4 flex flex-col justify-between overflow-hidden text-white rounded-t-2xl">
+          <div className="flex items-center justify-between z-10 hidden">
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/30">
+              Voice Dictation
+            </span>
+            <span className="text-[10px] font-bold bg-sky-500 text-white px-2 py-0.5 rounded-full shadow-xs">
+              Live Mic Active
+            </span>
+          </div>
+
+          <div className="z-10 flex items-end justify-between gap-2 mt-auto">
+            <div className="space-y-0.5">
+              <span className="text-xl font-black text-sky-200 block">
+                AI Voice to EHR
+              </span>
+              <span className="text-[10px] text-slate-300 block">
+                Telugu • English • Hindi
+              </span>
+              <span className="text-[9px] text-sky-300 font-semibold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                Clinical Speech Model
+              </span>
+            </div>
+
+            {/* Attractive 3D Product Objects: Clinical Studio Mic, Sound Waves & Transcription Pad */}
+            <div className="relative shrink-0">
+              <svg viewBox="0 0 130 90" className="w-28 h-20 drop-shadow-xl overflow-visible">
+                <defs>
+                  <linearGradient id="micGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#38bdf8" />
+                    <stop offset="100%" stopColor="#0284c7" />
+                  </linearGradient>
+                </defs>
+                {/* 3D Clinical Studio Mic */}
+                <g transform="translate(14, 8)">
+                  <path d="M4 22 C0 28 0 34 4 40" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
+                  <path d="M40 22 C44 28 44 34 40 40" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
+                  <rect x="14" y="12" width="16" height="28" rx="8" fill="url(#micGrad)" stroke="#ffffff" strokeWidth="1.2" />
+                  <line x1="14" y1="20" x2="30" y2="20" stroke="#0369a1" strokeWidth="1" />
+                  <line x1="14" y1="26" x2="30" y2="26" stroke="#0369a1" strokeWidth="1" />
+                  <line x1="14" y1="32" x2="30" y2="32" stroke="#0369a1" strokeWidth="1" />
+                  <path d="M8 28 C8 42 36 42 36 28" fill="none" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" />
+                  <line x1="22" y1="42" x2="22" y2="54" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" />
+                  <ellipse cx="22" cy="54" rx="10" ry="3" fill="#64748b" />
+                </g>
+                {/* Live Speech-to-Text Document */}
+                <g transform="translate(68, 6)">
+                  <rect x="0" y="0" width="54" height="60" rx="6" fill="#ffffff" stroke="#38bdf8" strokeWidth="1.2" />
+                  <rect x="6" y="8" width="22" height="4" rx="2" fill="#0284c7" />
+                  <line x1="6" y1="18" x2="48" y2="18" stroke="#64748b" strokeWidth="1.5" strokeLinecap="round" />
+                  <line x1="6" y1="24" x2="42" y2="24" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
+                  <line x1="6" y1="30" x2="46" y2="30" stroke="#64748b" strokeWidth="1.5" strokeLinecap="round" />
+                  <line x1="6" y1="36" x2="38" y2="36" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M6 46 Q14 42 22 46 T38 46 T48 46" fill="none" stroke="#ef4444" strokeWidth="1.5" />
+                  <circle cx="48" cy="46" r="2" fill="#ef4444" className="animate-ping" />
+                </g>
+                {/* Language Pill */}
+                <g transform="translate(48, 64)">
+                  <rect x="0" y="0" width="60" height="14" rx="7" fill="#0369a1" stroke="#38bdf8" strokeWidth="0.8" />
+                  <text x="6" y="10" fill="#ffffff" fontSize="6" fontWeight="bold">తెలుగు • Eng • हिन्दी</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-sky-500/20 rounded-full blur-xl pointer-events-none" />
+        </div>
+      ),
+    }
   ];
 
   const experienceList = [
@@ -1204,13 +1204,13 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
 
                       {/* Card Body with High Readability */}
                       <div className="p-4 sm:p-5 space-y-3">
-                        <div className="flex items-center justify-between gap-2">
+                        {/* <div className="flex items-center justify-between gap-2">
                           <span
                             className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${app.badgeColor}`}
                           >
                             {app.badge}
                           </span>
-                        </div>
+                        </div> */}
 
                         <div>
                           <h3 className="font-bold text-base sm:text-lg text-slate-900 group-hover:text-purple-700 transition-colors leading-snug">

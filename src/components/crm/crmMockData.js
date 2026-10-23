@@ -24,7 +24,7 @@ export const STAFF_MEMBERS = [
 ];
 
 export const QUICK_REPLIES = [
-  { id: "qr_1", title: "OPD Booking Link", tag: "@booking", body: "Here is your direct booking link for OPD Consultation with Dr. Sharma: https://apple.health/slot/cardio-104. Please pick your preferred time slot." },
+  { id: "qr_1", title: "OPD Booking Link", tag: "@booking", body: "Here is your direct booking link for OPD Consultation with Dr. Sharma: https://abcd.health/slot/cardio-104. Please pick your preferred time slot." },
   { id: "qr_2", title: "Lab Fasting Instructions", tag: "@fasting", body: "For your fasting blood glucose and lipid profile, please fast for 10-12 hours overnight. Plain water is permitted. Please report to Room 102 by 08:00 AM." },
   { id: "qr_3", title: "Hospital Location & Parking", tag: "@location", body: "Our main campus is at 104 Bannerghatta Road, Bengaluru. Multi-level patient parking is available at Gate 2 with valet service." },
   { id: "qr_4", title: "Health Checkup Packages", tag: "@packages", body: "We offer comprehensive Master Health Checkups starting at ₹2,499. Includes 68 blood parameters, ECG, Chest X-Ray, and Physician consult." },
