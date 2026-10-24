@@ -750,7 +750,7 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
       duration: "4 yrs 10 mos",
       location: "Hyderabad, India",
       summary:
-        "Spearheaded development of comprehensive Electronic Health Record (EHR) modules and remote patient telemetry for major hospital chains including KIMS Hospitals.",
+        "Spearheaded development of comprehensive Electronic Health Record (EHR) modules and remote patient telemetry for major hospital chains including K**S Hospitals.",
       achievements: [
         "Engineered core EHR clinical modules including IP Discharge Summary, Nursing Clinical Forms, Drug Charts, Intake/Output (I/O) Records, Vitals, and Diagnostic Lab Reports.",
         "Integrated Dozee Remote Patient Monitoring (RPM) IoT contactless sensors to stream real-time patient vitals into the EHR, enabling early warning clinical alerts.",
@@ -807,7 +807,7 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
     },
     {
       title: "Electronic Health Record (EHR) - Web Application",
-      client: "KIMS Hospitals",
+      client: "K**S Hospitals",
       period: "Mar 2021 – Mar 2024",
       teamSize: "5 members",
       category: "ehr",
@@ -824,7 +824,7 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
     },
     {
       title: "Electronic Health Record (EHR) - Mobile Application",
-      client: "KIMS Hospitals",
+      client: "K**S Hospitals",
       period: "Mar 2021 – Mar 2024",
       teamSize: "5 members",
       category: "mobile",
@@ -839,7 +839,7 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
     },
     {
       title: "Hospital Queue Management System",
-      client: "KIMS Hospitals",
+      client: "K**S Hospitals",
       period: "Jan 2021 – Mar 2021",
       teamSize: "5 members",
       category: "ehr",
@@ -854,7 +854,7 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
     },
     {
       title: "Hospital Financial Management & Counselling System",
-      client: "KIMS Hospitals",
+      client: "K**S Hospitals",
       period: "Mar 2020 – Jan 2021",
       teamSize: "5 members",
       category: "crm",
