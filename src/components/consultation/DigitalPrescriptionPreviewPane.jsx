@@ -444,7 +444,7 @@ function StandardPrescriptionSheet({
                 </div>
               </div>
               <p className="text-[11px] text-teal-200/80 mt-2">
-                100 Hospital Boulevard, Metro Health District • Tel: +91 44 2839 0000 • contact@applehospital.com
+                100 Hospital Boulevard, Metro Health District • Tel: +91 44 2839 0000 • contact@abcdhospital.com
               </p>
             </div>
 
@@ -468,7 +468,7 @@ function StandardPrescriptionSheet({
             </div>
             <div>
               <h2 className="text-sm font-black text-slate-900 tracking-tight leading-none">
-                APPLE HOSPITAL OPD
+                ABCD HOSPITAL OPD
               </h2>
               <span className="text-[10px] text-teal-800 font-semibold">General Medicine</span>
             </div>

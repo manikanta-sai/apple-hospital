@@ -22,7 +22,7 @@ export default function HospitalCrmApp() {
     role: "Lead Patient Care Coordinator & Omnichannel Specialist",
     agentId: "AGENT-704",
     department: "Patient Relations & Clinical Triage Desk",
-    email: "priya.nair@applehospital.health",
+    email: "priya.nair@abcdhospital.health",
     phone: "+91 98450 12345",
     status: "Available", // "Available" | "In Call" | "On Break" | "Busy / Triage" | "Offline"
     shift: "Morning Shift (08:00 AM - 04:30 PM)",

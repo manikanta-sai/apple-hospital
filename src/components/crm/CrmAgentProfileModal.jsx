@@ -6,7 +6,7 @@ export default function CrmAgentProfileModal({ agentProfile, onSave, onClose }) 
     role: agentProfile?.role || "Senior Patient Care Coordinator & Omnichannel Lead",
     agentId: agentProfile?.agentId || "AGENT-704",
     department: agentProfile?.department || "Patient Relations & Triage Desk",
-    email: agentProfile?.email || "priya.nair@applehospital.health",
+    email: agentProfile?.email || "priya.nair@abcdhospital.health",
     phone: agentProfile?.phone || "+91 98450 12345",
     status: agentProfile?.status || "Available",
     shift: agentProfile?.shift || "Morning Shift (08:00 AM - 04:30 PM)",

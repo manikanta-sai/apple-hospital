@@ -34,7 +34,7 @@ const DEFAULT_PROFILE = {
   patientsTreated: "14,820+",
   rating: "4.9 / 5.0",
   phone: "+91 98765 43210",
-  email: "dr.sharma@applehospital.in",
+  email: "dr.sharma@abcdhospital.in",
   workingHours: "09:00 AM – 02:00 PM & 04:00 PM – 07:00 PM (Mon–Sat)",
   location: "ABCD Multispecialty Hospital, Healthcare Enclave, New Delhi",
   avatarUrl: "",
@@ -974,7 +974,7 @@ export default function DoctorProfileView({
                       type="email"
                       value={formData.email}
                       onChange={(e) => handleInputChange("email", e.target.value)}
-                      placeholder="dr.sharma@applehospital.in"
+                      placeholder="dr.sharma@abcdhospital.in"
                       className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 font-medium text-slate-800 bg-white"
                     />
                   </div>

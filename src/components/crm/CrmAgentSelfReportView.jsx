@@ -9,7 +9,7 @@ export default function CrmAgentSelfReportView({ agentProfile = null, onNavigate
     role: "Senior Patient Care Coordinator & Omnichannel Lead",
     agentId: "AGENT-704",
     department: "Patient Relations & Triage Desk",
-    email: "priya.nair@applehospital.health",
+    email: "priya.nair@abcdhospital.health",
     phone: "+91 98450 12345",
     status: "Available",
     shift: "Morning Shift (08:00 AM - 04:30 PM)",

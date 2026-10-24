@@ -96,19 +96,19 @@ const FEEDBACK_TOPICS = [
 const SURVEY_TOPICS = [
   {
     title: "Annual Hospital Patient Experience & Quality Survey",
-    url: "https://forms.google.com/d/e/1FAIpQLSc_AppleHospitalSurvey/viewform",
+    url: "https://forms.google.com/d/e/1FAIpQLSc_ABCDHospitalSurvey/viewform",
   },
   {
     title: "Cafeteria Nutrition, Food Quality & Dietary Hygiene Audit",
-    url: "https://forms.office.com/r/apple-hospital-nutrition-2026",
+    url: "https://forms.office.com/r/abcd-hospital-nutrition-2026",
   },
   {
     title: "Post-Discharge 30-Day Recovery & PROM Outcome Study",
-    url: "https://surveys.applehospital.org/prom-30day-recovery",
+    url: "https://surveys.abcdhospital.org/prom-30day-recovery",
   },
   {
     title: "Accreditation Patient Safety & Hand Hygiene Perception",
-    url: "https://research.applehospital.org/audits/nabh-hand-hygiene",
+    url: "https://research.abcdhospital.org/audits/nabh-hand-hygiene",
   },
   {
     title: "Digital Health Portal & Telehealth Usability Questionnaire",
@@ -116,7 +116,7 @@ const SURVEY_TOPICS = [
   },
   {
     title: "Outpatient Wait Time & Pharmacy Queue Satisfaction",
-    url: "https://forms.office.com/r/apple-opd-waittimes-2026",
+    url: "https://forms.office.com/r/abcd-opd-waittimes-2026",
   },
 ];
 
@@ -190,7 +190,7 @@ export async function seedInitialDataIfEmpty() {
       meetingDate: new Date(now + 86400000 * ((i % 5) + 1)).toISOString().split("T")[0],
       meetingTime: `${(9 + (i % 8)).toString().padStart(2, "0")}:30 AM`,
       description: "Please have previous prescriptions, blood glucose logs, and vitals ready before joining.",
-      videoMeetingUrl: `https://meet.google.com/apple-${doc.name.toLowerCase().replace(/[^a-z]/g, "")}`,
+      videoMeetingUrl: `https://meet.google.com/abcd-${doc.name.toLowerCase().replace(/[^a-z]/g, "")}`,
       createdAt: now - (i * 3600000 + 20000),
     });
     telehealthIds.push(thId);

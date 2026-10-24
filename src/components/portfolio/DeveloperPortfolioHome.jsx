@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ScrollReveal from "../common/ScrollReveal.jsx";
 import ScrollToTopButton from "../common/ScrollToTopButton.jsx";
+import TechStackIcon from "./TechStackIcon.jsx";
 import {
   Briefcase,
   FolderGit2,
@@ -29,6 +30,8 @@ import {
   Cloud,
   CheckCircle2,
   Share2,
+  Server,
+  Wrench,
 } from "lucide-react";
 
 export default function DeveloperPortfolioHome({ navigateTo }) {
@@ -902,6 +905,8 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
   const skillCategories = [
     {
       name: "Frontend Architecture",
+      icon: Code2,
+      accent: "text-purple-600 bg-purple-50 border-purple-100",
       skills: [
         "React.js (v16.8+)",
         "React Native",
@@ -921,6 +926,8 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
     },
     {
       name: "Backend & APIs",
+      icon: Server,
+      accent: "text-emerald-600 bg-emerald-50 border-emerald-100",
       skills: [
         "Node.js",
         "Express.js",
@@ -937,6 +944,8 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
     },
     {
       name: "Databases & Storage",
+      icon: Database,
+      accent: "text-cyan-600 bg-cyan-50 border-cyan-100",
       skills: [
         "PostgreSQL",
         "MongoDB",
@@ -948,6 +957,8 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
     },
     {
       name: "Cloud, Telecom & Integrations",
+      icon: Cloud,
+      accent: "text-blue-600 bg-blue-50 border-blue-100",
       skills: [
         "AWS (EC2, S3, RDS, IAM, CloudWatch)",
         "Meta Business API (WhatsApp, Instagram, Ads)",
@@ -959,6 +970,8 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
     },
     {
       name: "DevOps & Engineering Tools",
+      icon: Wrench,
+      accent: "text-amber-600 bg-amber-50 border-amber-100",
       skills: [
         "GitHub Actions (CI/CD)",
         "Git & Bitbucket",
@@ -1493,9 +1506,10 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
                   {proj.stack.map((tech) => (
                     <span
                       key={tech}
-                      className="text-[10px] font-semibold bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-md font-mono"
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold bg-white border border-slate-200/90 text-slate-700 px-2 py-0.5 rounded-md font-mono shadow-2xs hover:border-purple-200 hover:bg-purple-50/40 transition-colors"
                     >
-                      {tech}
+                      <TechStackIcon name={tech} size={12} />
+                      <span>{tech}</span>
                     </span>
                   ))}
                 </div>
@@ -1524,24 +1538,39 @@ export default function DeveloperPortfolioHome({ navigateTo }) {
             </h2>
           </div>
 
-          <div className="space-y-4">
-            {skillCategories.map((cat, idx) => (
-              <div key={idx} className="space-y-2">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  {cat.name}
-                </h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {cat.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="text-xs font-semibold bg-slate-50 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 border border-slate-200/80 text-slate-700 px-3 py-1 rounded-lg transition-colors cursor-default"
-                    >
-                      {skill}
+          <div className="space-y-6">
+            {skillCategories.map((cat, idx) => {
+              const CategoryIcon = cat.icon;
+              return (
+                <div key={idx} className="space-y-2.5">
+                  <div className="flex items-center gap-2">
+                    {CategoryIcon && (
+                      <span className={`w-6 h-6 rounded-lg flex items-center justify-center border ${cat.accent}`}>
+                        <CategoryIcon size={13} />
+                      </span>
+                    )}
+                    <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      {cat.name}
+                    </h3>
+                    <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">
+                      {cat.skills.length}
                     </span>
-                  ))}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {cat.skills.map((skill) => (
+                      <span
+                        key={skill}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold bg-slate-50/90 hover:bg-purple-50/70 hover:text-purple-900 hover:border-purple-200 border border-slate-200/90 text-slate-700 px-2.5 py-1 rounded-lg transition-all cursor-default shadow-2xs group"
+                      >
+                        <TechStackIcon name={skill} size={14} className="group-hover:scale-110 transition-transform" />
+                        <span>{skill}</span>
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       </ScrollReveal>

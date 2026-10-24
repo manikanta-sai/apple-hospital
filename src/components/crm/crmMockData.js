@@ -332,7 +332,7 @@ export const INITIAL_CONVERSATIONS = [
         id: "m_602",
         sender: "agent",
         senderName: "Vikram Mehta",
-        text: "Hi John, yes! Our Apple HomeCare team covers Whitefield with trained neuro-ortho physiotherapists. The package includes 10 home sessions and ROM monitoring.",
+        text: "Hi John, yes! Our ABCD HomeCare team covers Whitefield with trained neuro-ortho physiotherapists. The package includes 10 home sessions and ROM monitoring.",
         timestamp: "Today, 08:42 AM",
         channel: "messenger",
         seen: true,
@@ -516,7 +516,7 @@ const CLINICAL_SCENARIOS = [
     topic: "Knee replacement second opinion & cashless TPA insurance inquiry",
     patientMsg: "Hello, my mother was advised Total Knee Replacement by a local clinic. We want a second opinion from Dr. Vivek Anand and want to know if Star Health cashless insurance is accepted.",
     note: "NOTE: Sent TPA pre-authorization checklist. Star Health cashless is active on Ground Floor Counter 6.",
-    agentReply: "Hello! Yes, Apple Hospital has direct cashless tie-up with Star Health Insurance. Dr. Vivek Anand (Senior Orthopedic Surgeon) has second-opinion slots available on Thursday at 02:30 PM. Please bring her knee X-rays and MRI films.",
+    agentReply: "Hello! Yes, ABCD Hospital has direct cashless tie-up with Star Health Insurance. Dr. Vivek Anand (Senior Orthopedic Surgeon) has second-opinion slots available on Thursday at 02:30 PM. Please bring her knee X-rays and MRI films.",
     leadSource: "Messenger",
     leadStatus: "Contacted",
     priority: "High"
