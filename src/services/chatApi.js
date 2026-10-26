@@ -13,6 +13,29 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 const MOCK_MODE = import.meta.env.VITE_CHAT_MOCK_MODE !== "false";
 
+// Client-side Rate Limiter (Sliding Window)
+// Protects backend against Layer 7 spam, bot floods, and infinite message loops
+const RATE_LIMIT_CONFIG = {
+  maxRequests: 10,       // Max requests
+  windowMs: 60 * 1000,   // Per 1 minute window
+};
+
+const requestTimestamps = [];
+
+export function checkRateLimit() {
+  const now = Date.now();
+  while (requestTimestamps.length > 0 && requestTimestamps[0] <= now - RATE_LIMIT_CONFIG.windowMs) {
+    requestTimestamps.shift();
+  }
+
+  if (requestTimestamps.length >= RATE_LIMIT_CONFIG.maxRequests) {
+    const retryAfter = Math.ceil((requestTimestamps[0] + RATE_LIMIT_CONFIG.windowMs - now) / 1000);
+    throw new Error(`Rate limit exceeded: Too many requests. Please wait ${retryAfter} seconds.`);
+  }
+
+  requestTimestamps.push(now);
+}
+
 function buildHeaders(tenantId) {
   return {
     "Content-Type": "application/json",
@@ -45,15 +68,9 @@ export async function fetchChatHistory(sessionId, tenantId) {
  * POST /api/chat/message
  * Sends the user's text to the AI backend and receives the assistant's
  * reply, which may include a `doctors` array for rich card rendering.
- *
- * `targetLanguage` (short code, e.g. "en"/"es"/"hi") tells the backend
- * which language to generate the reply in. Prefer this over
- * translating the English reply client-side afterward — an LLM
- * generating natively in the target language preserves medical nuance
- * (dosages, symptom terms, etc.) far better than a translation pass
- * bolted on after the fact.
  */
 export async function sendChatMessage(sessionId, message, tenantId, targetLanguage = "en", attachments = []) {
+  checkRateLimit();
   const res = await fetch(`${API_BASE_URL}/chat/message`, {
     method: "POST",
     headers: buildHeaders(tenantId),
@@ -63,6 +80,7 @@ export async function sendChatMessage(sessionId, message, tenantId, targetLangua
 }
 
 export async function uploadChatAttachments(sessionId, entries, tenantId, onProgress) {
+  checkRateLimit();
   if (MOCK_MODE) {
     return Promise.all(
       entries.map((entry) =>
@@ -138,6 +156,7 @@ export async function uploadChatAttachments(sessionId, entries, tenantId, onProg
  * Books a slot for a doctor surfaced in a doctor card.
  */
 export async function bookDoctorSlot(sessionId, doctorId, slotId, tenantId) {
+  checkRateLimit();
   const res = await fetch(`${API_BASE_URL}/appointments/book`, {
     method: "POST",
     headers: buildHeaders(tenantId),

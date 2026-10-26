@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { User, Phone, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "../i18n/LanguageContext";
 
@@ -6,14 +6,18 @@ import { useLanguage } from "../i18n/LanguageContext";
  * PatientRegistrationForm
  * ------------------------
  * Renders inline in the message stream when the "Book Appointment"
- * quick link is tapped. Validates locally, then hands the values up to
- * `onSubmit(messageId, formData)` which freezes this message (see
- * useChatSession.submitPatientForm) and continues the booking flow.
+ * quick link is tapped.
+ * 
+ * Hardened with Enterprise Threat Protections:
+ * 1. Honeypot Field (`website_trap`): Catches headless browser/autofill bot spam.
+ * 2. Submission Velocity Guard: Prevents instant programmatic submissions (<800ms).
  */
 export default function PatientRegistrationForm({ message, onSubmit }) {
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
+  const [honeypot, setHoneypot] = useState(""); // Bot honeypot trap
   const [errors, setErrors] = useState({});
+  const mountTimeRef = useRef(Date.now());
   const { t } = useLanguage();
 
   const isSubmitted = message.status === "submitted";
@@ -28,6 +32,20 @@ export default function PatientRegistrationForm({ message, onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // 1. Honeypot check: If the hidden trap field is filled, silently drop or reject the bot
+    if (honeypot) {
+      console.warn("[Security Alert] Bot detected via honeypot trap field.");
+      return;
+    }
+
+    // 2. Velocity check: Real humans take at least 800ms to read and submit the form
+    const elapsed = Date.now() - mountTimeRef.current;
+    if (elapsed < 800) {
+      console.warn("[Security Alert] Form submission rejected: unnatural submission velocity.");
+      return;
+    }
+
     if (!validate()) return;
     onSubmit(message.id, { name: name.trim(), mobile: mobile.trim() });
   };
@@ -52,6 +70,20 @@ export default function PatientRegistrationForm({ message, onSubmit }) {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate>
+            {/* Honeypot field: invisible to humans, auto-filled by scrapers/bots */}
+            <div className="hidden" aria-hidden="true" style={{ display: "none" }}>
+              <label htmlFor="hp_website">Do not fill this field</label>
+              <input
+                id="hp_website"
+                type="text"
+                name="website_trap"
+                tabIndex="-1"
+                autoComplete="off"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+              />
+            </div>
+
             <div>
               <label className="mb-1 flex items-center gap-1.5 text-xs font-medium text-ink-600">
                 <User size={13} /> {t("patientNameLabel")}
