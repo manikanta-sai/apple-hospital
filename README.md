@@ -169,3 +169,34 @@ function AppLayout() {
 ```
 
 Mount it once, near the root — its internal `useLocalStorage`-backed state means it will reopen in the same open/minimized state and resume the same conversation after any route change or full page refresh.
+
+## 8. Docker Deployment
+
+This project includes production-ready Docker configuration using a multi-stage build with Nginx.
+
+### Quick Start with Docker Compose
+
+Run the entire application in a container with a single command:
+
+```bash
+docker compose up -d --build
+```
+
+- Access the application at: `http://localhost:8080`
+- Stop the container:
+  ```bash
+  docker compose down
+  ```
+
+### Manual Docker Build & Run
+
+Alternatively, build and run using standard Docker CLI:
+
+```bash
+# Build the image
+docker build -t hospital-chatbot-widget:latest .
+
+# Run the container mapping host port 8080 to container port 80
+docker run -d --name hospital-chatbot-widget -p 8080:80 hospital-chatbot-widget:latest
+```
+
